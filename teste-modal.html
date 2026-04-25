@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste Modal</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 40px; background: #0a0a0f; color: #fff; }
+    .btn { background: #7c3aed; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.open { display: flex !important; }
+    .modal-box { background: #1a1a24; padding: 32px; border-radius: 12px; max-width: 400px; width: 100%; }
+    .modal-close { float: right; background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer; }
+    .auth-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .auth-tab { flex: 1; padding: 10px; background: #2a2a34; border: none; color: #999; cursor: pointer; border-radius: 6px; }
+    .auth-tab.active { background: #7c3aed; color: #fff; }
+    input { width: 100%; padding: 10px; margin: 8px 0; background: #2a2a34; border: 1px solid #444; color: #fff; border-radius: 6px; }
+    label { display: block; margin-top: 12px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>Teste do Modal</h1>
+  <button class="btn" onclick="abrirModal()">Abrir Modal</button>
+  <p id="status">Status: aguardando...</p>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalAuth">
+    <div class="modal-box">
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="trocarTab('login')">Entrar</button>
+        <button class="auth-tab" onclick="trocarTab('cadastro')">Criar Conta</button>
+      </div>
+
+      <div id="formLogin">
+        <h2>Login</h2>
+        <label>E-mail</label>
+        <input type="email" placeholder="seu@email.com" />
+        <label>Senha</label>
+        <input type="password" placeholder="••••••••" />
+        <button class="btn" style="width:100%; margin-top:16px;">Entrar</button>
+      </div>
+
+      <div id="formCadastro" style="display:none;">
+        <h2>Criar Conta</h2>
+        <label>Nome</label>
+        <input type="text" placeholder="Seu nome" />
+        <label>E-mail</label>
+        <input type="email" placeholder="seu@email.com" />
+        <label>Senha</label>
+        <input type="password" placeholder="Mínimo 6 caracteres" />
+        <button class="btn" style="width:100%; margin-top:16px;">Criar Conta</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function abrirModal() {
+      console.log('🔵 Abrindo modal...');
+      document.getElementById('status').textContent = 'Status: tentando abrir modal...';
+      
+      const modal = document.getElementById('modalAuth');
+      if (!modal) {
+        console.error('❌ Modal não encontrado!');
+        document.getElementById('status').textContent = 'Status: ERRO - Modal não encontrado';
+        return;
+      }
+      
+      modal.classList.add('open');
+      console.log('✅ Classe "open" adicionada');
+      console.log('Classes do modal:', modal.className);
+      document.getElementById('status').textContent = 'Status: modal aberto!';
+    }
+
+    function fecharModal() {
+      console.log('🔴 Fechando modal...');
+      document.getElementById('modalAuth').classList.remove('open');
+      document.getElementById('status').textContent = 'Status: modal fechado';
+    }
+
+    function trocarTab(tab) {
+      console.log('🔄 Trocando para tab:', tab);
+      document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('formCadastro').style.display = tab === 'cadastro' ? 'block' : 'none';
+    }
+
+    // Testa ao carregar
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('✅ DOM carregado');
+      console.log('Modal existe?', !!document.getElementById('modalAuth'));
+    });
+  </script>
+</body>
+</html>
