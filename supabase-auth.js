@@ -221,8 +221,20 @@ async function fazerCadastro() {
     }
 
     setBtnLoading('btnCadastro', false, 'Criar Conta');
-    fecharTodosModais();
-    showToast('🎉 Conta criada com sucesso!');
+    
+    // Verifica se precisa confirmar email
+    if (data.user && !data.session) {
+      // Supabase está configurado para exigir confirmação de email
+      mostrarErro('cadErro', '');
+      mostrarSucesso('cadErro', '✅ Conta criada! Verifique seu email para confirmar o cadastro.');
+      setTimeout(() => {
+        fecharTodosModais();
+      }, 5000);
+    } else {
+      // Login automático (confirmação de email desabilitada)
+      fecharTodosModais();
+      showToast('🎉 Conta criada com sucesso!');
+    }
   } catch (err) {
     console.error('Erro inesperado:', err);
     mostrarErro('cadErro', 'Erro inesperado: ' + err.message);
