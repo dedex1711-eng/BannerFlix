@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BannerFlix – Crie Banners Profissionais</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- COOKIE BANNER -->
+  <div id="cookieBanner" class="cookie-banner">
+    <span>🍪 Usamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa política.</span>
+    <button onclick="acceptCookies()">Aceitar</button>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">🎬 Banner<span>Flix</span></div>
+    <div class="nav-right">
+      <a href="#criador" class="btn-nav">Criar Banner</a>
+      <!-- Display de créditos (só aparece logado) -->
+      <div id="creditosDisplay" style="display:none;margin-right:16px;"></div>
+      <!-- Estado: deslogado -->
+      <button class="btn-nav-outline" id="btnAbrirAuth">Entrar</button>
+      <!-- Estado: logado -->
+      <div class="nav-user" id="navUser" style="display:none;">
+        <div class="nav-avatar" id="navAvatar">U</div>
+        <div class="nav-user-menu" id="navUserMenu">
+          <div class="nav-user-email" id="navUserEmail"></div>
+          <hr style="border-color:var(--border);margin:6px 0"/>
+          <button onclick="abrirPerfil()">⚙️ Meu Perfil</button>
+          <button id="btnAdmin" onclick="window.location.href='admin.html'" style="display:none;">👑 Admin</button>
+          <button onclick="fazerLogout()">🚪 Sair</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MODAL AUTH -->
+  <div class="modal-overlay" id="modalAuth" onclick="fecharModalFora(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+
+      <!-- TABS -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="trocarTab('login')">Entrar</button>
+        <button class="auth-tab" id="tabCadastro" onclick="trocarTab('cadastro')">Criar Conta</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="formLogin">
+        <h2 class="modal-title">Bem-vindo de volta 👋</h2>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="loginEmail" placeholder="seu@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="loginSenha" placeholder="••••••••" />
+        </div>
+        <div id="loginErro" class="auth-erro"></div>
+        <button class="btn-auth" id="btnLogin" onclick="fazerLogin()">Entrar</button>
+        <p class="auth-link">Esqueceu a senha? <a href="#" onclick="recuperarSenha()">Recuperar</a></p>
+      </div>
+
+      <!-- CADASTRO -->
+      <div id="formCadastro" style="display:none;">
+        <h2 class="modal-title">Criar sua conta 🚀</h2>
+        <div class="form-group">
+          <label>Nome</label>
+          <input type="text" id="cadNome" placeholder="Seu nome" />
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="cadEmail" placeholder="seu@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <div id="cadErro" class="auth-erro"></div>
+        <button class="btn-auth" id="btnCadastro" onclick="fazerCadastro()">Criar Conta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PERFIL -->
+  <div class="modal-overlay" id="modalPerfil" onclick="fecharModalFora(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+      <h2 class="modal-title">⚙️ Meu Perfil</h2>
+      <p class="modal-sub">Seus dados são salvos automaticamente e carregados em todo login.</p>
+
+      <div class="form-group">
+        <label>Nome</label>
+        <input type="text" id="perfilNome" placeholder="Seu nome" />
+      </div>
+      <div class="form-group">
+        <label>WhatsApp</label>
+        <input type="text" id="perfilWhatsapp" placeholder="(11) 99999-9999" />
+      </div>
+      <div class="form-group">
+        <label>Instagram</label>
+        <input type="text" id="perfilInstagram" placeholder="@seuperfil" />
+      </div>
+      <div class="form-group">
+        <label>Site / URL</label>
+        <input type="text" id="perfilSite" placeholder="www.seusite.com" />
+        <div style="margin-top: 8px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted);">
+            <input type="checkbox" id="perfilCheckMostrarSiteBanner" checked style="width: 16px; height: 16px; cursor: pointer;" />
+            <span>Mostrar site no banner</span>
+          </label>
+          <small style="display: block; margin-top: 4px; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7;">
+            Desmarque para mostrar apenas no resumo
+          </small>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Texto Extra</label>
+        <input type="text" id="perfilTexto" placeholder="Ex: Assine agora!" />
+      </div>
+
+      <div class="form-group">
+        <label>Logo</label>
+        <div class="logo-upload-area perfil-logo-area" onclick="document.getElementById('perfilLogoInput').click()">
+          <img id="perfilLogoPreview" src="" alt="" style="display:none;max-height:70px;" />
+          <div id="perfilLogoPlaceholder">
+            <span class="upload-icon">📁</span>
+            <p>Clique para escolher sua logo</p>
+          </div>
+        </div>
+        <input type="file" id="perfilLogoInput" accept="image/*" style="display:none;" onchange="perfilCarregarLogo(event)" />
+        <button class="btn-remove-logo" id="perfilBtnRemoveLogo" onclick="perfilRemoverLogo()" style="display:none;">✕ Remover Logo</button>
+      </div>
+
+      <div id="perfilErro" class="auth-erro"></div>
+      <div id="perfilSucesso" class="auth-sucesso"></div>
+      <button class="btn-auth" id="btnSalvarPerfil" onclick="salvarPerfil()">💾 Salvar Perfil</button>
+    </div>
+  </div>
+
+  <!-- MODAL CRIADOR DE VÍDEO -->
+  <div class="modal-overlay" id="modalVideo" onclick="fecharModalFora(event)">
+    <div class="modal-box modal-video">
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+      <h2 class="modal-title">🎬 Criar Vídeo com Trailer</h2>
+      <p class="modal-sub">Faça upload do trailer e adicione sua logo e contatos</p>
+
+      <!-- ETAPA 1: BUSCAR TRAILER -->
+      <div id="etapaTrailer" class="video-etapa">
+        <div class="video-info">
+          <strong id="videoFilmeNome"></strong>
+          <span id="videoFilmeAno"></span>
+        </div>
+
+        <div id="trailerCarregando" class="trailer-loading">
+          <span class="spinner"></span>
+          <p>Buscando trailer...</p>
+        </div>
+
+        <div id="trailerErro" class="trailer-erro" style="display:none;">
+          <p>❌ Trailer não encontrado</p>
+          <p style="font-size:0.85rem;margin-top:8px;">Você pode fazer upload do vídeo manualmente abaixo</p>
+        </div>
+
+        <div id="trailerEncontrado" class="trailer-encontrado" style="display:none;">
+          <p>✅ Trailer encontrado!</p>
+          <div class="trailer-acoes">
+            <button class="btn-trailer" onclick="abrirTrailerYoutube()">🎬 Abrir no YouTube</button>
+            <button class="btn-trailer" onclick="copiarLinkTrailer()">📋 Copiar Link</button>
+          </div>
+          <p class="trailer-instrucao">👆 Baixe o trailer usando <a href="https://y2meta.is/" target="_blank">y2meta.is</a> ou <a href="https://app.ytdown.to/pt27/" target="_blank">ytdown.to</a></p>
+        </div>
+
+        <div class="upload-video-area">
+          <h4>📤 Fazer Upload do Vídeo</h4>
+          <div class="video-upload-box" onclick="document.getElementById('videoInput').click()">
+            <div id="videoUploadPlaceholder">
+              <span class="upload-icon">🎬</span>
+              <p>Clique para escolher o vídeo do trailer</p>
+              <small>MP4, WebM, MOV (máx. 500MB)</small>
+            </div>
+            <video id="videoPreview" style="display:none;" controls></video>
+          </div>
+          <input type="file" id="videoInput" accept="video/*" style="display:none;" onchange="carregarVideo(event)" />
+          <button class="btn-remove-logo" id="btnRemoverVideo" onclick="removerVideo()" style="display:none;">✕ Remover Vídeo</button>
+        </div>
+
+        <button class="btn-auth" id="btnProximoEtapa" onclick="irParaEdicao()" style="display:none;">Próximo: Editar Vídeo →</button>
+      </div>
+
+      <!-- ETAPA 2: EDITAR VÍDEO -->
+      <div id="etapaEdicao" class="video-etapa" style="display:none;">
+        <div class="video-editor">
+          <div class="editor-preview">
+            <h4>Preview</h4>
+            <div class="video-canvas-wrapper">
+              <video id="videoEditor" style="width:100%;" controls></video>
+              <canvas id="videoCanvas" style="display:none;"></canvas>
+            </div>
+          </div>
+
+          <div class="editor-controles">
+            <h4>⚙️ Configurações</h4>
+            
+            <div class="form-group">
+              <label>Formato de Saída</label>
+              <select id="videoFormatoSaida" onchange="atualizarPreviewVideo()">
+                <option value="original">Original (manter proporção)</option>
+                <option value="stories">Stories (9:16 - 1080x1920)</option>
+                <option value="reels">Reels (9:16 - 1080x1920)</option>
+                <option value="feed">Feed (4:5 - 1080x1350)</option>
+                <option value="paisagem">Paisagem (16:9 - 1920x1080)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Duração</label>
+              <select id="videoDuracaoCorte">
+                <option value="completo">Vídeo completo</option>
+                <option value="15">Primeiros 15 segundos</option>
+                <option value="30">Primeiros 30 segundos</option>
+                <option value="60">Primeiros 60 segundos</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="videoMostrarLogo" checked onchange="atualizarPreviewVideo()" />
+                Mostrar minha logo
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label>Posição da Logo</label>
+              <select id="videoLogoPos" onchange="atualizarPreviewVideo()">
+                <option value="top-left">Superior Esquerdo</option>
+                <option value="top-right">Superior Direito</option>
+                <option value="bottom-left">Inferior Esquerdo</option>
+                <option value="bottom-right">Inferior Direito</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="videoMostrarTitulo" checked onchange="atualizarPreviewVideo()" />
+                Mostrar título do filme
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="videoMostrarContatos" checked onchange="atualizarPreviewVideo()" />
+                Mostrar contatos (WhatsApp/Instagram)
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label>Overlay</label>
+              <select id="videoOverlay" onchange="atualizarPreviewVideo()">
+                <option value="dark">Escuro</option>
+                <option value="purple">Roxo</option>
+                <option value="blue">Azul</option>
+                <option value="red">Vermelho</option>
+                <option value="none">Sem overlay</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="video-acoes">
+          <button class="btn-auth" onclick="voltarParaUpload()" style="background: var(--bg3);">← Voltar</button>
+          <button class="btn-auth" onclick="processarVideo()" id="btnProcessarVideo">🎬 Processar Vídeo</button>
+        </div>
+
+        <div id="videoProcessando" class="video-processando" style="display:none;">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <p id="progressTexto">Processando vídeo... 0%</p>
+          <small>Isso pode levar alguns minutos dependendo do tamanho do vídeo</small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Crie Banners<br/><span>Profissionais</span><br/>em Segundos</h1>
+      <p>Busque qualquer filme ou série, adicione sua logo e gere artes prontas para Instagram, WhatsApp e YouTube.</p>
+      <a href="#criador" class="btn-primary">Criar Banner Agora 🚀</a>
+    </div>
+    <div class="hero-preview">
+      <div class="preview-card">
+        <div class="preview-badge">NOVO</div>
+        <img src="https://image.tmdb.org/t/p/w500/1E5baAaEse26fej7uHcjOgEE2t2.jpg" alt="Preview" id="heroImg" />
+        <div class="preview-overlay">
+          <span>Sua Logo Aqui</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <h2>Marketing Profissional para Revendedores</h2>
+    <p class="features-sub">Sem precisar de Photoshop ou editores complexos. Tudo automático.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Catálogo Infinito</h3>
+        <p>Banco de dados com milhões de filmes e séries atualizados diariamente via TMDB.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Sua Logo em Foco</h3>
+        <p>Faça upload da sua logo e ela será inserida automaticamente em todas as artes.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Formatos Sociais</h3>
+        <p>Stories 9:16, Feed 4:5 e Paisagem 16:9. Otimizados para cada plataforma.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Download Rápido</h3>
+        <p>Baixe em alta resolução ou compartilhe direto no WhatsApp e Instagram.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CRIADOR DE BANNER -->
+  <section class="criador" id="criador">
+    
+    <!-- MENSAGEM PARA DESLOGADOS -->
+    <div id="criadorBloqueado" class="criador-bloqueado">
+      <div class="bloqueio-icon">🔒</div>
+      <h2>Faça login para criar banners</h2>
+      <p>Crie sua conta gratuita e tenha acesso ao criador de banners profissionais com seus dados salvos automaticamente.</p>
+      <button class="btn-primary" onclick="abrirModal('cadastro')">Criar Conta Grátis</button>
+      <p class="auth-link">Já tem conta? <a href="#" onclick="abrirModal('login')">Entrar</a></p>
+    </div>
+
+    <!-- CRIADOR (só aparece logado) -->
+    <div id="criadorConteudo" style="display:none;">
+      <div class="criador-header">
+        <h2>🎨 Criador de Banners</h2>
+        <p>Busque um filme, escolha sua logo e gere a arte</p>
+      </div>
+
+      <div class="criador-layout">
+
+      <!-- PAINEL ESQUERDO: CONTROLES -->
+      <div class="painel-controles">
+
+        <!-- STEP 1: BUSCA -->
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Buscar Filme ou Série</h3>
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Ex: Vingadores, Breaking Bad..." />
+            <button onclick="buscarFilme()" id="btnBuscar">🔍 Buscar</button>
+          </div>
+          <div id="searchResults" class="search-results"></div>
+        </div>
+
+        <!-- STEP 2: LOGO -->
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Sua Logo</h3>
+          <div class="logo-upload-area" id="logoUploadArea" onclick="document.getElementById('logoInput').click()">
+            <img id="logoPreview" src="" alt="" style="display:none;" />
+            <div id="logoPlaceholder">
+              <span class="upload-icon">📁</span>
+              <p>Clique para escolher sua logo</p>
+              <small>PNG com fundo transparente recomendado</small>
+            </div>
+          </div>
+          <input type="file" id="logoInput" accept="image/*" style="display:none;" onchange="carregarLogo(event)" />
+          <button class="btn-remove-logo" id="btnRemoveLogo" onclick="removerLogo()" style="display:none;">✕ Remover Logo</button>
+        </div>
+
+        <!-- STEP 3: TEXTO -->
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Informações de Contato</h3>
+          <div class="form-group">
+            <label>WhatsApp</label>
+            <input type="text" id="inputWhatsapp" placeholder="(11) 99999-9999" />
+          </div>
+          <div class="form-group">
+            <label>Instagram</label>
+            <input type="text" id="inputInstagram" placeholder="@seuperfil" />
+          </div>
+          <div class="form-group">
+            <label>Site / URL</label>
+            <input type="text" id="inputSite" placeholder="www.seusite.com" />
+            <div style="margin-top: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted);">
+                <input type="checkbox" id="checkMostrarSiteBanner" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="if(filmeAtual) gerarBanner()" />
+                <span>Mostrar site no banner</span>
+              </label>
+              <small style="display: block; margin-top: 4px; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7;">
+                Desmarque para mostrar apenas no resumo
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Texto Extra (opcional)</label>
+            <input type="text" id="inputTexto" placeholder="Ex: Assine agora!" />
+          </div>
+        </div>
+
+        <!-- STEP 4: FORMATO -->
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <h3>Estilo do Banner</h3>
+          <div class="template-options">
+            <label class="template-option">
+              <input type="radio" name="template" value="simples" checked onchange="atualizarFormato()" />
+              <div class="template-box">
+                <span class="template-icon">🎬</span>
+                <strong>Simples</strong>
+                <small>Fundo + Textos</small>
+              </div>
+            </label>
+            <label class="template-option">
+              <input type="radio" name="template" value="promocional" onchange="atualizarFormato()" />
+              <div class="template-box">
+                <span class="template-icon">🍿</span>
+                <strong>Promocional</strong>
+                <small>Estilo profissional</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- STEP 5: FORMATO -->
+        <div class="step-card">
+          <div class="step-num">5</div>
+          <h3>Formato do Banner</h3>
+          <div class="format-options">
+            <label class="format-option">
+              <input type="radio" name="formato" value="whatsapp" checked onchange="atualizarFormato()" />
+              <div class="format-box">
+                <div class="format-icon whatsapp-icon"></div>
+                <span>WhatsApp</span>
+                <small>1:1</small>
+              </div>
+            </label>
+            <label class="format-option">
+              <input type="radio" name="formato" value="stories" onchange="atualizarFormato()" />
+              <div class="format-box">
+                <div class="format-icon stories-icon"></div>
+                <span>Stories</span>
+                <small>9:16</small>
+              </div>
+            </label>
+            <label class="format-option">
+              <input type="radio" name="formato" value="feed" onchange="atualizarFormato()" />
+              <div class="format-box">
+                <div class="format-icon feed-icon"></div>
+                <span>Feed</span>
+                <small>4:5</small>
+              </div>
+            </label>
+            <label class="format-option">
+              <input type="radio" name="formato" value="paisagem" onchange="atualizarFormato()" />
+              <div class="format-box">
+                <div class="format-icon paisagem-icon"></div>
+                <span>Paisagem</span>
+                <small>16:9</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- STEP 6: COR DO OVERLAY / FUNDO PROMOCIONAL -->
+        <div class="step-card">
+          <div class="step-num">6</div>
+
+          <!-- Overlay (template simples) -->
+          <div id="overlayOpcoes">
+            <h3>Estilo do Overlay</h3>
+            <div class="overlay-options">
+              <label class="overlay-opt" title="Escuro">
+                <input type="radio" name="overlay" value="dark" checked onchange="gerarBanner()" />
+                <div class="overlay-swatch dark-swatch"></div>
+              </label>
+              <label class="overlay-opt" title="Roxo">
+                <input type="radio" name="overlay" value="purple" onchange="gerarBanner()" />
+                <div class="overlay-swatch purple-swatch"></div>
+              </label>
+              <label class="overlay-opt" title="Azul">
+                <input type="radio" name="overlay" value="blue" onchange="gerarBanner()" />
+                <div class="overlay-swatch blue-swatch"></div>
+              </label>
+              <label class="overlay-opt" title="Vermelho">
+                <input type="radio" name="overlay" value="red" onchange="gerarBanner()" />
+                <div class="overlay-swatch red-swatch"></div>
+              </label>
+              <label class="overlay-opt" title="Sem overlay">
+                <input type="radio" name="overlay" value="none" onchange="gerarBanner()" />
+                <div class="overlay-swatch none-swatch">✕</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Cor do fundo (template promocional) -->
+          <div id="fundoPromoOpcoes" style="display:none;">
+            <h3>Cor do Fundo</h3>
+            <div class="overlay-options">
+              <label class="overlay-opt" title="Imagem do Filme">
+                <input type="radio" name="fundoPromo" value="imagem" checked onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a1a2e,#4a4a5e);font-size:1.2rem;">🎬</div>
+              </label>
+              <label class="overlay-opt" title="Roxo">
+                <input type="radio" name="fundoPromo" value="roxo" onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a2e,#6b21a8);"></div>
+              </label>
+              <label class="overlay-opt" title="Azul">
+                <input type="radio" name="fundoPromo" value="azul" onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#0a1628,#1e3a8a);"></div>
+              </label>
+              <label class="overlay-opt" title="Vermelho">
+                <input type="radio" name="fundoPromo" value="vermelho" onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a0a,#991b1b);"></div>
+              </label>
+              <label class="overlay-opt" title="Verde">
+                <input type="radio" name="fundoPromo" value="verde" onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#0a1a0a,#14532d);"></div>
+              </label>
+              <label class="overlay-opt" title="Laranja">
+                <input type="radio" name="fundoPromo" value="laranja" onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a00,#c2410c);"></div>
+              </label>
+              <label class="overlay-opt" title="Rosa">
+                <input type="radio" name="fundoPromo" value="rosa" onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a14,#be185d);"></div>
+              </label>
+              <label class="overlay-opt" title="Ciano">
+                <input type="radio" name="fundoPromo" value="ciano" onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#0a1a1a,#0891b2);"></div>
+              </label>
+              <label class="overlay-opt" title="Dourado">
+                <input type="radio" name="fundoPromo" value="dourado" onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a1200,#ca8a04);"></div>
+              </label>
+              <label class="overlay-opt" title="Preto">
+                <input type="radio" name="fundoPromo" value="preto" onchange="gerarBanner()" />
+                <div class="overlay-swatch" style="background: linear-gradient(135deg,#000,#1a1a1a);"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-gerar" onclick="gerarBanner()">✨ Gerar Banner</button>
+      </div>
+
+      <!-- PAINEL DIREITO: PREVIEW -->
+      <div class="painel-preview">
+        <h3>Preview</h3>
+        <div class="canvas-wrapper" id="canvasWrapper">
+          <canvas id="bannerCanvas"></canvas>
+          <div class="canvas-placeholder" id="canvasPlaceholder">
+            <span>🎬</span>
+            <p>Busque um filme para começar</p>
+          </div>
+        </div>
+        <div class="preview-actions" id="previewActions" style="display:none;">
+          <button class="btn-download" onclick="downloadBanner()">⬇️ Baixar Banner</button>
+          <button class="btn-share" onclick="compartilharBanner()">📤 Compartilhar</button>
+        </div>
+        <div id="filmeSelecionado" class="filme-info" style="display:none;">
+          <img id="filmeThumb" src="" alt="" />
+          <div>
+            <strong id="filmeNome"></strong>
+            <span id="filmeAno"></span>
+          </div>
+        </div>
+
+        <!-- RESUMO DO FILME -->
+        <div id="resumoCard" class="resumo-card" style="display:none;">
+          <div class="resumo-header">
+            <span class="resumo-titulo">📝 Resumo para Redes Sociais</span>
+            <div class="resumo-acoes">
+              <button class="btn-resumo-acao" onclick="copiarResumo()" title="Copiar texto">📋 Copiar</button>
+              <button class="btn-resumo-acao" onclick="gerarResumoPersonalizado()" title="Gerar versão diferente">🔄 Outro</button>
+            </div>
+          </div>
+          <div id="resumoTexto" class="resumo-texto"></div>
+          <div class="resumo-tags" id="resumoTags"></div>
+          <div class="resumo-nota">
+            <span>✏️ Clique no texto para editar antes de copiar</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <!-- FIM criadorConteudo -->
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="como-funciona">
+    <h2>Como Funciona</h2>
+    <div class="steps-row">
+      <div class="step-item">
+        <div class="step-circle">1</div>
+        <h4>Busque o Título</h4>
+        <p>Digite o nome do filme ou série e selecione nos resultados</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">
+        <div class="step-circle">2</div>
+        <h4>Adicione sua Logo</h4>
+        <p>Faça upload da sua logo em PNG para personalizar a arte</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">
+        <div class="step-circle">3</div>
+        <h4>Escolha o Formato</h4>
+        <p>Stories, Feed ou Paisagem — otimizado para cada rede social</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">
+        <div class="step-circle">4</div>
+        <h4>Baixe e Publique</h4>
+        <p>Download em alta resolução pronto para postar</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">🎬 Banner<span>Flix</span></div>
+    <p>A ferramenta nº 1 para revendedores criarem banners profissionais em segundos.</p>
+    <div class="footer-links">
+      <a href="#">Política de Privacidade</a>
+      <a href="#">Termos de Uso</a>
+    </div>
+    <small>© 2026 BannerFlix. Todos os direitos reservados.</small>
+  </footer>
+
+  <!-- MODAL SEM CRÉDITOS -->
+  <div class="modal-overlay" id="modalSemCreditos" onclick="fecharModalFora(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+      <h2 class="modal-title">😔 Créditos Esgotados</h2>
+      <p class="modal-sub">Você não tem mais créditos disponíveis para criar banners.</p>
+      
+      <div style="background:var(--bg3);padding:20px;border-radius:var(--radius);margin:20px 0;">
+        <h3 style="font-size:1.1rem;margin-bottom:16px;">Escolha um plano:</h3>
+        
+        <div style="display:grid;gap:12px;">
+          <div style="background:var(--bg2);padding:16px;border-radius:var(--radius-sm);border:2px solid rgba(124,58,237,0.3);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <strong style="color:#a855f7;">💜 Mensal</strong>
+              <span style="font-size:1.2rem;font-weight:700;">R$ 29,90</span>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">Banners ilimitados por 30 dias</p>
+            <button class="btn-auth" style="width:100%;padding:10px;" onclick="alert('Entre em contato para assinar')">Assinar Agora</button>
+          </div>
+
+          <div style="background:var(--bg2);padding:16px;border-radius:var(--radius-sm);border:2px solid rgba(37,99,235,0.3);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <strong style="color:#60a5fa;">💙 Anual</strong>
+              <span style="font-size:1.2rem;font-weight:700;">R$ 299,90</span>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:4px;">Banners ilimitados por 365 dias</p>
+            <p style="font-size:0.75rem;color:#4ade80;margin-bottom:12px;">✨ Economize R$ 59,00</p>
+            <button class="btn-auth" style="width:100%;padding:10px;" onclick="alert('Entre em contato para assinar')">Assinar Agora</button>
+          </div>
+
+          <div style="background:var(--bg2);padding:16px;border-radius:var(--radius-sm);border:2px solid rgba(234,179,8,0.3);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <strong style="color:#fbbf24;">👑 Vitalício</strong>
+              <span style="font-size:1.2rem;font-weight:700;">R$ 997,00</span>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:4px;">Banners ilimitados para sempre</p>
+            <p style="font-size:0.75rem;color:#4ade80;margin-bottom:12px;">✨ Pagamento único</p>
+            <button class="btn-auth" style="width:100%;padding:10px;background:linear-gradient(135deg,#eab308,#ca8a04);" onclick="alert('Entre em contato para assinar')">Assinar Agora</button>
+          </div>
+        </div>
+      </div>
+
+      <p style="text-align:center;font-size:0.85rem;color:var(--text-muted);">
+        Entre em contato pelo WhatsApp para assinar
+      </p>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- DEBUG: Teste se scripts carregam -->
+  <script>
+    console.log('✅ Scripts começando a carregar...');
+    window.testeModal = function() {
+      console.log('🧪 Teste direto chamado');
+      alert('Função JavaScript está funcionando!');
+      const modal = document.getElementById('modalAuth');
+      console.log('Modal encontrado?', !!modal);
+      if (modal) {
+        modal.classList.add('open');
+        console.log('Classe open adicionada');
+      }
+    };
+  </script>
+  
+  <script src="supabase-auth.js"></script>
+  <script src="planos-creditos-supabase.js"></script>
+  <script src="app.js"></script>
+  
+  <script>
+    // Verifica se funções foram carregadas
+    console.log('abrirModal existe?', typeof abrirModal !== 'undefined');
+    console.log('supabase existe?', typeof supabase !== 'undefined');
+  </script>
+</body>
+</html>
