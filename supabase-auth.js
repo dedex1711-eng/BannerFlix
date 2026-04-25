@@ -197,6 +197,17 @@ function setBtnLoading(id, loading, texto) {
   if (!btn) return;
   btn.disabled = loading;
   btn.innerHTML = loading ? '<span class="spinner"></span> Aguarde...' : texto;
+  
+  // Garantia: remove loading após 15 segundos
+  if (loading) {
+    setTimeout(() => {
+      if (btn.disabled) {
+        btn.disabled = false;
+        btn.innerHTML = texto;
+        console.warn('⚠️ Botão desbloqueado por timeout de segurança');
+      }
+    }, 15000);
+  }
 }
 
 // ===== LOGIN =====
@@ -208,14 +219,35 @@ async function fazerLogin() {
   if (!email || !senha) { mostrarErro('loginErro', 'Preencha e-mail e senha.'); return; }
 
   setBtnLoading('btnLogin', true, 'Entrar');
-  const { error } = await sb.auth.signInWithPassword({ email, password: senha });
-  setBtnLoading('btnLogin', false, 'Entrar');
+  
+  try {
+    // Timeout de 10 segundos
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 10000)
+    );
+    
+    const loginPromise = sb.auth.signInWithPassword({ email, password: senha });
+    
+    const { error } = await Promise.race([loginPromise, timeoutPromise]);
+    
+    setBtnLoading('btnLogin', false, 'Entrar');
 
-  if (error) {
-    mostrarErro('loginErro', traduzirErro(error.message));
-  } else {
-    fecharTodosModais();
-    showToast('✅ Login realizado!');
+    if (error) {
+      mostrarErro('loginErro', traduzirErro(error.message));
+    } else {
+      fecharTodosModais();
+      if (typeof showToast === 'function') {
+        showToast('✅ Login realizado!');
+      }
+    }
+  } catch (err) {
+    setBtnLoading('btnLogin', false, 'Entrar');
+    
+    if (err.message === 'Timeout') {
+      mostrarErro('loginErro', '⏱️ Tempo esgotado. Verifique sua conexão e tente novamente.');
+    } else {
+      mostrarErro('loginErro', 'Erro ao fazer login: ' + err.message);
+    }
   }
 }
 
