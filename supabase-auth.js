@@ -13,6 +13,12 @@ let usuarioAtual = null;
 // ===== INICIALIZAÇÃO =====
 sb.auth.onAuthStateChange(async (event, session) => {
   usuarioAtual = session?.user ?? null;
+  
+  // Se fez login, verifica se o perfil existe
+  if (event === 'SIGNED_IN' && usuarioAtual) {
+    await garantirPerfilExiste();
+  }
+  
   atualizarNavbar();
   if (usuarioAtual) await carregarPerfilNaTela();
 });
@@ -20,9 +26,54 @@ sb.auth.onAuthStateChange(async (event, session) => {
 (async () => {
   const { data: { session } } = await sb.auth.getSession();
   usuarioAtual = session?.user ?? null;
+  
+  // Se já está logado, verifica se o perfil existe
+  if (usuarioAtual) {
+    await garantirPerfilExiste();
+  }
+  
   atualizarNavbar();
   if (usuarioAtual) await carregarPerfilNaTela();
 })();
+
+// Garante que o perfil existe no Supabase
+async function garantirPerfilExiste() {
+  if (!usuarioAtual) return;
+  
+  try {
+    // Verifica se o perfil existe
+    const { data, error } = await sb
+      .from('perfis')
+      .select('id')
+      .eq('id', usuarioAtual.id)
+      .single();
+    
+    // Se não existe, cria
+    if (error && error.code === 'PGRST116') {
+      console.log('📝 Criando perfil no primeiro login...');
+      
+      const { error: insertError } = await sb.from('perfis').insert({
+        id: usuarioAtual.id,
+        email: usuarioAtual.email,
+        nome: usuarioAtual.user_metadata?.nome || '',
+        whatsapp: '',
+        instagram: '',
+        texto_extra: '',
+        logo_url: null,
+        plano: 'teste',
+        creditos: 50,
+      });
+      
+      if (insertError) {
+        console.error('Erro ao criar perfil:', insertError);
+      } else {
+        console.log('✅ Perfil criado com sucesso!');
+      }
+    }
+  } catch (err) {
+    console.error('Erro ao verificar perfil:', err);
+  }
+}
 
 // ===== NAVBAR =====
 function atualizarNavbar() {
@@ -189,7 +240,10 @@ async function fazerCadastro() {
     const { data, error } = await sb.auth.signUp({
       email,
       password: senha,
-      options: { data: { nome } }
+      options: { 
+        data: { nome },
+        emailRedirectTo: window.location.origin
+      }
     });
 
     if (error) {
@@ -199,7 +253,11 @@ async function fazerCadastro() {
       return;
     }
 
+    // Aguarda um pouco para o usuário ser autenticado
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     if (data.user) {
+      // Tenta criar perfil (pode falhar se RLS estiver bloqueando)
       const { error: perfilError } = await sb.from('perfis').upsert({
         id: data.user.id,
         email: email,
@@ -214,9 +272,8 @@ async function fazerCadastro() {
 
       if (perfilError) {
         console.error('Erro ao criar perfil:', perfilError);
-        mostrarErro('cadErro', 'Conta criada mas erro ao salvar perfil: ' + perfilError.message);
-        setBtnLoading('btnCadastro', false, 'Criar Conta');
-        return;
+        // Não mostra erro para o usuário, perfil será criado no primeiro login
+        console.log('ℹ️ Perfil será criado no primeiro login');
       }
     }
 
@@ -225,8 +282,8 @@ async function fazerCadastro() {
     // Verifica se precisa confirmar email
     if (data.user && !data.session) {
       // Supabase está configurado para exigir confirmação de email
-      mostrarErro('cadErro', '');
-      mostrarSucesso('cadErro', '✅ Conta criada! Verifique seu email para confirmar o cadastro.');
+      limparErros();
+      mostrarSucesso('cadErro', '📧 Conta criada! Verifique seu email para confirmar o cadastro.');
       setTimeout(() => {
         fecharTodosModais();
       }, 5000);
