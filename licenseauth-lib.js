@@ -102,11 +102,23 @@ class LicenseAuth {
 
     if (response.success) {
       console.log('✅ Login bem-sucedido!');
+      
+      // Detecta o nível baseado na chave
+      let nivel = 'level1'; // padrão
+      if (licenseKey.toLowerCase().includes('premium') || 
+          licenseKey.toLowerCase().includes('anual') ||
+          licenseKey.toLowerCase().includes('vitalicio')) {
+        nivel = 'level2';
+      }
+      
       if (callback) {
         callback({
           success: true,
           token: licenseKey,
-          user: response.info || {}
+          user: {
+            ...response.info,
+            nivel: nivel
+          }
         });
       }
     } else {

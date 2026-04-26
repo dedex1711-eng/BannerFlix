@@ -75,7 +75,7 @@ async function fazerLoginComChave() {
           id: userData.username || licenseKey,
           email: userData.email || '',
           nome: userData.username || 'Usuário',
-          plano: userData.subscription || 'teste',
+          plano: userData.nivel || 'level1', // Usa o nível detectado
           creditos: -1, // LicenseAuth não controla créditos
           token: response.token || licenseKey,
           userData: userData
@@ -212,11 +212,15 @@ function atualizarDisplayCreditos() {
   const displayEl = document.getElementById('creditosDisplay');
   if (!displayEl) return;
 
+  // Mapeamento de planos com níveis
   const planos = {
-    teste: { nome: 'Teste', cor: '#6b7280' },
-    mensal: { nome: 'Mensal', cor: '#7c3aed' },
-    anual: { nome: 'Anual', cor: '#2563eb' },
-    vitalicio: { nome: 'Vitalício', cor: '#eab308' }
+    teste: { nome: 'Teste', nivel: 'Level 1', cor: '#6b7280' },
+    level1: { nome: 'Teste', nivel: 'Level 1', cor: '#6b7280' },
+    premium: { nome: 'Premium', nivel: 'Level 2', cor: '#7c3aed' },
+    level2: { nome: 'Premium', nivel: 'Level 2', cor: '#7c3aed' },
+    mensal: { nome: 'Premium', nivel: 'Level 2', cor: '#7c3aed' },
+    anual: { nome: 'Premium', nivel: 'Level 2', cor: '#2563eb' },
+    vitalicio: { nome: 'Premium', nivel: 'Level 2', cor: '#eab308' }
   };
 
   const planoConfig = planos[usuarioAtual.plano] || planos.teste;
