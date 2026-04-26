@@ -1798,3 +1798,11 @@ async function processarVideo() {
     btnProcessar.textContent = '🎬 Processar Vídeo';
   }
 }
+
+// ===== FUNÇÃO WHATSAPP =====
+function abrirWhatsApp() {
+  const numero = '5583998929124';
+  const mensagem = 'Olá! Gostaria de testar o BannerFlix e criar banners profissionais.';
+  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, '_blank');
+}
