@@ -1,103 +1,124 @@
-# 🎬 Divulga Fácil
+# 🎬 BannerFlix - Criador de Banners Profissionais
 
-Plataforma completa para criar banners profissionais de filmes e séries para divulgação em redes sociais.
+Ferramenta para criar banners profissionais para filmes e séries em segundos, com suporte a múltiplos formatos de rede social.
 
-## ✨ Funcionalidades
+## 🚀 Quick Start
 
-- 🔍 **Busca de filmes/séries** — Banco de dados TMDB com milhões de títulos em português
-- 🎨 **Upload de logo personalizada** — Sua marca em todos os banners
-- 📱 **3 formatos otimizados** — Stories (9:16), Feed (4:5), Paisagem (16:9)
-- 🎭 **5 estilos de overlay** — Escuro, Roxo, Azul, Vermelho ou Sem overlay
-- 📝 **Resumo automático** — Texto pronto para copiar e colar nas redes sociais
-- 💾 **Sistema de contas** — Salva logo, WhatsApp, Instagram e texto automaticamente
-- ⬇️ **Download em alta resolução** — PNG pronto para publicar
-- 📤 **Compartilhamento direto** — Web Share API para mobile
-
-## 🚀 Como Usar
-
-### 1. Instalar dependências
-
-Nenhuma dependência local necessária! Apenas Node.js para rodar o servidor.
-
-### 2. Configurar Supabase (5 minutos)
-
-Siga as instruções em **[SETUP-SUPABASE.md](SETUP-SUPABASE.md)** para:
-- Criar a tabela de perfis
-- Configurar o bucket de logos
-- Ativar autenticação
-
-### 3. Rodar o servidor
-
+### 1. Instalar Dependências
 ```bash
-node server.js
+npm install
 ```
 
-Acesse: **http://localhost:3000**
-
-## 📁 Estrutura do Projeto
-
-```
-.
-├── index.html           # Estrutura da página
-├── style.css            # Design completo (tema escuro)
-├── app.js               # Lógica de busca e geração de banners
-├── supabase-auth.js     # Sistema de autenticação e perfis
-├── server.js            # Servidor local simples
-├── README.md            # Este arquivo
-└── SETUP-SUPABASE.md    # Instruções de configuração do banco
+### 2. Iniciar o Servidor
+```bash
+npm start
 ```
 
-## 🎨 Tecnologias
-
-- **Frontend:** HTML5, CSS3, JavaScript (Vanilla)
-- **API de Filmes:** [TMDB](https://www.themoviedb.org/)
-- **Backend:** [Supabase](https://supabase.com) (Auth + Database + Storage)
-- **Canvas API:** Geração de banners em tempo real
-
-## 🔑 Configuração da API TMDB
-
-A chave pública já está no código para testes. Para produção:
-
-1. Crie conta em [themoviedb.org](https://www.themoviedb.org/settings/api)
-2. Gere uma API Key gratuita
-3. Substitua em `app.js`:
-```javascript
-const TMDB_API_KEY = 'SUA_CHAVE_AQUI';
+Ou no Windows, execute o arquivo:
+```bash
+iniciar-servidor.bat
 ```
 
-## 💡 Como Funciona
+### 3. Acessar a Aplicação
+Abra seu navegador e acesse:
+```
+http://localhost:3000
+```
 
-1. **Busque** um filme ou série pelo nome
-2. **Selecione** nos resultados
-3. **Faça upload** da sua logo (salva na conta)
-4. **Preencha** WhatsApp, Instagram e texto extra (salvos na conta)
-5. **Escolha** o formato e estilo
-6. **Gere** o banner
-7. **Copie** o resumo pronto para redes sociais
-8. **Baixe** ou compartilhe direto
+## 📋 Requisitos
 
-## 🔐 Sistema de Contas
+- **Node.js** 14+ (para rodar o servidor)
+- **Navegador moderno** (Chrome, Firefox, Safari, Edge)
+- **Conexão com internet** (para buscar dados de filmes/séries)
 
-- **Cadastro/Login** com e-mail e senha
-- **Perfil salvo** no Supabase (logo, contatos, texto)
-- **Carregamento automático** em todo login
-- **Segurança RLS** — cada usuário vê apenas seus dados
+## 🎨 Funcionalidades
 
-## 📱 Responsivo
+- ✅ Busca de filmes e séries via TMDB
+- ✅ Upload de logo personalizada
+- ✅ Múltiplos formatos: WhatsApp, Stories, Feed, Paisagem
+- ✅ Estilos de banner: Simples e Promocional
+- ✅ Geração de resumos automáticos
+- ✅ Download em alta resolução
+- ✅ Sistema de autenticação com LicenseAuth
 
-Interface otimizada para desktop, tablet e mobile.
+## 📁 Estrutura de Arquivos
 
-## 🎯 Casos de Uso
+```
+bannerflix-producao/
+├── index.html                 # Página principal
+├── style.css                  # Estilos
+├── app.js                     # Lógica principal
+├── licenseauth-lib.js         # Biblioteca de autenticação
+├── auth-licenseauth-js.js     # Sistema de autenticação
+├── server-simples.js          # Servidor Node.js
+├── iniciar-servidor.bat       # Script para Windows
+├── package.json               # Dependências
+├── README.md                  # Este arquivo
+└── .gitignore                 # Arquivos ignorados no Git
+```
 
-- Revendedores de IPTV/streaming
-- Divulgadores de conteúdo
-- Páginas de filmes/séries
-- Marketing de entretenimento
+## 🔐 Autenticação
 
-## 📄 Licença
+O BannerFlix usa o sistema **LicenseAuth** para autenticação. Para usar:
 
-Projeto de código aberto para fins educacionais.
+1. Acesse a aplicação
+2. Clique em "Entrar"
+3. Digite sua chave de licença
+4. Pronto! Você está autenticado
+
+## 🎯 Como Usar
+
+1. **Buscar Filme/Série**: Digite o nome na barra de busca
+2. **Adicionar Logo**: Faça upload da sua logo em PNG
+3. **Configurar Contatos**: Adicione WhatsApp, Instagram e Site
+4. **Escolher Formato**: Selecione o formato desejado
+5. **Gerar Banner**: Clique em "Gerar Banner"
+6. **Baixar**: Clique em "Baixar Banner" para salvar
+
+## 🛠️ Desenvolvimento
+
+### Modificar Estilos
+Edite o arquivo `style.css` para customizar cores e layouts.
+
+### Adicionar Funcionalidades
+Edite o arquivo `app.js` para adicionar novas features.
+
+### Configurar API
+A chave da API TMDB está em `app.js`. Para usar sua própria chave:
+1. Acesse https://www.themoviedb.org/settings/api
+2. Copie sua chave
+3. Substitua em `app.js` na linha: `const TMDB_API_KEY = 'sua-chave-aqui'`
+
+## 📦 Dependências
+
+- **Node.js**: Runtime JavaScript
+- **TMDB API**: Banco de dados de filmes/séries
+- **LicenseAuth**: Sistema de autenticação
+
+## 🐛 Troubleshooting
+
+### Porta 3000 já está em uso
+```bash
+# Use uma porta diferente
+node server-simples.js 3001
+```
+
+### Erro ao buscar filmes
+- Verifique sua conexão com internet
+- Verifique se a chave da API TMDB está correta
+
+### Logo não aparece no banner
+- Certifique-se que o arquivo é PNG
+- Tente com uma imagem menor (< 2MB)
+
+## 📝 Licença
+
+MIT License - Veja LICENSE para detalhes
+
+## 🤝 Suporte
+
+Para suporte, entre em contato através do WhatsApp ou Instagram configurado na aplicação.
 
 ---
 
-**Desenvolvido com ❤️ para facilitar a vida de revendedores**
+**Desenvolvido com ❤️ para criadores de conteúdo**

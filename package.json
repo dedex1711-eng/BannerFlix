@@ -1,0 +1,12 @@
+{
+  "name": "bannerflix",
+  "version": "1.0.0",
+  "description": "Criador de banners profissionais com LicenseAuth",
+  "main": "server-simples.js",
+  "scripts": {
+    "start": "node server-simples.js"
+  },
+  "keywords": ["banners", "licenseauth"],
+  "author": "",
+  "license": "MIT"
+}

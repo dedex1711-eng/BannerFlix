@@ -39,50 +39,35 @@
     </div>
   </nav>
 
-  <!-- MODAL AUTH -->
+  <!-- MODAL AUTH - SISTEMA DE LICENÇAS -->
   <div class="modal-overlay" id="modalAuth" onclick="fecharModalFora(event)">
     <div class="modal-box">
       <button class="modal-close" onclick="fecharModal()">✕</button>
 
-      <!-- TABS -->
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tabLogin" onclick="trocarTab('login')">Entrar</button>
-        <button class="auth-tab" id="tabCadastro" onclick="trocarTab('cadastro')">Criar Conta</button>
-      </div>
-
-      <!-- LOGIN -->
+      <!-- LOGIN COM CHAVE -->
       <div id="formLogin">
-        <h2 class="modal-title">Bem-vindo de volta 👋</h2>
+        <h2 class="modal-title">🔑 Acesso por Licença</h2>
+        <p class="modal-sub">Digite sua chave de licença para acessar o sistema</p>
+        
         <div class="form-group">
-          <label>E-mail</label>
-          <input type="email" id="loginEmail" placeholder="seu@email.com" />
+          <label>Chave de Licença</label>
+          <input 
+            type="text" 
+            id="licenseKeyInput" 
+            placeholder="Digite sua chave de licença" 
+            style="text-transform: uppercase;"
+            onkeydown="if(event.key==='Enter') fazerLoginComChave()"
+          />
+          <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px; display: block;">
+            Entre em contato para obter sua chave de licença
+          </small>
         </div>
-        <div class="form-group">
-          <label>Senha</label>
-          <input type="password" id="loginSenha" placeholder="••••••••" />
-        </div>
+        
         <div id="loginErro" class="auth-erro"></div>
-        <button class="btn-auth" id="btnLogin" onclick="fazerLogin()">Entrar</button>
-        <p class="auth-link">Esqueceu a senha? <a href="#" onclick="recuperarSenha()">Recuperar</a></p>
-      </div>
-
-      <!-- CADASTRO -->
-      <div id="formCadastro" style="display:none;">
-        <h2 class="modal-title">Criar sua conta 🚀</h2>
-        <div class="form-group">
-          <label>Nome</label>
-          <input type="text" id="cadNome" placeholder="Seu nome" />
-        </div>
-        <div class="form-group">
-          <label>E-mail</label>
-          <input type="email" id="cadEmail" placeholder="seu@email.com" />
-        </div>
-        <div class="form-group">
-          <label>Senha</label>
-          <input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres" />
-        </div>
-        <div id="cadErro" class="auth-erro"></div>
-        <button class="btn-auth" id="btnCadastro" onclick="fazerCadastro()">Criar Conta</button>
+        
+        <button class="btn-auth" id="btnLoginChave" onclick="fazerLoginComChave()">
+          🔑 Entrar
+        </button>
       </div>
     </div>
   </div>
@@ -299,10 +284,7 @@
     <div class="hero-preview">
       <div class="preview-card">
         <div class="preview-badge">NOVO</div>
-        <img src="https://image.tmdb.org/t/p/w500/1E5baAaEse26fej7uHcjOgEE2t2.jpg" alt="Preview" id="heroImg" />
-        <div class="preview-overlay">
-          <span>Sua Logo Aqui</span>
-        </div>
+        <img src="https://i.imgur.com/cIJl2uI.png" alt="Preview" id="heroImg" />
       </div>
     </div>
   </section>
@@ -342,8 +324,8 @@
     <div id="criadorBloqueado" class="criador-bloqueado">
       <div class="bloqueio-icon">🔒</div>
       <h2>Faça login para criar banners</h2>
-      <p>Crie sua conta gratuita e tenha acesso ao criador de banners profissionais com seus dados salvos automaticamente.</p>
-      <button class="btn-primary" onclick="abrirModal('cadastro')">Criar Conta Grátis</button>
+      <p>Acesse com sua chave de licença para começar a criar banners profissionais.</p>
+      <button class="btn-primary" onclick="abrirModal('login')">Entrar</button>
       <p class="auth-link">Já tem conta? <a href="#" onclick="abrirModal('login')">Entrar</a></p>
     </div>
 
@@ -699,32 +681,21 @@
   <!-- TOAST -->
   <div id="toast" class="toast"></div>
 
-  <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Scripts -->
+  <!-- 1. Biblioteca LicenseAuth (deve ser carregada primeiro) -->
+  <script src="licenseauth-lib.js"></script>
   
-  <!-- DEBUG: Teste se scripts carregam -->
-  <script>
-    console.log('✅ Scripts começando a carregar...');
-    window.testeModal = function() {
-      console.log('🧪 Teste direto chamado');
-      alert('Função JavaScript está funcionando!');
-      const modal = document.getElementById('modalAuth');
-      console.log('Modal encontrado?', !!modal);
-      if (modal) {
-        modal.classList.add('open');
-        console.log('Classe open adicionada');
-      }
-    };
-  </script>
+  <!-- 2. Sistema de autenticação com LicenseAuth -->
+  <script src="auth-licenseauth-js.js"></script>
   
-  <script src="supabase-auth.js"></script>
-  <script src="planos-creditos-supabase.js"></script>
+  <!-- 3. App principal (criador de banners) -->
   <script src="app.js"></script>
   
   <script>
-    // Verifica se funções foram carregadas
-    console.log('abrirModal existe?', typeof abrirModal !== 'undefined');
-    console.log('supabase existe?', typeof supabase !== 'undefined');
+    console.log('✅ Todos os scripts carregados com sucesso');
+    console.log('LicenseAuth disponível?', typeof LicenseAuth !== 'undefined');
+    console.log('fazerLoginComChave disponível?', typeof fazerLoginComChave !== 'undefined');
+    console.log('gerarBanner disponível?', typeof gerarBanner !== 'undefined');
   </script>
 </body>
 </html>

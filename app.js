@@ -10,6 +10,10 @@ let filmeAtual    = null;   // { title, year, posterPath, backdropPath, type }
 let logoImg       = null;   // HTMLImageElement da logo do usuário
 let bannerGerado  = false;
 
+// ===== RESUMO =====
+let resumoAtual = { overview: '', genres: [], tagline: '', rating: '', runtime: '' };
+let resumoVariante = 0;
+
 // ===== COOKIES =====
 function acceptCookies() {
   document.getElementById('cookieBanner').style.display = 'none';
@@ -118,13 +122,11 @@ function selecionarFilme(item, el) {
   infoDiv.style.display = 'flex';
 
   showToast(`✅ "${title}" selecionado`);
-  gerarBanner();
+  gerarBanner(false); // false = apenas preview, sem verificar crédito
   buscarResumo(item);
 }
 
 // ===== BUSCAR RESUMO =====
-let resumoAtual = { overview: '', genres: [], tagline: '', rating: '', runtime: '' };
-let resumoVariante = 0;
 
 async function buscarResumo(item) {
   const card = document.getElementById('resumoCard');
@@ -337,7 +339,7 @@ function carregarLogo(event) {
       document.getElementById('logoPlaceholder').style.display = 'none';
       document.getElementById('btnRemoveLogo').style.display = 'block';
       showToast('✅ Logo carregada!');
-      if (filmeAtual) gerarBanner();
+      if (filmeAtual) gerarBanner(false); // false = apenas preview
     };
     img.src = e.target.result;
   };
@@ -351,7 +353,7 @@ function removerLogo() {
   document.getElementById('logoPlaceholder').style.display = 'block';
   document.getElementById('btnRemoveLogo').style.display = 'none';
   document.getElementById('logoInput').value = '';
-  if (filmeAtual) gerarBanner();
+  if (filmeAtual) gerarBanner(false); // false = apenas preview
 }
 
 // ===== FORMATO =====
@@ -369,7 +371,7 @@ function getDimensoes() {
 }
 
 function atualizarFormato() {
-  if (filmeAtual) gerarBanner();
+  if (filmeAtual) gerarBanner(false); // false = não verificar crédito, apenas preview
 }
 
 // ===== OVERLAY COLOR =====
@@ -385,53 +387,112 @@ function getOverlayStyle() {
   return map[v] || null;
 }
 
-// ===== GERAR BANNER =====
-async function gerarBanner() {
-  if (!filmeAtual) { showToast('Selecione um filme primeiro'); return; }
+// ===== GERAR BANNER FINAL (com verificação de crédito) =====
+async function gerarBannerFinal() {
+  await gerarBanner(true); // true = verificar e consumir crédito
+  if (bannerGerado) {
+    showToast('✅ Banner gerado com sucesso!');
+  }
+}
 
-  // Verifica se TEM créditos (mas não consome ainda)
-  if (typeof verificarCreditos === 'function') {
-    const { temCredito } = await verificarCreditos();
-    if (!temCredito) {
-      mostrarModalSemCreditos();
-      return;
+// ===== GERAR BANNER =====
+async function gerarBanner(verificarCredito = false) {
+  console.log('🎨 gerarBanner chamada, filmeAtual:', filmeAtual, 'verificarCredito:', verificarCredito);
+  
+  if (!filmeAtual) { 
+    console.log('❌ Nenhum filme selecionado');
+    showToast('Selecione um filme primeiro'); 
+    return; 
+  }
+
+  // Só verifica créditos quando for realmente gerar (botão "Gerar Banner")
+  if (verificarCredito) {
+    console.log('🔍 Verificando créditos...');
+    if (typeof verificarCreditos === 'function') {
+      try {
+        const { temCredito } = await verificarCreditos();
+        console.log('💳 Tem crédito:', temCredito);
+        if (!temCredito) {
+          mostrarModalSemCreditos();
+          return;
+        }
+      } catch (error) {
+        console.log('⚠️ Erro ao verificar créditos, continuando...', error);
+      }
     }
   }
 
-  const template = document.querySelector('input[name="template"]:checked').value;
+  const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
+  console.log('🎭 Template selecionado:', template);
 
   // Alterna painel de opções conforme template
-  document.getElementById('overlayOpcoes').style.display    = template === 'simples'     ? 'block' : 'none';
-  document.getElementById('fundoPromoOpcoes').style.display = template === 'promocional' ? 'block' : 'none';
+  const overlayOpcoes = document.getElementById('overlayOpcoes');
+  const fundoPromoOpcoes = document.getElementById('fundoPromoOpcoes');
+  
+  if (overlayOpcoes) overlayOpcoes.style.display = template === 'simples' ? 'block' : 'none';
+  if (fundoPromoOpcoes) fundoPromoOpcoes.style.display = template === 'promocional' ? 'block' : 'none';
 
-  // Gera o banner (finalizarBanner() vai consumir o crédito)
-  if (template === 'promocional') {
-    await gerarBannerPromocional();
-  } else {
-    await gerarBannerSimples();
+  console.log('🚀 Iniciando geração do banner...');
+  
+  try {
+    // Gera o banner
+    if (template === 'promocional') {
+      console.log('🍿 Gerando banner promocional...');
+      await gerarBannerPromocional();
+    } else {
+      console.log('🎬 Gerando banner simples...');
+      await gerarBannerSimples();
+    }
+    
+    // Só consome crédito quando for geração final (botão "Gerar Banner")
+    if (verificarCredito) {
+      console.log('✅ Banner gerado com sucesso - consumindo crédito');
+      if (typeof consumirCredito === 'function') {
+        await consumirCredito();
+      }
+    } else {
+      console.log('✅ Preview atualizado');
+    }
+    
+  } catch (error) {
+    console.error('❌ Erro ao gerar banner:', error);
+    showToast('❌ Erro ao gerar banner: ' + error.message);
   }
 }
 
 // ===== GERAR BANNER SIMPLES =====
 async function gerarBannerSimples() {
+  console.log('🎬 gerarBannerSimples iniciada');
+  
   const { w, h } = getDimensoes();
   const canvas   = document.getElementById('bannerCanvas');
   const ctx      = canvas.getContext('2d');
+  
+  if (!canvas || !ctx) {
+    console.error('❌ Canvas ou contexto não encontrado');
+    return;
+  }
+  
   canvas.width   = w;
   canvas.height  = h;
 
-  // Esconde placeholder
-  document.getElementById('canvasPlaceholder').style.display = 'none';
+  // Esconde placeholder e mostra canvas
+  const placeholder = document.getElementById('canvasPlaceholder');
+  if (placeholder) placeholder.style.display = 'none';
   canvas.style.display = 'block';
 
-  // Escolhe imagem de fundo: backdrop para paisagem, poster para outros
+  // Escolhe imagem de fundo
   const formato = getFormato();
   let imgUrl = formato === 'paisagem'
     ? (filmeAtual.backdropPath || filmeAtual.posterPath)
     : (filmeAtual.posterPath   || filmeAtual.backdropPath);
 
+  console.log('🖼️ URL da imagem:', imgUrl);
+
   if (!imgUrl) {
-    ctx.fillStyle = '#111';
+    // Sem imagem - fundo sólido
+    console.log('⚠️ Sem imagem, usando fundo sólido');
+    ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, w, h);
     desenharTextos(ctx, w, h);
     finalizarBanner();
@@ -439,14 +500,19 @@ async function gerarBannerSimples() {
   }
 
   try {
+    console.log('📥 Carregando imagem...');
     const bgImg = await carregarImagem(imgUrl);
-    // Desenha fundo com cover
+    console.log('✅ Imagem carregada:', bgImg.width, 'x', bgImg.height);
+    
+    // Desenha fundo
     desenharCover(ctx, bgImg, w, h);
+    console.log('🎨 Fundo desenhado');
 
     // Overlay
     const overlay = getOverlayStyle();
-    if (overlay) {
-      // Gradiente na parte inferior para legibilidade
+    console.log('🎭 Overlay:', overlay);
+    
+    if (overlay && overlay !== 'none') {
       const grad = ctx.createLinearGradient(0, h * 0.3, 0, h);
       grad.addColorStop(0, 'transparent');
       grad.addColorStop(0.5, overlay);
@@ -454,27 +520,50 @@ async function gerarBannerSimples() {
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
 
-      // Leve escurecimento no topo
+      // Escurecimento no topo
       const gradTop = ctx.createLinearGradient(0, 0, 0, h * 0.25);
       gradTop.addColorStop(0, 'rgba(0,0,0,0.5)');
       gradTop.addColorStop(1, 'transparent');
       ctx.fillStyle = gradTop;
       ctx.fillRect(0, 0, w, h);
+      
+      console.log('🎨 Overlay aplicado');
     }
 
     // Logo
     if (logoImg) {
+      console.log('🏷️ Desenhando logo...');
       desenharLogo(ctx, w, h);
     }
 
     // Textos
+    console.log('📝 Desenhando textos...');
     desenharTextos(ctx, w, h);
 
+    console.log('✅ Banner simples gerado');
     finalizarBanner();
+    
   } catch (err) {
-    console.error('Erro ao carregar imagem:', err);
+    console.error('❌ Erro ao carregar imagem:', err);
+    console.log('🔄 Usando fallback com fundo sólido');
+    
+    // Fallback - fundo sólido
     ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, w, h);
+    
+    // Aplica overlay mesmo sem imagem
+    const overlay = getOverlayStyle();
+    if (overlay && overlay !== 'none') {
+      ctx.fillStyle = overlay;
+      ctx.fillRect(0, 0, w, h);
+    }
+    
+    // Logo
+    if (logoImg) {
+      desenharLogo(ctx, w, h);
+    }
+    
+    // Textos
     desenharTextos(ctx, w, h);
     finalizarBanner();
   }
@@ -484,12 +573,8 @@ async function finalizarBanner() {
   bannerGerado = true;
   document.getElementById('previewActions').style.display = 'flex';
   
-  // CONSOME CRÉDITO APÓS GERAR COM SUCESSO
-  if (typeof consumirCredito === 'function') {
-    await consumirCredito();
-  }
-  
-  showToast('✅ Banner gerado com sucesso!');
+  // Não consome crédito aqui - será consumido apenas no botão "Gerar Banner"
+  console.log('✅ Banner finalizado (preview)');
 }
 
 // ===== GERAR BANNER PROMOCIONAL =====
