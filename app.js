@@ -713,11 +713,24 @@ async function gerarBannerPromocional() {
   ctx.shadowBlur = 0;
 
   // Botão "Assista agora" - Canto inferior direito com play integrado
-  const btnH  = h * 0.065;
-  const btnW  = w * 0.30;
-  const btnX  = w * 0.95 - btnW;
-  const btnY  = h * 0.42;
-  const circR = btnH * 0.65; // Aumentado de 0.5 para 0.65 (30% maior)
+  const formato = getFormato();
+  let btnH, btnW, btnX, btnY, circR;
+  
+  if (formato === 'stories') {
+    // Proporções para Stories (9:16)
+    btnH  = h * 0.060; // Diminuído de 0.070
+    btnW  = w * 0.30;
+    btnX  = w * 0.95 - btnW;
+    btnY  = h * 0.42;
+    circR = btnH * 0.55;
+  } else {
+    // Proporções padrão para outros formatos
+    btnH  = h * 0.065;
+    btnW  = w * 0.30;
+    btnX  = w * 0.95 - btnW;
+    btnY  = h * 0.42;
+    circR = btnH * 0.65;
+  }
 
   // Sombra do botão
   ctx.shadowColor = 'rgba(0,0,0,0.4)';
@@ -753,11 +766,29 @@ async function gerarBannerPromocional() {
   ctx.shadowBlur = 0;
   ctx.shadowOffsetY = 0;
 
-  // Texto do botão (ajustado para ficar à direita do círculo maior)
+  // Texto do botão (centralizado na parte branca)
+  let textSize;
+  if (formato === 'stories') {
+    textSize = btnH * 0.22;
+  } else if (formato === 'feed') {
+    textSize = btnH * 0.28; // Feed com letra menor
+  } else {
+    textSize = btnH * 0.35; // WhatsApp e Paisagem
+  }
+  let textX;
+  if (formato === 'stories') {
+    textX = btnX + btnW * 0.70;
+  } else if (formato === 'feed') {
+    textX = btnX + btnW * 0.68; // Feed um pouco para a direita
+  } else if (formato === 'paisagem') {
+    textX = btnX + btnW * 0.58; // Paisagem um pouco para a esquerda
+  } else {
+    textX = btnX + btnW * 0.62; // WhatsApp
+  }
   ctx.fillStyle = '#111111';
-  ctx.font      = `700 ${btnH * 0.34}px Inter, sans-serif`;
+  ctx.font      = `700 ${textSize}px Inter, sans-serif`;
   ctx.textAlign = 'center';
-  ctx.fillText('Assista agora', btnX + circR + (btnW - circR)/2, btnY + btnH*0.60);
+  ctx.fillText('Assista agora', textX, btnY + btnH*0.62);
 
   // Faixa dispositivos
   const faixaY = h * 0.68;
@@ -770,7 +801,7 @@ async function gerarBannerPromocional() {
   ctx.fillStyle = fg;
   ctx.fillRect(0, faixaY, w, faixaH);
 
-  ctx.font      = `700 ${w * 0.022}px Inter, sans-serif`;
+  ctx.font      = `700 ${formato === 'paisagem' ? w * 0.018 : w * 0.022}px Inter, sans-serif`;
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 10;
@@ -779,13 +810,14 @@ async function gerarBannerPromocional() {
 
   // Ícones dos dispositivos
   const iconY    = faixaY + faixaH * 0.72;
-  const iconSize = faixaH * 0.38;
+  const iconSize = formato === 'stories' ? faixaH * 0.30 : faixaH * 0.38; // Menor no Stories
   const devices  = ['LG','Roku','TCL','Samsung','Fire TV','Android TV','Mecool','Mi'];
-  const totalW   = devices.length * iconSize * 2.5;
+  const spacing  = formato === 'stories' ? iconSize * 1.8 : iconSize * 2.5; // Menos espaçamento no Stories
+  const totalW   = devices.length * spacing;
   let   iconX    = w/2 - totalW/2;
   devices.forEach(name => {
     desenharIconeDispositivo(ctx, name, iconX, iconY, iconSize, p.accent);
-    iconX += iconSize * 2.5;
+    iconX += spacing;
   });
 
   // Logo (acima da faixa de dispositivos, centralizada)
@@ -799,62 +831,58 @@ async function gerarBannerPromocional() {
     ctx.shadowBlur = 0;
   }
 
-  // Seção "ASSISTA EM QUALQUER DISPOSITIVO" (canto inferior direito)
-  const dispBoxW = w * 0.42;
-  const dispBoxH = h * 0.11;
-  const dispBoxX = w * 0.56; // Canto direito
-  const dispBoxY = h * 0.87; // Parte inferior
-  
-  // Fundo semi-transparente com borda arredondada
-  ctx.fillStyle = 'rgba(0,0,0,0.75)';
-  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-  ctx.lineWidth = 2;
-  roundRect(ctx, dispBoxX, dispBoxY, dispBoxW, dispBoxH, w * 0.012);
-  ctx.fill();
-  ctx.stroke();
-  
-  // Texto "ASSISTA EM QUALQUER DISPOSITIVO"
-  ctx.font = `700 ${w * 0.0135}px Inter, sans-serif`;
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(0,0,0,0.9)';
-  ctx.shadowBlur = 6;
-  ctx.fillText('ASSISTA EM QUALQUER DISPOSITIVO', dispBoxX + dispBoxW/2, dispBoxY + dispBoxH * 0.24);
-  ctx.shadowBlur = 0;
-  
-  // Ícones dos dispositivos em linha horizontal
-  const dispIconSize = dispBoxH * 0.38;
-  const dispDevices = ['TV SMART', 'TV BOX', 'PC/NOT', 'WHATSAPP', 'XBOX', 'CHROMECAST'];
-  
-  // Calcula espaçamento total disponível
-  const totalIconsWidth = dispDevices.length * dispIconSize;
-  const availableSpace = dispBoxW - totalIconsWidth;
-  const dispSpacing = availableSpace / (dispDevices.length + 1); // +1 para incluir margens
-  
-  let dispIconX = dispBoxX + dispSpacing; // Começa com margem
-  const dispIconY = dispBoxY + dispBoxH * 0.48;
-  
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'top';
-  
-  dispDevices.forEach(device => {
-    const iconCenterX = dispIconX + dispIconSize / 2;
+  // Seção "ASSISTA EM QUALQUER DISPOSITIVO" (apenas para outros formatos, não Stories)
+  if (formato !== 'stories') {
+    const dispBoxW = w * 0.42;
+    const dispBoxH = h * 0.11;
+    const dispBoxX = w * 0.56;
+    const dispBoxY = h * 0.87;
     
-    // Desenha ícone visual
-    desenharIconeDispositivoVisual(ctx, device, dispIconX, dispIconY, dispIconSize);
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 2;
+    roundRect(ctx, dispBoxX, dispBoxY, dispBoxW, dispBoxH, w * 0.012);
+    ctx.fill();
+    ctx.stroke();
     
-    // Label abaixo do ícone
-    ctx.font = `600 ${w * 0.0085}px Inter, sans-serif`;
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = `700 ${w * 0.0135}px Inter, sans-serif`;
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
     ctx.shadowColor = 'rgba(0,0,0,0.9)';
-    ctx.shadowBlur = 3;
-    ctx.fillText(device, iconCenterX, dispIconY + dispIconSize + w * 0.004);
+    ctx.shadowBlur = 6;
+    ctx.fillText('ASSISTA EM QUALQUER DISPOSITIVO', dispBoxX + dispBoxW/2, dispBoxY + dispBoxH * 0.24);
+    ctx.shadowBlur = 0;
     
-    dispIconX += dispIconSize + dispSpacing; // Avança ícone + espaço
-  });
-  
-  ctx.shadowBlur = 0;
-  ctx.textBaseline = 'alphabetic';
+    const dispIconSize = dispBoxH * 0.38;
+    const dispDevices = ['TV SMART', 'TV BOX', 'PC/NOT', 'WHATSAPP', 'XBOX', 'CHROMECAST'];
+    
+    const totalIconsWidth = dispDevices.length * dispIconSize;
+    const availableSpace = dispBoxW - totalIconsWidth;
+    const dispSpacing = availableSpace / (dispDevices.length + 1);
+    
+    let dispIconX = dispBoxX + dispSpacing;
+    const dispIconY = dispBoxY + dispBoxH * 0.48;
+    
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    
+    dispDevices.forEach(device => {
+      const iconCenterX = dispIconX + dispIconSize / 2;
+      
+      desenharIconeDispositivoVisual(ctx, device, dispIconX, dispIconY, dispIconSize);
+      
+      ctx.font = `600 ${w * 0.0085}px Inter, sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 3;
+      ctx.fillText(device, iconCenterX, dispIconY + dispIconSize + w * 0.004);
+      
+      dispIconX += dispIconSize + dispSpacing;
+    });
+    
+    ctx.shadowBlur = 0;
+    ctx.textBaseline = 'alphabetic';
+  }
 
   // Contatos (alinhados à esquerda)
   const whatsapp  = document.getElementById('inputWhatsapp').value.trim();

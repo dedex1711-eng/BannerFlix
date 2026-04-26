@@ -70,13 +70,40 @@ async function fazerLoginComChave() {
         // Sucesso! Pega os dados do usuário
         const userData = response.user || {};
 
+        // Pega os dias APENAS do LicenseAuth (resposta da API)
+        // O LicenseAuth retorna os dias de validade na resposta
+        let dias = 0;
+        
+        // Tenta pegar de diferentes campos possíveis na resposta
+        if (response.expiry_days !== undefined && response.expiry_days !== null) {
+          dias = parseInt(response.expiry_days) || 0;
+        } else if (response.days_remaining !== undefined && response.days_remaining !== null) {
+          dias = parseInt(response.days_remaining) || 0;
+        } else if (response.dias !== undefined && response.dias !== null) {
+          dias = parseInt(response.dias) || 0;
+        } else if (userData.expiry_days !== undefined && userData.expiry_days !== null) {
+          dias = parseInt(userData.expiry_days) || 0;
+        } else if (userData.days_remaining !== undefined && userData.days_remaining !== null) {
+          dias = parseInt(userData.days_remaining) || 0;
+        } else if (userData.dias !== undefined && userData.dias !== null) {
+          dias = parseInt(userData.dias) || 0;
+        }
+        
+        // Se for vitalício/ilimitado, dias fica 0
+        if (licenseKey.toLowerCase().includes('vitalicio') || 
+            licenseKey.toLowerCase().includes('forever') ||
+            licenseKey.toLowerCase().includes('ilimitado')) {
+          dias = 0; // 0 significa ilimitado
+        }
+
         // Salva dados do usuário
         usuarioAtual = {
           id: userData.username || licenseKey,
           email: userData.email || '',
           nome: userData.username || 'Usuário',
-          plano: userData.nivel || 'level1', // Usa o nível detectado
-          creditos: -1, // LicenseAuth não controla créditos
+          plano: userData.nivel || 'level1',
+          dias: dias,
+          creditos: -1,
           token: response.token || licenseKey,
           userData: userData
         };
@@ -90,7 +117,17 @@ async function fazerLoginComChave() {
         // Atualiza interface
         atualizarNavbar();
         fecharTodosModais();
-        showToast('✅ Login realizado com sucesso!');
+        
+        // Mostra mensagem com dias restantes
+        if (dias > 0) {
+          if (dias === 1) {
+            showToast('⚠️ Login realizado! Sua chave expira em 1 dia.');
+          } else {
+            showToast(`✅ Login realizado! Sua chave tem ${dias} dias restantes.`);
+          }
+        } else {
+          showToast('✅ Login realizado! Chave ilimitada.');
+        }
 
         // Carrega perfil
         carregarPerfilDoUsuario(userData);
@@ -212,32 +249,30 @@ function atualizarDisplayCreditos() {
   const displayEl = document.getElementById('creditosDisplay');
   if (!displayEl) return;
 
-  // Mapeamento de planos com níveis
-  const planos = {
-    teste: { nome: 'Teste', nivel: 'Level 1', cor: '#6b7280' },
-    level1: { nome: 'Teste', nivel: 'Level 1', cor: '#6b7280' },
-    premium: { nome: 'Premium', nivel: 'Level 2', cor: '#7c3aed' },
-    level2: { nome: 'Premium', nivel: 'Level 2', cor: '#7c3aed' },
-    mensal: { nome: 'Premium', nivel: 'Level 2', cor: '#7c3aed' },
-    anual: { nome: 'Premium', nivel: 'Level 2', cor: '#2563eb' },
-    vitalicio: { nome: 'Premium', nivel: 'Level 2', cor: '#eab308' }
+  // Cores por nível
+  const cores = {
+    level1: '#6b7280',
+    level2: '#7c3aed'
   };
 
-  const planoConfig = planos[usuarioAtual.plano] || planos.teste;
-  const creditos = usuarioAtual.creditos;
+  const nivel = usuarioAtual.plano || 'level1';
+  const cor = cores[nivel] || '#6b7280';
+  
+  // Pega os dias da chave (se disponível)
+  const dias = usuarioAtual.dias || 0;
 
-  if (creditos === -1) {
+  if (dias > 0) {
     displayEl.innerHTML = `
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="color: ${planoConfig.cor}; font-weight: 700;">∞</span>
-        <span style="font-size: 0.85rem; color: var(--text-muted);">${planoConfig.nome}</span>
+        <span style="color: ${cor}; font-weight: 700;">${dias}</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">dias</span>
       </div>
     `;
   } else {
     displayEl.innerHTML = `
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="color: ${planoConfig.cor}; font-weight: 700;">${creditos}</span>
-        <span style="font-size: 0.85rem; color: var(--text-muted);">créditos</span>
+        <span style="color: ${cor}; font-weight: 700;">∞</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">ilimitado</span>
       </div>
     `;
   }
