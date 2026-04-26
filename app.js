@@ -114,16 +114,20 @@ function selecionarFilme(item, el) {
     posterThumb:  item.poster_path   ? `${TMDB_IMG_W}${item.poster_path}` : null,
   };
 
-  // Atualiza info do filme selecionado
-  const infoDiv = document.getElementById('filmeSelecionado');
-  document.getElementById('filmeThumb').src = filmeAtual.posterThumb || '';
-  document.getElementById('filmeNome').textContent = title;
-  document.getElementById('filmeAno').textContent  = `${year} • ${type}`;
-  infoDiv.style.display = 'flex';
-
   showToast(`✅ "${title}" selecionado`);
-  gerarBanner(false); // false = apenas preview, sem verificar crédito
-  buscarResumo(item);
+  
+  // Só gera o banner e mostra informações se estiver na aba de filmes
+  if (tipoAtual !== 'futebol') {
+    // Atualiza info do filme selecionado
+    const infoDiv = document.getElementById('filmeSelecionado');
+    document.getElementById('filmeThumb').src = filmeAtual.posterThumb || '';
+    document.getElementById('filmeNome').textContent = title;
+    document.getElementById('filmeAno').textContent  = `${year} • ${type}`;
+    infoDiv.style.display = 'flex';
+    
+    gerarBanner(false); // false = apenas preview, sem verificar crédito
+    buscarResumo(item);
+  }
 }
 
 // ===== BUSCAR RESUMO =====
@@ -339,7 +343,12 @@ function carregarLogo(event) {
       document.getElementById('logoPlaceholder').style.display = 'none';
       document.getElementById('btnRemoveLogo').style.display = 'block';
       showToast('✅ Logo carregada!');
-      if (filmeAtual) gerarBanner(false); // false = apenas preview
+      // Só regenera se estiver na aba correta com conteúdo selecionado
+      if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
+        gerarBannerAtual();
+      } else if (tipoAtual !== 'futebol' && filmeAtual) {
+        gerarBanner(false);
+      }
     };
     img.src = e.target.result;
   };
@@ -353,7 +362,12 @@ function removerLogo() {
   document.getElementById('logoPlaceholder').style.display = 'block';
   document.getElementById('btnRemoveLogo').style.display = 'none';
   document.getElementById('logoInput').value = '';
-  if (filmeAtual) gerarBanner(false); // false = apenas preview
+  // Só regenera se estiver na aba correta com conteúdo selecionado
+  if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
+    gerarBannerAtual();
+  } else if (tipoAtual !== 'futebol' && filmeAtual) {
+    gerarBanner(false);
+  }
 }
 
 // ===== FORMATO =====
@@ -371,7 +385,11 @@ function getDimensoes() {
 }
 
 function atualizarFormato() {
-  if (filmeAtual) gerarBanner(false); // false = não verificar crédito, apenas preview
+  if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
+    gerarBannerAtual(); // Gera banner de futebol
+  } else if (filmeAtual) {
+    gerarBanner(false); // false = não verificar crédito, apenas preview
+  }
 }
 
 // ===== OVERLAY COLOR =====
@@ -1366,10 +1384,24 @@ function carregarImagem(url) {
 
 // ===== DOWNLOAD =====
 function downloadBanner() {
+  // Se há banners múltiplos, usar a função específica
+  if (window.bannersMultiplos && window.bannersMultiplos.length > 0) {
+    downloadBannersMultiplos();
+    return;
+  }
+  
   if (!bannerGerado) { showToast('Gere um banner primeiro'); return; }
   const canvas   = document.getElementById('bannerCanvas');
   const formato  = getFormato();
-  const titulo   = (filmeAtual?.title || 'banner').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  
+  // Definir nome do arquivo baseado no tipo de banner
+  let titulo;
+  if (tipoAtual === 'futebol') {
+    titulo = 'futebol_destaques';
+  } else {
+    titulo = (filmeAtual?.title || 'banner').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  }
+  
   const filename = `banner_${titulo}_${formato}.png`;
 
   const link  = document.createElement('a');
@@ -1389,7 +1421,9 @@ async function compartilharBanner() {
       const file = new File([blob], 'banner.png', { type: 'image/png' });
       if (navigator.canShare({ files: [file] })) {
         try {
-          await navigator.share({ files: [file], title: filmeAtual?.title || 'Banner' });
+          // Definir título baseado no tipo de banner
+          const titulo = tipoAtual === 'futebol' ? 'Banner Futebol' : (filmeAtual?.title || 'Banner');
+          await navigator.share({ files: [file], title: titulo });
         } catch (e) {
           if (e.name !== 'AbortError') showToast('Erro ao compartilhar');
         }
@@ -1805,4 +1839,1258 @@ function abrirWhatsApp() {
   const mensagem = 'Olá! Gostaria de testar o BannerFlix e criar banners profissionais.';
   const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
   window.open(url, '_blank');
+}
+// ===== FUTEBOL FUNCTIONS =====
+let tipoAtual = 'filme';
+let jogosSelecionados = [];
+
+function selecionarTipo(tipo) {
+  tipoAtual = tipo;
+  
+  // Atualizar botões
+  document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`btnTipo${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`).classList.add('active');
+  
+  // Mostrar/esconder painéis
+  document.getElementById('painelFilmes').style.display = tipo === 'filme' ? 'block' : 'none';
+  document.getElementById('painelFutebol').style.display = tipo === 'futebol' ? 'block' : 'none';
+  
+  // Atualizar placeholder do preview
+  const placeholder = document.getElementById('canvasPlaceholder');
+  if (tipo === 'futebol') {
+    placeholder.innerHTML = '<span>⚽</span><p>Selecione jogos para começar</p>';
+  } else {
+    placeholder.innerHTML = '<span>🎬</span><p>Busque um filme para começar</p>';
+  }
+  
+  // Limpar preview
+  placeholder.style.display = 'block';
+  document.getElementById('bannerCanvas').style.display = 'none';
+  document.getElementById('previewActions').style.display = 'none';
+  
+  // Se trocou para futebol, esconder info do filme e resumo
+  if (tipo === 'futebol') {
+    const filmeSelecionado = document.getElementById('filmeSelecionado');
+    if (filmeSelecionado) filmeSelecionado.style.display = 'none';
+    
+    const resumoCard = document.getElementById('resumoCard');
+    if (resumoCard) resumoCard.style.display = 'none';
+  }
+  
+  // Resetar estado do banner
+  bannerGerado = false;
+  
+  // Limpar banners múltiplos
+  window.bannersMultiplos = null;
+  
+  // Esconder visualizador múltiplo
+  const visualizador = document.getElementById('visualizadorMultiplo');
+  if (visualizador) {
+    visualizador.classList.remove('show');
+  }
+  
+  // Resetar botão de download
+  const btnDownload = document.querySelector('.btn-download');
+  if (btnDownload) {
+    btnDownload.innerHTML = '⬇️ Baixar Banner';
+    btnDownload.onclick = downloadBanner;
+  }
+  
+  // Se for futebol, buscar jogos automaticamente
+  if (tipo === 'futebol') {
+    buscarJogosFutebol();
+  }
+}
+
+async function buscarJogosFutebol() {
+  const ligaSelect = document.getElementById('ligaSelect');
+  const liga = ligaSelect.value;
+  const container = document.getElementById('jogosDisponiveis');
+  
+  if (!liga) {
+    container.innerHTML = '<div class="empty-state">Selecione uma liga para ver os jogos</div>';
+    return;
+  }
+  
+  container.innerHTML = '<div class="loading-state">🔄 Buscando jogos...</div>';
+  
+  try {
+    // Buscar jogos da ESPN API
+    const hoje = new Date();
+    const dataFormatada = hoje.toISOString().split('T')[0].replace(/-/g, '');
+    
+    const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=${dataFormatada}`);
+    
+    if (!response.ok) {
+      throw new Error('Erro ao buscar jogos');
+    }
+    
+    const data = await response.json();
+    const jogos = data.events || [];
+    
+    if (jogos.length === 0) {
+      container.innerHTML = '<div class="empty-state">Nenhum jogo encontrado para hoje nesta liga</div>';
+      return;
+    }
+    
+    // Renderizar jogos
+    let jogosHtml = '';
+    jogos.forEach((jogo, index) => {
+      const timeCasa = jogo.competitions[0].competitors.find(c => c.homeAway === 'home');
+      const timeVisitante = jogo.competitions[0].competitors.find(c => c.homeAway === 'away');
+      const dataJogo = new Date(jogo.date);
+      const horario = dataJogo.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const status = jogo.status.type.description;
+      
+      // Determinar canal de transmissão baseado na liga
+      let canalTransmissao = 'A definir';
+      const ligaNome = ligaSelect.options[ligaSelect.selectedIndex].text;
+      
+      if (ligaNome.includes('Brasileirão')) {
+        const canaisBrasileirao = ['Globo', 'SporTV', 'Premiere'];
+        canalTransmissao = canaisBrasileirao[Math.floor(Math.random() * canaisBrasileirao.length)];
+      } else if (ligaNome.includes('Premier League')) {
+        canalTransmissao = 'ESPN';
+      } else if (ligaNome.includes('La Liga')) {
+        canalTransmissao = 'ESPN';
+      } else if (ligaNome.includes('Champions')) {
+        const canaisChampions = ['TNT Sports', 'HBO Max'];
+        canalTransmissao = canaisChampions[Math.floor(Math.random() * canaisChampions.length)];
+      } else if (ligaNome.includes('Libertadores')) {
+        canalTransmissao = 'ESPN';
+      } else {
+        const canaisGerais = ['ESPN', 'Fox Sports', 'SporTV'];
+        canalTransmissao = canaisGerais[Math.floor(Math.random() * canaisGerais.length)];
+      }
+
+      jogosHtml += `
+        <div class="jogo-api-item" onclick="toggleJogoSelecionado(${index}, this)" data-jogo='${JSON.stringify({
+          id: jogo.id,
+          timeCasa: timeCasa.team.displayName,
+          timeVisitante: timeVisitante.team.displayName,
+          horario: horario,
+          status: status,
+          liga: ligaSelect.options[ligaSelect.selectedIndex].text,
+          logoCasa: timeCasa.team.logo || '',
+          logoVisitante: timeVisitante.team.logo || '',
+          local: jogo.competitions[0].venue ? jogo.competitions[0].venue.fullName : 'Local não informado',
+          canal: canalTransmissao
+        })}'>
+          <div class="jogo-api-header">
+            <div class="jogo-api-data">${horario}</div>
+            <div class="jogo-api-status">${status}</div>
+          </div>
+          <div class="jogo-api-times">
+            <div class="jogo-api-time">
+              <div class="jogo-api-logo">
+                ${timeCasa.team.logo ? `<img src="${timeCasa.team.logo}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}
+              </div>
+              <div class="jogo-api-nome">${timeCasa.team.displayName}</div>
+            </div>
+            <div class="jogo-api-vs">VS</div>
+            <div class="jogo-api-time">
+              <div class="jogo-api-logo">
+                ${timeVisitante.team.logo ? `<img src="${timeVisitante.team.logo}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}
+              </div>
+              <div class="jogo-api-nome">${timeVisitante.team.displayName}</div>
+            </div>
+          </div>
+          <div class="jogo-api-transmissao">📺 ${canalTransmissao}</div>
+        </div>
+      `;
+    });
+    
+    container.innerHTML = jogosHtml;
+    
+    // Atualizar botão "Selecionar Todos" após carregar jogos
+    atualizarBotaoSelecionarTodos();
+    
+  } catch (error) {
+    console.error('Erro ao buscar jogos:', error);
+    container.innerHTML = '<div class="error-state">❌ Erro ao carregar jogos. Tente novamente.</div>';
+  }
+}
+
+function toggleJogoSelecionado(index, element) {
+  const jogoData = JSON.parse(element.getAttribute('data-jogo'));
+  
+  // Verificar se já está selecionado
+  const jaExiste = jogosSelecionados.findIndex(j => j.id === jogoData.id);
+  
+  if (jaExiste >= 0) {
+    // Remover seleção
+    jogosSelecionados.splice(jaExiste, 1);
+    element.classList.remove('selected');
+  } else {
+    // Adicionar seleção
+    jogosSelecionados.push(jogoData);
+    element.classList.add('selected');
+  }
+  
+  atualizarJogosSelecionados();
+}
+
+function atualizarJogosSelecionados() {
+  const container = document.getElementById('jogosSelecionados');
+  
+  if (jogosSelecionados.length === 0) {
+    container.innerHTML = '<p class="empty-state">Nenhum jogo selecionado</p>';
+    // Atualizar placeholder
+    const placeholder = document.getElementById('canvasPlaceholder');
+    placeholder.innerHTML = '<span>⚽</span><p>Selecione jogos para começar</p>';
+    placeholder.style.display = 'block';
+    document.getElementById('bannerCanvas').style.display = 'none';
+    return;
+  }
+  
+  let html = '';
+  jogosSelecionados.forEach((jogo, index) => {
+    html += `
+      <div class="jogo-selecionado">
+        <div class="jogo-info">
+          <strong>${jogo.timeCasa} x ${jogo.timeVisitante}</strong>
+          <div>${jogo.horario} - ${jogo.liga}</div>
+        </div>
+        <button onclick="removerJogoSelecionado(${index})" class="btn-remove">✕</button>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+  
+  // Atualizar placeholder para mostrar que há jogos selecionados
+  const placeholder = document.getElementById('canvasPlaceholder');
+  placeholder.innerHTML = `<span>⚽</span><p>${jogosSelecionados.length} jogo(s) selecionado(s)<br/>Clique em "Gerar Banner" para criar</p>`;
+  
+  // Atualizar botão "Selecionar Todos"
+  atualizarBotaoSelecionarTodos();
+}
+
+function removerJogoSelecionado(index) {
+  const jogo = jogosSelecionados[index];
+  jogosSelecionados.splice(index, 1);
+  
+  // Remover seleção visual
+  const elementos = document.querySelectorAll('.jogo-api-item');
+  elementos.forEach(el => {
+    const data = JSON.parse(el.getAttribute('data-jogo'));
+    if (data.id === jogo.id) {
+      el.classList.remove('selected');
+    }
+  });
+  
+  atualizarJogosSelecionados();
+}
+
+function limparJogosSelecionados() {
+  jogosSelecionados = [];
+  document.querySelectorAll('.jogo-api-item').forEach(el => el.classList.remove('selected'));
+  
+  // Limpar banners múltiplos
+  window.bannersMultiplos = null;
+  
+  // Resetar botão de download
+  const btnDownload = document.querySelector('.btn-download');
+  if (btnDownload) {
+    btnDownload.innerHTML = '⬇️ Baixar Banner';
+    btnDownload.onclick = downloadBanner;
+  }
+  
+  atualizarJogosSelecionados();
+}
+
+// ===== FUNÇÃO PARA SELECIONAR TODOS OS JOGOS =====
+function selecionarTodosJogos() {
+  const jogosDisponiveis = document.querySelectorAll('.jogo-api-item');
+  
+  if (jogosDisponiveis.length === 0) {
+    showToast('Nenhum jogo disponível para seleção');
+    return;
+  }
+  
+  // Verificar se todos já estão selecionados
+  const todosSelecionados = Array.from(jogosDisponiveis).every(el => el.classList.contains('selected'));
+  
+  if (todosSelecionados) {
+    // Se todos estão selecionados, desmarcar todos
+    limparJogosSelecionados();
+    showToast('🔄 Todos os jogos desmarcados');
+  } else {
+    // Selecionar todos os jogos
+    jogosSelecionados = [];
+    
+    jogosDisponiveis.forEach(el => {
+      // Adicionar classe selected
+      el.classList.add('selected');
+      
+      // Extrair dados do jogo do atributo data-jogo
+      try {
+        const jogoData = JSON.parse(el.getAttribute('data-jogo'));
+        jogosSelecionados.push(jogoData);
+      } catch (error) {
+        console.error('Erro ao extrair dados do jogo:', error);
+      }
+    });
+    
+    // Limpar banners múltiplos anteriores
+    window.bannersMultiplos = null;
+    
+    // Resetar botão de download
+    const btnDownload = document.querySelector('.btn-download');
+    if (btnDownload) {
+      btnDownload.innerHTML = '⬇️ Baixar Banner';
+      btnDownload.onclick = downloadBanner;
+    }
+    
+    // Atualizar interface
+    atualizarJogosSelecionados();
+    
+    // Mostrar toast com quantidade selecionada
+    showToast(`✅ ${jogosSelecionados.length} jogos selecionados!`);
+    
+    console.log('Todos os jogos selecionados:', jogosSelecionados);
+  }
+  
+  // Atualizar texto do botão
+  atualizarBotaoSelecionarTodos();
+}
+
+// ===== FUNÇÃO PARA ATUALIZAR TEXTO DO BOTÃO SELECIONAR TODOS =====
+function atualizarBotaoSelecionarTodos() {
+  const jogosDisponiveis = document.querySelectorAll('.jogo-api-item');
+  const todosSelecionados = Array.from(jogosDisponiveis).every(el => el.classList.contains('selected'));
+  
+  const botao = document.querySelector('button[onclick="selecionarTodosJogos()"]');
+  if (botao) {
+    if (todosSelecionados && jogosDisponiveis.length > 0) {
+      botao.innerHTML = '🔄 Desmarcar Todos';
+    } else {
+      botao.innerHTML = '✅ Selecionar Todos';
+    }
+  }
+}
+
+function gerarBannerFutebol() {
+  console.log('gerarBannerFutebol chamada');
+  console.log('Jogos selecionados:', jogosSelecionados.length);
+  
+  if (jogosSelecionados.length === 0) {
+    alert('Selecione pelo menos um jogo!');
+    return;
+  }
+  
+  // Se tiver mais de 5 jogos, dividir em grupos
+  if (jogosSelecionados.length > 5) {
+    console.log('Mais de 5 jogos selecionados, gerando múltiplas imagens...');
+    gerarMultiplosBannersFutebol();
+  } else {
+    console.log('Iniciando geração do canvas...');
+    // Gerar banner com os jogos selecionados
+    gerarBannerFutebolCanvas(jogosSelecionados);
+  }
+}
+
+// ===== FUNÇÃO PARA GERAR MÚLTIPLOS BANNERS DE FUTEBOL =====
+async function gerarMultiplosBannersFutebol() {
+  try {
+    // Dividir jogos em grupos de 5
+    const gruposDeJogos = [];
+    for (let i = 0; i < jogosSelecionados.length; i += 5) {
+      gruposDeJogos.push(jogosSelecionados.slice(i, i + 5));
+    }
+    
+    console.log(`Gerando ${gruposDeJogos.length} banners para ${jogosSelecionados.length} jogos`);
+    
+    // Mostrar mensagem de progresso
+    showToast(`Gerando ${gruposDeJogos.length} banners com ${jogosSelecionados.length} jogos...`, 3000);
+    
+    // Array para armazenar todos os canvas gerados
+    const bannersGerados = [];
+    
+    // Gerar cada banner
+    for (let i = 0; i < gruposDeJogos.length; i++) {
+      const grupo = gruposDeJogos[i];
+      console.log(`Gerando banner ${i + 1}/${gruposDeJogos.length} com ${grupo.length} jogos`);
+      
+      // Criar um canvas temporário para este grupo
+      const canvas = await gerarBannerFutebolCanvasMultiplo(grupo, i + 1, gruposDeJogos.length);
+      bannersGerados.push({
+        canvas: canvas,
+        numero: i + 1,
+        total: gruposDeJogos.length,
+        jogos: grupo.length
+      });
+    }
+    
+    // Mostrar o primeiro banner no preview
+    const canvasPreview = document.getElementById('bannerCanvas');
+    const ctx = canvasPreview.getContext('2d');
+    canvasPreview.width = bannersGerados[0].canvas.width;
+    canvasPreview.height = bannersGerados[0].canvas.height;
+    ctx.drawImage(bannersGerados[0].canvas, 0, 0);
+    
+    // Mostrar canvas e ações
+    document.getElementById('canvasPlaceholder').style.display = 'none';
+    canvasPreview.style.display = 'block';
+    document.getElementById('previewActions').style.display = 'flex';
+    bannerGerado = true;
+    
+    // Armazenar os banners para download
+    window.bannersMultiplos = bannersGerados;
+    
+    // Criar visualizador de múltiplas imagens
+    criarVisualizadorMultiplo(bannersGerados);
+    
+    // Mostrar visualizador
+    const visualizador = document.getElementById('visualizadorMultiplo');
+    if (visualizador) {
+      visualizador.classList.add('show');
+    }
+    
+    // Atualizar botão de download para baixar todos
+    atualizarBotaoDownloadMultiplo(bannersGerados.length);
+    
+    showToast(`✅ ${gruposDeJogos.length} banners gerados com sucesso!`, 4000);
+    
+  } catch (error) {
+    console.error('Erro ao gerar múltiplos banners:', error);
+    showToast('❌ Erro ao gerar banners múltiplos');
+  }
+}
+
+// ===== FUNÇÃO PARA GERAR CANVAS MÚLTIPLO =====
+async function gerarBannerFutebolCanvasMultiplo(jogos, numeroBanner, totalBanners) {
+  // Criar um canvas temporário
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  // Configurar dimensões
+  const { w, h } = getDimensoes();
+  canvas.width = w;
+  canvas.height = h;
+  
+  // Fundo baseado no template selecionado
+  const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
+  
+  if (template === 'promocional') {
+    // Template promocional: usar imagens de futebol
+    await desenharFundoFutebol(ctx, w, h);
+  } else {
+    // Template simples: usar gradiente de cor
+    await desenharFundoSimplesFutebol(ctx, w, h);
+  }
+  
+  // Título "DESTAQUES" com indicador de página
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `900 ${w * 0.08}px Inter, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 10;
+  ctx.fillText('DESTAQUES', w/2, h * 0.10); // Movido de 0.12 para 0.10
+  ctx.shadowBlur = 0;
+  
+  // Indicador de página (removido - não mostrar mais)
+  // if (totalBanners > 1) {
+  //   ctx.fillStyle = '#F77F30'; // Laranja
+  //   ctx.font = `700 ${w * 0.025}px Inter, sans-serif`;
+  //   ctx.fillText(`PÁGINA ${numeroBanner} DE ${totalBanners}`, w/2, h * 0.155);
+  // }
+  
+  // Data
+  const hoje = new Date();
+  const dataFormatada = hoje.toLocaleDateString('pt-BR', { 
+    weekday: 'short', 
+    day: '2-digit', 
+    month: '2-digit' 
+  });
+  ctx.font = `700 ${w * 0.025}px Inter, sans-serif`;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(`DA RODADA - ${dataFormatada.toUpperCase()}`, w/2, h * 0.14); // Movido de 0.19 para 0.14
+  
+  // Desenhar jogos
+  let yPos = h * 0.18; // Movido de 0.25 para 0.18
+  const jogoHeight = h * 0.11;
+  const jogoSpacing = h * 0.015;
+  
+  // Carregar todas as imagens primeiro
+  const imagensCarregadas = await carregarImagensDosTimes(jogos);
+  
+  console.log(`Total de jogos recebidos: ${jogos.length}`);
+  console.log('Jogos:', jogos.map(j => `${j.timeCasa} x ${j.timeVisitante}`));
+  
+  for (let i = 0; i < jogos.length && i < 5; i++) {
+    const jogo = jogos[i];
+    
+    console.log(`Desenhando jogo ${i + 1}/5:`, jogo.timeCasa, 'x', jogo.timeVisitante);
+    
+    // Fundo do jogo com bordas arredondadas
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+    roundRect(ctx, w * 0.05, yPos, w * 0.9, jogoHeight, 12);
+    ctx.fill();
+    
+    // Campeonato/Liga (topo)
+    ctx.fillStyle = '#F77F30'; // Laranja vibrante
+    ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(jogo.liga, w/2, yPos + jogoHeight * 0.2);
+    
+    // Horário (esquerda)
+    ctx.fillStyle = '#F77F30'; // Laranja (igual ao canal)
+    ctx.font = `900 ${w * 0.032}px Inter, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText(jogo.horario, w * 0.08, yPos + jogoHeight * 0.6);
+    
+    // Desenhar brasões dos times
+    const logoSize = w * 0.06;
+    const logoY = yPos + jogoHeight * 0.32;
+    
+    // Logo time casa (esquerda)
+    if (imagensCarregadas[i] && imagensCarregadas[i].logoCasa) {
+      ctx.drawImage(imagensCarregadas[i].logoCasa, w * 0.28, logoY, logoSize, logoSize);
+    } else {
+      // Fallback: círculo com emoji
+      ctx.fillStyle = '#f0f0f0';
+      ctx.beginPath();
+      ctx.arc(w * 0.28 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#666';
+      ctx.font = `${logoSize * 0.6}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.fillText('⚽', w * 0.28 + logoSize/2, logoY + logoSize * 0.7);
+    }
+    
+    // Logo time visitante (direita)
+    if (imagensCarregadas[i] && imagensCarregadas[i].logoVisitante) {
+      ctx.drawImage(imagensCarregadas[i].logoVisitante, w * 0.66, logoY, logoSize, logoSize);
+    } else {
+      // Fallback: círculo com emoji
+      ctx.fillStyle = '#f0f0f0';
+      ctx.beginPath();
+      ctx.arc(w * 0.66 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#666';
+      ctx.font = `${logoSize * 0.6}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.fillText('⚽', w * 0.66 + logoSize/2, logoY + logoSize * 0.7);
+    }
+    
+    // Times (centro)
+    ctx.fillStyle = '#000000';
+    ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(`${jogo.timeCasa} x ${jogo.timeVisitante}`, w/2, yPos + jogoHeight * 0.8);
+    
+    // Canal de transmissão (direita)
+    ctx.fillStyle = '#F77F30';
+    ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
+    ctx.textAlign = 'right';
+    const canalTransmissao = jogo.canal || 'A definir';
+    ctx.fillText(`📺 ${canalTransmissao}`, w * 0.92, yPos + jogoHeight * 0.65);
+    
+    yPos += jogoHeight + jogoSpacing;
+  }
+  
+  // Logo do usuário no canto superior esquerdo
+  await desenharLogoUsuarioCanvas(ctx, w, h);
+  
+  // Informações do usuário (se houver)
+  const whatsappEl = document.getElementById('inputWhatsapp');
+  const instagramEl = document.getElementById('inputInstagram');
+  const siteEl = document.getElementById('inputSite');
+  const textoEl = document.getElementById('inputTexto');
+  
+  const whatsapp = whatsappEl ? whatsappEl.value : '';
+  const instagram = instagramEl ? instagramEl.value : '';
+  const site = siteEl ? siteEl.value : '';
+  const textoExtra = textoEl ? textoEl.value : '';
+  
+  // Verificar se deve mostrar site no banner
+  const mostrarSiteEl = document.getElementById('checkMostrarSiteBanner');
+  const mostrarSite = mostrarSiteEl ? mostrarSiteEl.checked : true;
+  
+  // Criar array de contatos
+  let contatos = [];
+  if (whatsapp) contatos.push(`📱 ${whatsapp}`);
+  if (instagram) contatos.push(`📷 ${instagram}`);
+  if (site && mostrarSite) contatos.push(`🌐 ${site}`);
+  if (textoExtra) contatos.push(`✨ ${textoExtra}`);
+  
+  if (contatos.length > 0) {
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 5;
+    
+    ctx.fillText(contatos.join('  •  '), w/2, h * 0.92);
+    ctx.shadowBlur = 0;
+  }
+  
+  return canvas;
+}
+
+// ===== FUNÇÃO PARA DESENHAR LOGO DO USUÁRIO EM CANVAS ESPECÍFICO =====
+async function desenharLogoUsuarioCanvas(ctx, w, h) {
+  const logoElement = document.getElementById('logoPreview');
+  
+  if (logoElement && logoElement.src && logoElement.style.display !== 'none') {
+    try {
+      const logoImg = await carregarImagem(logoElement.src);
+      
+      // Calcular tamanho da logo (canto superior esquerdo)
+      const logoMaxSize = Math.min(w * 0.12, h * 0.08);
+      const logoScale = Math.min(logoMaxSize / logoImg.width, logoMaxSize / logoImg.height);
+      const logoW = logoImg.width * logoScale;
+      const logoH = logoImg.height * logoScale;
+      
+      // Posição no canto superior esquerdo
+      const logoX = w * 0.05;
+      const logoY = h * 0.05;
+      
+      // Sombra da logo
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      // Desenhar logo
+      ctx.drawImage(logoImg, logoX, logoY, logoW, logoH);
+      
+      // Resetar sombra
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      console.log('Logo do usuário desenhada no canvas');
+    } catch (error) {
+      console.log('Erro ao desenhar logo do usuário:', error);
+    }
+  }
+}
+
+// ===== FUNÇÃO PARA ATUALIZAR BOTÃO DE DOWNLOAD MÚLTIPLO =====
+function atualizarBotaoDownloadMultiplo(quantidadeBanners) {
+  const btnDownload = document.querySelector('.btn-download');
+  if (btnDownload) {
+    btnDownload.innerHTML = `⬇️ Baixar ${quantidadeBanners} Banners`;
+    btnDownload.onclick = downloadBannersMultiplos;
+  }
+}
+
+// ===== FUNÇÃO PARA DOWNLOAD DE MÚLTIPLOS BANNERS =====
+async function downloadBannersMultiplos() {
+  if (!window.bannersMultiplos || window.bannersMultiplos.length === 0) {
+    showToast('Nenhum banner múltiplo encontrado');
+    return;
+  }
+  
+  const formato = getFormato();
+  
+  // Fazer download de cada banner
+  for (let i = 0; i < window.bannersMultiplos.length; i++) {
+    const banner = window.bannersMultiplos[i];
+    const filename = `banner_futebol_parte${banner.numero}_${formato}.png`;
+    
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = banner.canvas.toDataURL('image/png');
+    link.click();
+    
+    // Pequeno delay entre downloads para não sobrecarregar o navegador
+    if (i < window.bannersMultiplos.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+  
+  showToast(`⬇️ ${window.bannersMultiplos.length} banners baixados!`, 3000);
+}
+
+// ===== FUNÇÃO PARA CRIAR VISUALIZADOR MÚLTIPLO =====
+function criarVisualizadorMultiplo(bannersGerados) {
+  // Verificar se já existe o visualizador
+  let visualizador = document.getElementById('visualizadorMultiplo');
+  
+  if (!visualizador) {
+    // Criar o visualizador
+    visualizador = document.createElement('div');
+    visualizador.id = 'visualizadorMultiplo';
+    visualizador.className = 'visualizador-multiplo';
+    
+    // Inserir após o canvas wrapper
+    const canvasWrapper = document.getElementById('canvasWrapper');
+    canvasWrapper.parentNode.insertBefore(visualizador, canvasWrapper.nextSibling);
+  }
+  
+  // Criar HTML do visualizador
+  let html = `
+    <div class="visualizador-header">
+      <h4>📄 ${bannersGerados.length} Banners Gerados</h4>
+      <p>Clique em qualquer banner para visualizar</p>
+    </div>
+    <div class="visualizador-grid">
+  `;
+  
+  bannersGerados.forEach((banner, index) => {
+    html += `
+      <div class="banner-thumb ${index === 0 ? 'active' : ''}" onclick="trocarBannerPreview(${index})">
+        <canvas class="thumb-canvas" width="200" height="200"></canvas>
+        <div class="thumb-info">
+          <span>Página ${banner.numero}</span>
+          <small>${banner.jogos} jogos</small>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += `
+    </div>
+    <div class="visualizador-navegacao">
+      <button onclick="bannerAnterior()" class="btn-nav">← Anterior</button>
+      <span id="bannerAtual">1 de ${bannersGerados.length}</span>
+      <button onclick="proximoBanner()" class="btn-nav">Próximo →</button>
+    </div>
+  `;
+  
+  visualizador.innerHTML = html;
+  
+  // Desenhar thumbnails
+  setTimeout(() => {
+    bannersGerados.forEach((banner, index) => {
+      const thumbCanvas = visualizador.querySelectorAll('.thumb-canvas')[index];
+      if (thumbCanvas) {
+        const thumbCtx = thumbCanvas.getContext('2d');
+        
+        // Calcular escala para thumbnail
+        const scale = Math.min(200 / banner.canvas.width, 200 / banner.canvas.height);
+        const thumbW = banner.canvas.width * scale;
+        const thumbH = banner.canvas.height * scale;
+        
+        thumbCanvas.width = thumbW;
+        thumbCanvas.height = thumbH;
+        
+        // Desenhar banner reduzido
+        thumbCtx.drawImage(banner.canvas, 0, 0, thumbW, thumbH);
+      }
+    });
+  }, 100);
+  
+  // Armazenar índice atual
+  window.bannerAtualIndex = 0;
+}
+
+// ===== FUNÇÕES DE NAVEGAÇÃO =====
+function trocarBannerPreview(index) {
+  if (!window.bannersMultiplos || !window.bannersMultiplos[index]) return;
+  
+  // Atualizar canvas principal
+  const canvasPreview = document.getElementById('bannerCanvas');
+  const ctx = canvasPreview.getContext('2d');
+  const banner = window.bannersMultiplos[index];
+  
+  canvasPreview.width = banner.canvas.width;
+  canvasPreview.height = banner.canvas.height;
+  ctx.drawImage(banner.canvas, 0, 0);
+  
+  // Atualizar thumbnails ativos
+  document.querySelectorAll('.banner-thumb').forEach((thumb, i) => {
+    thumb.classList.toggle('active', i === index);
+  });
+  
+  // Atualizar navegação
+  window.bannerAtualIndex = index;
+  const navegacao = document.getElementById('bannerAtual');
+  if (navegacao) {
+    navegacao.textContent = `${index + 1} de ${window.bannersMultiplos.length}`;
+  }
+}
+
+function bannerAnterior() {
+  if (window.bannerAtualIndex > 0) {
+    trocarBannerPreview(window.bannerAtualIndex - 1);
+  }
+}
+
+function proximoBanner() {
+  if (window.bannerAtualIndex < window.bannersMultiplos.length - 1) {
+    trocarBannerPreview(window.bannerAtualIndex + 1);
+  }
+}
+
+async function gerarBannerFutebolCanvas(jogos) {
+  console.log('gerarBannerFutebolCanvas iniciada com jogos:', jogos);
+  
+  try {
+    const canvas = document.getElementById('bannerCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    console.log('Canvas encontrado:', canvas);
+    console.log('Context obtido:', ctx);
+    
+    // Configurar dimensões
+    const { w, h } = getDimensoes();
+    canvas.width = w;
+    canvas.height = h;
+    
+    console.log('Dimensões configuradas:', w, 'x', h);
+    
+    // Fundo baseado no template selecionado
+    const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
+    
+    if (template === 'promocional') {
+      // Template promocional: usar imagens de futebol
+      await desenharFundoFutebol(ctx, w, h);
+    } else {
+      // Template simples: usar gradiente de cor
+      await desenharFundoSimplesFutebol(ctx, w, h);
+    }
+    
+    console.log('Fundo desenhado');
+    
+    // Título "DESTAQUES"
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `900 ${w * 0.08}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 10;
+    ctx.fillText('DESTAQUES', w/2, h * 0.10); // Movido de 0.12 para 0.10
+    ctx.shadowBlur = 0;
+    
+    console.log('Título desenhado');
+    
+    // Data
+    const hoje = new Date();
+    const dataFormatada = hoje.toLocaleDateString('pt-BR', { 
+      weekday: 'short', 
+      day: '2-digit', 
+      month: '2-digit' 
+    });
+    ctx.font = `700 ${w * 0.025}px Inter, sans-serif`;
+    ctx.fillText(`DA RODADA - ${dataFormatada.toUpperCase()}`, w/2, h * 0.14); // Movido de 0.16 para 0.14
+    
+    console.log('Data desenhada');
+    
+    // Desenhar jogos
+    let yPos = h * 0.18; // Movido de 0.22 para 0.18
+    const jogoHeight = h * 0.11; // Voltou para o tamanho original
+    const jogoSpacing = h * 0.015; // Voltou para o espaçamento original
+    
+    // Carregar todas as imagens primeiro
+    const imagensCarregadas = await carregarImagensDosTimes(jogos);
+    
+    for (let i = 0; i < jogos.length && i < 5; i++) {
+      const jogo = jogos[i];
+      
+      console.log('Desenhando jogo:', i, jogo);
+      
+      // Fundo do jogo com bordas arredondadas
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      roundRect(ctx, w * 0.05, yPos, w * 0.9, jogoHeight, 12);
+      ctx.fill();
+      
+      // Campeonato/Liga (topo)
+      ctx.fillStyle = '#F77F30'; // Laranja vibrante
+      ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(jogo.liga, w/2, yPos + jogoHeight * 0.2);
+      
+      // Horário (esquerda)
+      ctx.fillStyle = '#F77F30'; // Laranja (igual ao canal)
+      ctx.font = `900 ${w * 0.032}px Inter, sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.fillText(jogo.horario, w * 0.08, yPos + jogoHeight * 0.6);
+      
+      // Desenhar brasões dos times
+      const logoSize = w * 0.06; // Aumentado de 0.05 para 0.06
+      const logoY = yPos + jogoHeight * 0.32; // Ajustado para acomodar o tamanho maior
+      
+      // Logo time casa (esquerda)
+      if (imagensCarregadas[i] && imagensCarregadas[i].logoCasa) {
+        ctx.drawImage(imagensCarregadas[i].logoCasa, w * 0.28, logoY, logoSize, logoSize);
+      } else {
+        // Fallback: círculo com emoji
+        ctx.fillStyle = '#f0f0f0';
+        ctx.beginPath();
+        ctx.arc(w * 0.28 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#666';
+        ctx.font = `${logoSize * 0.6}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.fillText('⚽', w * 0.28 + logoSize/2, logoY + logoSize * 0.7);
+      }
+      
+      // Logo time visitante (direita)
+      if (imagensCarregadas[i] && imagensCarregadas[i].logoVisitante) {
+        ctx.drawImage(imagensCarregadas[i].logoVisitante, w * 0.66, logoY, logoSize, logoSize);
+      } else {
+        // Fallback: círculo com emoji
+        ctx.fillStyle = '#f0f0f0';
+        ctx.beginPath();
+        ctx.arc(w * 0.66 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#666';
+        ctx.font = `${logoSize * 0.6}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.fillText('⚽', w * 0.66 + logoSize/2, logoY + logoSize * 0.7);
+      }
+      
+      // Times (centro) - ajustado para ficar abaixo dos logos
+      ctx.fillStyle = '#000000';
+      ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(`${jogo.timeCasa} x ${jogo.timeVisitante}`, w/2, yPos + jogoHeight * 0.8);
+      
+      // Canal de transmissão (direita, mais centralizado)
+      ctx.fillStyle = '#F77F30'; // Laranja para destacar
+      ctx.font = `600 ${w * 0.020}px Inter, sans-serif`; // Aumentado de 0.016 para 0.020
+      ctx.textAlign = 'right';
+      const canalTransmissao = jogo.canal || 'A definir';
+      ctx.fillText(`📺 ${canalTransmissao}`, w * 0.92, yPos + jogoHeight * 0.65);
+      
+      yPos += jogoHeight + jogoSpacing;
+    }
+    
+    console.log('Jogos desenhados');
+    
+    // Logo do usuário no canto superior esquerdo
+    await desenharLogoUsuario(ctx, w, h);
+    
+    // Informações do usuário (se houver)
+    const whatsappEl = document.getElementById('inputWhatsapp');
+    const instagramEl = document.getElementById('inputInstagram');
+    const siteEl = document.getElementById('inputSite');
+    const textoEl = document.getElementById('inputTexto');
+    
+    const whatsapp = whatsappEl ? whatsappEl.value : '';
+    const instagram = instagramEl ? instagramEl.value : '';
+    const site = siteEl ? siteEl.value : '';
+    const textoExtra = textoEl ? textoEl.value : '';
+    
+    // Verificar se deve mostrar site no banner
+    const mostrarSiteEl = document.getElementById('checkMostrarSiteBanner');
+    const mostrarSite = mostrarSiteEl ? mostrarSiteEl.checked : true;
+    
+    // Criar array de contatos
+    let contatos = [];
+    if (whatsapp) contatos.push(`📱 ${whatsapp}`);
+    if (instagram) contatos.push(`📷 ${instagram}`);
+    if (site && mostrarSite) contatos.push(`🌐 ${site}`);
+    if (textoExtra) contatos.push(`✨ ${textoExtra}`);
+    
+    if (contatos.length > 0) {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 5;
+      
+      ctx.fillText(contatos.join('  •  '), w/2, h * 0.92);
+      ctx.shadowBlur = 0;
+      console.log('Contatos desenhados');
+    }
+    
+    // Mostrar canvas
+    document.getElementById('canvasPlaceholder').style.display = 'none';
+    canvas.style.display = 'block';
+    document.getElementById('previewActions').style.display = 'flex';
+    
+    // Marcar banner como gerado para permitir download
+    bannerGerado = true;
+    
+    console.log('Canvas exibido com sucesso!');
+    
+  } catch (error) {
+    console.error('Erro ao gerar banner de futebol:', error);
+    alert('Erro ao gerar banner: ' + error.message);
+  }
+}
+
+// Inicializar com um jogo exemplo
+document.addEventListener('DOMContentLoaded', function() {
+  // Adicionar jogo exemplo quando selecionar futebol
+  setTimeout(() => {
+    if (document.getElementById('painelFutebol')) {
+      adicionarJogo();
+    }
+  }, 100);
+});
+function gerarBannerAtual() {
+  console.log('gerarBannerAtual chamada, tipo:', tipoAtual);
+  console.log('jogos selecionados:', jogosSelecionados);
+  
+  if (tipoAtual === 'futebol') {
+    console.log('Gerando banner de futebol...');
+    gerarBannerFutebol();
+  } else {
+    console.log('Gerando banner de filme...');
+    gerarBanner(); // Função original para filmes
+  }
+}
+// ===== FUNÇÃO PARA CARREGAR IMAGENS DOS TIMES =====
+async function carregarImagensDosTimes(jogos) {
+  const imagensCarregadas = [];
+  
+  for (let i = 0; i < jogos.length && i < 5; i++) {
+    const jogo = jogos[i];
+    const imagens = {
+      logoCasa: null,
+      logoVisitante: null
+    };
+    
+    // Carregar logo do time casa
+    if (jogo.logoCasa) {
+      try {
+        imagens.logoCasa = await carregarImagem(jogo.logoCasa);
+        console.log(`Logo do ${jogo.timeCasa} carregada`);
+      } catch (e) {
+        console.log(`Erro ao carregar logo do ${jogo.timeCasa}:`, e);
+      }
+    }
+    
+    // Carregar logo do time visitante
+    if (jogo.logoVisitante) {
+      try {
+        imagens.logoVisitante = await carregarImagem(jogo.logoVisitante);
+        console.log(`Logo do ${jogo.timeVisitante} carregada`);
+      } catch (e) {
+        console.log(`Erro ao carregar logo do ${jogo.timeVisitante}:`, e);
+      }
+    }
+    
+    imagensCarregadas.push(imagens);
+  }
+  
+  return imagensCarregadas;
+}
+
+function carregarImagem(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    img.onload = () => {
+      resolve(img);
+    };
+    
+    img.onerror = () => {
+      reject(new Error(`Falha ao carregar imagem: ${url}`));
+    };
+    
+    // Timeout de 5 segundos
+    setTimeout(() => {
+      reject(new Error(`Timeout ao carregar imagem: ${url}`));
+    }, 5000);
+    
+    img.src = url;
+  });
+}
+// ===== FUNÇÃO PARA DESENHAR LOGO DO USUÁRIO =====
+async function desenharLogoUsuario(ctx, w, h) {
+  const logoElement = document.getElementById('logoPreview');
+  
+  console.log('Verificando logo do usuário...');
+  console.log('logoElement:', logoElement);
+  console.log('logoElement.src:', logoElement ? logoElement.src : 'não encontrado');
+  console.log('logoElement.style.display:', logoElement ? logoElement.style.display : 'não encontrado');
+  
+  if (logoElement && logoElement.src && logoElement.style.display !== 'none') {
+    try {
+      console.log('Carregando logo do elemento preview...');
+      const logoImg = await carregarImagem(logoElement.src);
+      
+      // Calcular tamanho mantendo proporção original
+      const maxLogoSize = Math.min(w, h) * 0.12; // Aumentado de 0.08 para 0.12
+      const aspectRatio = logoImg.width / logoImg.height;
+      
+      let logoWidth, logoHeight;
+      if (aspectRatio > 1) {
+        // Logo mais larga que alta
+        logoWidth = maxLogoSize;
+        logoHeight = maxLogoSize / aspectRatio;
+      } else {
+        // Logo mais alta que larga ou quadrada
+        logoHeight = maxLogoSize;
+        logoWidth = maxLogoSize * aspectRatio;
+      }
+      
+      const logoX = w * 0.05; // Canto esquerdo
+      const logoY = h * 0.05; // Canto superior
+      
+      ctx.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
+      console.log(`Logo desenhada no canto superior esquerdo! Tamanho: ${logoWidth}x${logoHeight}`);
+      
+    } catch(e) {
+      console.log('Erro ao carregar/desenhar logo:', e);
+    }
+  } else if (typeof logoAtual !== 'undefined' && logoAtual) {
+    try {
+      console.log('Usando logoAtual...');
+      
+      // Calcular tamanho mantendo proporção original
+      const maxLogoSize = Math.min(w, h) * 0.12; // Aumentado de 0.08 para 0.12
+      const aspectRatio = logoAtual.width / logoAtual.height;
+      
+      let logoWidth, logoHeight;
+      if (aspectRatio > 1) {
+        // Logo mais larga que alta
+        logoWidth = maxLogoSize;
+        logoHeight = maxLogoSize / aspectRatio;
+      } else {
+        // Logo mais alta que larga ou quadrada
+        logoHeight = maxLogoSize;
+        logoWidth = maxLogoSize * aspectRatio;
+      }
+      
+      const logoX = w * 0.05; // Canto esquerdo
+      const logoY = h * 0.05; // Canto superior
+      
+      ctx.drawImage(logoAtual, logoX, logoY, logoWidth, logoHeight);
+      console.log(`Logo desenhada no canto superior esquerdo (logoAtual)! Tamanho: ${logoWidth}x${logoHeight}`);
+      
+    } catch(e) {
+      console.log('Erro ao desenhar logoAtual:', e);
+    }
+  } else {
+    console.log('Nenhuma logo encontrada para desenhar');
+  }
+}
+// ===== FUNÇÃO PARA DESENHAR FUNDO SIMPLES DE FUTEBOL =====
+async function desenharFundoSimplesFutebol(ctx, w, h) {
+  // Obter a cor selecionada do overlay (reutilizando as opções existentes)
+  const overlayStyle = getOverlayStyle();
+  
+  // Mapear cores do overlay para gradientes de fundo
+  let gradient;
+  
+  if (overlayStyle === 'rgba(76,29,149,0.6)') { // Purple
+    gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#1a0a2e');
+    gradient.addColorStop(0.5, '#2d1060');
+    gradient.addColorStop(1, '#4c1d95');
+  } else if (overlayStyle === 'rgba(30,58,95,0.6)') { // Blue
+    gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#0a1628');
+    gradient.addColorStop(0.5, '#1e3a5f');
+    gradient.addColorStop(1, '#2563eb');
+  } else if (overlayStyle === 'rgba(127,29,29,0.6)') { // Red
+    gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#1a0a0a');
+    gradient.addColorStop(0.5, '#7f1d1d');
+    gradient.addColorStop(1, '#dc2626');
+  } else { // Dark (default)
+    gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#0a0a0f');
+    gradient.addColorStop(0.5, '#1a1a24');
+    gradient.addColorStop(1, '#2a2a3a');
+  }
+  
+  // Aplicar o gradiente de fundo
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, w, h);
+  
+  // Adicionar padrão sutil de futebol (opcional)
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+  
+  // Desenhar círculos sutis para simular bolas de futebol
+  for (let i = 0; i < 8; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const radius = Math.random() * 30 + 10;
+    
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  console.log('Fundo simples de futebol aplicado');
+}
+
+// ===== FUNÇÃO PARA DESENHAR FUNDO DE FUTEBOL =====
+async function desenharFundoFutebol(ctx, w, h) {
+  try {
+    // URLs de imagens de futebol de alta qualidade (Unsplash)
+    const imagensFutebol = [
+      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&h=1080&fit=crop&crop=center',
+      'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1920&h=1080&fit=crop&crop=center',
+      'https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=1920&h=1080&fit=crop&crop=center',
+      'https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=1920&h=1080&fit=crop&crop=center',
+      'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=1920&h=1080&fit=crop&crop=center'
+    ];
+    
+    // Usar sempre a primeira imagem (mais consistente)
+    const imagemEscolhida = imagensFutebol[0];
+    
+    console.log('Carregando imagem de fundo:', imagemEscolhida);
+    
+    // Carregar imagem de fundo com timeout menor
+    const imagemFundo = await Promise.race([
+      carregarImagem(imagemEscolhida),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
+    ]);
+    
+    // Desenhar imagem de fundo cobrindo todo o canvas
+    ctx.drawImage(imagemFundo, 0, 0, w, h);
+    
+    // Adicionar overlay sutil para melhor legibilidade
+    const overlayGradient = ctx.createLinearGradient(0, 0, w, h);
+    overlayGradient.addColorStop(0, 'rgba(0, 0, 0, 0.4)'); // Preto sutil
+    overlayGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.3)'); // Preto mais sutil no meio
+    overlayGradient.addColorStop(1, 'rgba(0, 0, 0, 0.4)'); // Preto sutil
+    
+    ctx.fillStyle = overlayGradient;
+    ctx.fillRect(0, 0, w, h);
+    
+    console.log('Fundo de futebol aplicado com sucesso');
+    
+  } catch (error) {
+    console.log('Erro ao carregar imagem de fundo, usando padrão de campo:', error);
+    
+    // Fallback: padrão de campo de futebol
+    desenharPadraoFutebol(ctx, w, h);
+  }
+}
+// ===== FUNÇÃO PARA DESENHAR PADRÃO DE FUTEBOL =====
+function desenharPadraoFutebol(ctx, w, h) {
+  // Fundo gradiente base
+  const gradient = ctx.createLinearGradient(0, 0, w, h);
+  gradient.addColorStop(0, '#1a5f1a'); // Verde escuro
+  gradient.addColorStop(0.3, '#2d8f2d'); // Verde médio
+  gradient.addColorStop(0.7, '#4caf4c'); // Verde claro
+  gradient.addColorStop(1, '#1a5f1a'); // Verde escuro
+  
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, w, h);
+  
+  // Desenhar linhas do campo
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 2;
+  
+  // Linha central
+  ctx.beginPath();
+  ctx.moveTo(0, h/2);
+  ctx.lineTo(w, h/2);
+  ctx.stroke();
+  
+  // Círculo central
+  ctx.beginPath();
+  ctx.arc(w/2, h/2, Math.min(w, h) * 0.1, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  // Áreas do gol (simplificadas)
+  const goalAreaW = w * 0.15;
+  const goalAreaH = h * 0.3;
+  
+  // Área esquerda
+  ctx.strokeRect(0, (h - goalAreaH)/2, goalAreaW, goalAreaH);
+  
+  // Área direita
+  ctx.strokeRect(w - goalAreaW, (h - goalAreaH)/2, goalAreaW, goalAreaH);
+  
+  // Overlay preto sutil para melhor legibilidade
+  const overlayGradient = ctx.createLinearGradient(0, 0, w, h);
+  overlayGradient.addColorStop(0, 'rgba(0, 0, 0, 0.4)');
+  overlayGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.3)');
+  overlayGradient.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
+  
+  ctx.fillStyle = overlayGradient;
+  ctx.fillRect(0, 0, w, h);
 }

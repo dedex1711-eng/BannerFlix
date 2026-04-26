@@ -342,6 +342,16 @@
       <div class="criador-header">
         <h2>🎨 Criador de Banners</h2>
         <p>Busque um filme, escolha sua logo e gere a arte</p>
+        
+        <!-- Seletor de Tipo de Banner -->
+        <div class="banner-type-selector">
+          <button class="type-btn active" onclick="selecionarTipo('filme')" id="btnTipoFilme">
+            🎬 Filmes & Séries
+          </button>
+          <button class="type-btn" onclick="selecionarTipo('futebol')" id="btnTipoFutebol">
+            ⚽ Futebol
+          </button>
+        </div>
       </div>
 
       <div class="criador-layout">
@@ -349,15 +359,57 @@
       <!-- PAINEL ESQUERDO: CONTROLES -->
       <div class="painel-controles">
 
-        <!-- STEP 1: BUSCA -->
-        <div class="step-card">
-          <div class="step-num">1</div>
-          <h3>Buscar Filme ou Série</h3>
-          <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Ex: Vingadores, Breaking Bad..." />
-            <button onclick="buscarFilme()" id="btnBuscar">🔍 Buscar</button>
+        <!-- PAINEL FILMES (ORIGINAL) -->
+        <div class="painel-filmes active" id="painelFilmes">
+          <!-- STEP 1: BUSCA -->
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <h3>Buscar Filme ou Série</h3>
+            <div class="search-box">
+              <input type="text" id="searchInput" placeholder="Ex: Vingadores, Breaking Bad..." />
+              <button onclick="buscarFilme()" id="btnBuscar">🔍 Buscar</button>
+            </div>
+            <div id="searchResults" class="search-results"></div>
           </div>
-          <div id="searchResults" class="search-results"></div>
+        </div>
+
+        <!-- PAINEL FUTEBOL (NOVO) -->
+        <div class="painel-futebol" id="painelFutebol">
+          <!-- STEP 1: BUSCAR JOGOS -->
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <h3>Buscar Jogos</h3>
+            <div class="liga-selector">
+              <select id="ligaSelect" onchange="buscarJogosFutebol()">
+                <option value="">Selecione uma Liga</option>
+                <option value="BRA.1">Brasileirão Série A</option>
+                <option value="ENG.1">Premier League</option>
+                <option value="ESP.1">La Liga</option>
+                <option value="GER.1">Bundesliga</option>
+                <option value="ITA.1">Serie A</option>
+                <option value="FRA.1">Ligue 1</option>
+                <option value="UEFA.CHAMPIONS">Champions League</option>
+                <option value="CONMEBOL.LIBERTADORES">Copa Libertadores</option>
+              </select>
+              <button onclick="buscarJogosFutebol()" id="btnBuscarJogos">🔍 Buscar Jogos</button>
+            </div>
+            <div id="jogosDisponiveis" class="jogos-disponiveis">
+              <!-- Jogos da API serão mostrados aqui -->
+            </div>
+          </div>
+          
+          <!-- STEP 2: JOGOS SELECIONADOS -->
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <h3>Jogos Selecionados</h3>
+            <div id="jogosSelecionados">
+              <p class="empty-state">Nenhum jogo selecionado</p>
+            </div>
+            <div class="jogos-acoes">
+              <button onclick="selecionarTodosJogos()" class="btn-secondary">✅ Selecionar Todos</button>
+              <button onclick="limparJogosSelecionados()" class="btn-secondary">🗑️ Limpar Seleção</button>
+            </div>
+          </div>
         </div>
 
         <!-- STEP 2: LOGO -->
@@ -393,7 +445,7 @@
             <input type="text" id="inputSite" placeholder="www.seusite.com" />
             <div style="margin-top: 8px;">
               <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted);">
-                <input type="checkbox" id="checkMostrarSiteBanner" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="if(filmeAtual) gerarBanner()" />
+                <input type="checkbox" id="checkMostrarSiteBanner" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="if(tipoAtual === 'filme' && filmeAtual) gerarBannerAtual(); else if(tipoAtual === 'futebol' && jogosSelecionados.length > 0) gerarBannerAtual();" />
                 <span>Mostrar site no banner</span>
               </label>
               <small style="display: block; margin-top: 4px; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7;">
@@ -460,14 +512,6 @@
                 <small>4:5</small>
               </div>
             </label>
-            <label class="format-option">
-              <input type="radio" name="formato" value="paisagem" onchange="atualizarFormato()" />
-              <div class="format-box">
-                <div class="format-icon paisagem-icon"></div>
-                <span>Paisagem</span>
-                <small>16:9</small>
-              </div>
-            </label>
           </div>
         </div>
 
@@ -480,23 +524,23 @@
             <h3>Estilo do Overlay</h3>
             <div class="overlay-options">
               <label class="overlay-opt" title="Escuro">
-                <input type="radio" name="overlay" value="dark" checked onchange="gerarBanner()" />
+                <input type="radio" name="overlay" value="dark" checked onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch dark-swatch"></div>
               </label>
               <label class="overlay-opt" title="Roxo">
-                <input type="radio" name="overlay" value="purple" onchange="gerarBanner()" />
+                <input type="radio" name="overlay" value="purple" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch purple-swatch"></div>
               </label>
               <label class="overlay-opt" title="Azul">
-                <input type="radio" name="overlay" value="blue" onchange="gerarBanner()" />
+                <input type="radio" name="overlay" value="blue" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch blue-swatch"></div>
               </label>
               <label class="overlay-opt" title="Vermelho">
-                <input type="radio" name="overlay" value="red" onchange="gerarBanner()" />
+                <input type="radio" name="overlay" value="red" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch red-swatch"></div>
               </label>
               <label class="overlay-opt" title="Sem overlay">
-                <input type="radio" name="overlay" value="none" onchange="gerarBanner()" />
+                <input type="radio" name="overlay" value="none" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch none-swatch">✕</div>
               </label>
             </div>
@@ -507,50 +551,50 @@
             <h3>Cor do Fundo</h3>
             <div class="overlay-options">
               <label class="overlay-opt" title="Imagem do Filme">
-                <input type="radio" name="fundoPromo" value="imagem" checked onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="imagem" checked onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a1a2e,#4a4a5e);font-size:1.2rem;">🎬</div>
               </label>
               <label class="overlay-opt" title="Roxo">
-                <input type="radio" name="fundoPromo" value="roxo" onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="roxo" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a2e,#6b21a8);"></div>
               </label>
               <label class="overlay-opt" title="Azul">
-                <input type="radio" name="fundoPromo" value="azul" onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="azul" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#0a1628,#1e3a8a);"></div>
               </label>
               <label class="overlay-opt" title="Vermelho">
-                <input type="radio" name="fundoPromo" value="vermelho" onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="vermelho" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a0a,#991b1b);"></div>
               </label>
               <label class="overlay-opt" title="Verde">
-                <input type="radio" name="fundoPromo" value="verde" onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="verde" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#0a1a0a,#14532d);"></div>
               </label>
               <label class="overlay-opt" title="Laranja">
-                <input type="radio" name="fundoPromo" value="laranja" onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="laranja" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a00,#c2410c);"></div>
               </label>
               <label class="overlay-opt" title="Rosa">
-                <input type="radio" name="fundoPromo" value="rosa" onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="rosa" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a14,#be185d);"></div>
               </label>
               <label class="overlay-opt" title="Ciano">
-                <input type="radio" name="fundoPromo" value="ciano" onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="ciano" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#0a1a1a,#0891b2);"></div>
               </label>
               <label class="overlay-opt" title="Dourado">
-                <input type="radio" name="fundoPromo" value="dourado" onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="dourado" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a1200,#ca8a04);"></div>
               </label>
               <label class="overlay-opt" title="Preto">
-                <input type="radio" name="fundoPromo" value="preto" onchange="gerarBanner()" />
+                <input type="radio" name="fundoPromo" value="preto" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#000,#1a1a1a);"></div>
               </label>
             </div>
           </div>
         </div>
 
-        <button class="btn-gerar" onclick="gerarBanner()">✨ Gerar Banner</button>
+        <button class="btn-gerar" onclick="gerarBannerAtual()">✨ Gerar Banner</button>
       </div>
 
       <!-- PAINEL DIREITO: PREVIEW -->
