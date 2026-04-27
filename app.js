@@ -1994,28 +1994,79 @@ async function buscarJogosFutebol() {
       const timeVisitante = jogo.competitions[0].competitors.find(c => c.homeAway === 'away');
       const dataJogo = new Date(jogo.date);
       const horario = dataJogo.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      const status = jogo.status.type.description;
+      const statusRaw = jogo.status.type.description;
+      
+      // Traduzir status para português
+      const traducaoStatus = {
+        'Scheduled':  'Agendado',
+        'In Progress': 'Ao Vivo',
+        'Final':       'Encerrado',
+        'Postponed':   'Adiado',
+        'Canceled':    'Cancelado',
+        'Suspended':   'Suspenso',
+        'Delayed':     'Atrasado',
+        'Halftime':    'Intervalo',
+        'Full Time':   'Encerrado',
+        'Extra Time':  'Prorrogação',
+        'Penalty':     'Pênaltis',
+      };
+      const status = traducaoStatus[statusRaw] || statusRaw;
       
       // Determinar canal de transmissão baseado na liga
       let canalTransmissao = 'A definir';
       const ligaNome = ligaSelect.options[ligaSelect.selectedIndex].text;
+      const ligaVal  = ligaSelect.value;
       
-      if (ligaNome.includes('Brasileirão')) {
-        const canaisBrasileirao = ['Globo', 'SporTV', 'Premiere'];
-        canalTransmissao = canaisBrasileirao[Math.floor(Math.random() * canaisBrasileirao.length)];
-      } else if (ligaNome.includes('Premier League')) {
-        canalTransmissao = 'ESPN';
-      } else if (ligaNome.includes('La Liga')) {
-        canalTransmissao = 'ESPN';
-      } else if (ligaNome.includes('Champions')) {
-        const canaisChampions = ['TNT Sports', 'HBO Max'];
-        canalTransmissao = canaisChampions[Math.floor(Math.random() * canaisChampions.length)];
-      } else if (ligaNome.includes('Libertadores')) {
-        canalTransmissao = 'ESPN';
-      } else {
-        const canaisGerais = ['ESPN', 'Fox Sports', 'SporTV'];
-        canalTransmissao = canaisGerais[Math.floor(Math.random() * canaisGerais.length)];
-      }
+      // Mapa de ligas para canais
+      const canaisPorLiga = {
+        // Brasil
+        'BRA.1':  ['Globo', 'SporTV', 'Premiere'],
+        'BRA.2':  ['SporTV', 'Premiere'],
+        'BRA.3':  ['DAZN'],
+        'BRA.CB': ['Globo', 'SporTV', 'Premiere'],
+        'BRA.RJ': ['Band', 'SporTV'],
+        'BRA.SP': ['Record', 'SporTV'],
+        'BRA.MG': ['SporTV'],
+        'BRA.RS': ['SporTV'],
+        'BRA.BA': ['SporTV'],
+        'BRA.PE': ['SporTV'],
+        'BRA.CE': ['SporTV'],
+        // América do Sul
+        'CONMEBOL.LIBERTADORES':  ['ESPN', 'SporTV'],
+        'CONMEBOL.SUDAMERICANA':  ['ESPN', 'SporTV'],
+        'CONMEBOL.RECOPA':        ['SporTV'],
+        'ARG.1': ['ESPN'],
+        'COL.1': ['ESPN'],
+        'CHI.1': ['ESPN'],
+        'URU.1': ['ESPN'],
+        // Europa
+        'UEFA.CHAMPIONS':  ['TNT Sports', 'HBO Max'],
+        'UEFA.EUROPA':     ['ESPN'],
+        'UEFA.CONFERENCE': ['ESPN'],
+        'UEFA.NATIONS':    ['SporTV'],
+        'ENG.1': ['ESPN'],
+        'ENG.2': ['ESPN'],
+        'ESP.1': ['ESPN'],
+        'ESP.2': ['ESPN'],
+        'GER.1': ['Fox Sports'],
+        'GER.2': ['Fox Sports'],
+        'ITA.1': ['ESPN'],
+        'ITA.2': ['ESPN'],
+        'FRA.1': ['CazéTV'],
+        'FRA.2': ['CazéTV'],
+        'POR.1': ['ESPN'],
+        'NED.1': ['ESPN'],
+        'SCO.1': ['ESPN'],
+        'TUR.1': ['ESPN'],
+        // Mundial
+        'FIFA.WORLDQ.CONMEBOL': ['Globo', 'SporTV'],
+        'FIFA.WORLDQ.UEFA':     ['SporTV'],
+        'CONCACAF.CHAMPIONS':   ['DAZN'],
+        'CAF.CHAMPIONS':        ['DAZN'],
+      };
+      
+      const canaisDisponiveis = canaisPorLiga[ligaVal] || ['ESPN', 'Fox Sports', 'SporTV'];
+      canalTransmissao = canaisDisponiveis[Math.floor(Math.random() * canaisDisponiveis.length)];
 
       jogosHtml += `
         <div class="jogo-api-item" onclick="toggleJogoSelecionado(${index}, this)" data-jogo='${JSON.stringify({

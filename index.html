@@ -382,14 +382,54 @@
             <div class="liga-selector">
               <select id="ligaSelect" onchange="buscarJogosFutebol()">
                 <option value="">Selecione uma Liga</option>
-                <option value="BRA.1">Brasileirão Série A</option>
-                <option value="ENG.1">Premier League</option>
-                <option value="ESP.1">La Liga</option>
-                <option value="GER.1">Bundesliga</option>
-                <option value="ITA.1">Serie A</option>
-                <option value="FRA.1">Ligue 1</option>
-                <option value="UEFA.CHAMPIONS">Champions League</option>
-                <option value="CONMEBOL.LIBERTADORES">Copa Libertadores</option>
+                <optgroup label="🇧🇷 Brasil">
+                  <option value="BRA.1">Brasileirão Série A</option>
+                  <option value="BRA.2">Brasileirão Série B</option>
+                  <option value="BRA.3">Brasileirão Série C</option>
+                  <option value="BRA.CB">Copa do Brasil</option>
+                  <option value="BRA.RJ">Campeonato Carioca</option>
+                  <option value="BRA.SP">Campeonato Paulista</option>
+                  <option value="BRA.MG">Campeonato Mineiro</option>
+                  <option value="BRA.RS">Campeonato Gaúcho</option>
+                  <option value="BRA.BA">Campeonato Baiano</option>
+                  <option value="BRA.PE">Campeonato Pernambucano</option>
+                  <option value="BRA.CE">Campeonato Cearense</option>
+                </optgroup>
+                <optgroup label="🌎 América do Sul">
+                  <option value="CONMEBOL.LIBERTADORES">Copa Libertadores</option>
+                  <option value="CONMEBOL.SUDAMERICANA">Copa Sul-Americana</option>
+                  <option value="CONMEBOL.RECOPA">Recopa Sul-Americana</option>
+                  <option value="ARG.1">Liga Argentina</option>
+                  <option value="COL.1">Liga Colombiana</option>
+                  <option value="CHI.1">Liga Chilena</option>
+                  <option value="URU.1">Liga Uruguaia</option>
+                </optgroup>
+                <optgroup label="🌍 Europa">
+                  <option value="UEFA.CHAMPIONS">Champions League</option>
+                  <option value="UEFA.EUROPA">Europa League</option>
+                  <option value="UEFA.CONFERENCE">Conference League</option>
+                  <option value="UEFA.NATIONS">Nations League</option>
+                  <option value="ENG.1">Premier League</option>
+                  <option value="ENG.2">Championship</option>
+                  <option value="ESP.1">La Liga</option>
+                  <option value="ESP.2">La Liga 2</option>
+                  <option value="GER.1">Bundesliga</option>
+                  <option value="GER.2">2. Bundesliga</option>
+                  <option value="ITA.1">Serie A</option>
+                  <option value="ITA.2">Serie B</option>
+                  <option value="FRA.1">Ligue 1</option>
+                  <option value="FRA.2">Ligue 2</option>
+                  <option value="POR.1">Primeira Liga</option>
+                  <option value="NED.1">Eredivisie</option>
+                  <option value="SCO.1">Scottish Premiership</option>
+                  <option value="TUR.1">Süper Lig</option>
+                </optgroup>
+                <optgroup label="🌐 Mundial">
+                  <option value="FIFA.WORLDQ.CONMEBOL">Eliminatórias Sul-Americanas</option>
+                  <option value="FIFA.WORLDQ.UEFA">Eliminatórias Europeias</option>
+                  <option value="CONCACAF.CHAMPIONS">CONCACAF Champions Cup</option>
+                  <option value="CAF.CHAMPIONS">CAF Champions League</option>
+                </optgroup>
               </select>
               <button onclick="buscarJogosFutebol()" id="btnBuscarJogos">🔍 Buscar Jogos</button>
             </div>
