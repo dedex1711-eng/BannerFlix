@@ -2026,3 +2026,14 @@ body.tema-futebol .banner-type-selector .type-btn#btnTipoFutebol {
   color: white;
   border-color: transparent;
 }
+
+/* Cabeçalho de grupo de liga no modo "Todos do Dia" */
+.liga-header-grupo {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}

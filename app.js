@@ -1923,6 +1923,150 @@ function selecionarTipo(tipo) {
   alternarPainelTemplate();
 }
 
+// ===== BUSCAR TODOS OS JOGOS DO DIA =====
+async function buscarTodosJogosDoDia() {
+  const container = document.getElementById('jogosDisponiveis');
+  const btn = document.getElementById('btnBuscarTodos');
+  
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Buscando...';
+  container.innerHTML = '<div class="loading-state">🔄 Buscando jogos de todos os campeonatos...</div>';
+  
+  // Todos os campeonatos disponíveis
+  const todasLigas = [
+    { id: 'BRA.1',  nome: 'Brasileirão Série A' },
+    { id: 'BRA.2',  nome: 'Brasileirão Série B' },
+    { id: 'BRA.CB', nome: 'Copa do Brasil' },
+    { id: 'BRA.RJ', nome: 'Campeonato Carioca' },
+    { id: 'BRA.SP', nome: 'Campeonato Paulista' },
+    { id: 'BRA.MG', nome: 'Campeonato Mineiro' },
+    { id: 'BRA.RS', nome: 'Campeonato Gaúcho' },
+    { id: 'CONMEBOL.LIBERTADORES', nome: 'Copa Libertadores' },
+    { id: 'CONMEBOL.SUDAMERICANA', nome: 'Copa Sul-Americana' },
+    { id: 'UEFA.CHAMPIONS', nome: 'Champions League' },
+    { id: 'UEFA.EUROPA',    nome: 'Europa League' },
+    { id: 'UEFA.CONFERENCE',nome: 'Conference League' },
+    { id: 'ENG.1', nome: 'Premier League' },
+    { id: 'ESP.1', nome: 'La Liga' },
+    { id: 'GER.1', nome: 'Bundesliga' },
+    { id: 'ITA.1', nome: 'Serie A' },
+    { id: 'FRA.1', nome: 'Ligue 1' },
+    { id: 'POR.1', nome: 'Primeira Liga' },
+    { id: 'ARG.1', nome: 'Liga Argentina' },
+  ];
+  
+  const hoje = new Date();
+  const dataFormatada = hoje.toISOString().split('T')[0].replace(/-/g, '');
+  
+  const canaisPorLiga = {
+    'BRA.1':  ['Globo', 'SporTV', 'Premiere'],
+    'BRA.2':  ['SporTV', 'Premiere'],
+    'BRA.CB': ['Globo', 'SporTV', 'Premiere'],
+    'BRA.RJ': ['Band', 'SporTV'],
+    'BRA.SP': ['Record', 'SporTV'],
+    'BRA.MG': ['SporTV'], 'BRA.RS': ['SporTV'],
+    'CONMEBOL.LIBERTADORES': ['ESPN', 'SporTV'],
+    'CONMEBOL.SUDAMERICANA': ['ESPN', 'SporTV'],
+    'UEFA.CHAMPIONS':  ['TNT Sports', 'HBO Max'],
+    'UEFA.EUROPA':     ['ESPN'],
+    'UEFA.CONFERENCE': ['ESPN'],
+    'ENG.1': ['ESPN'], 'ESP.1': ['ESPN'],
+    'GER.1': ['Fox Sports'], 'ITA.1': ['ESPN'],
+    'FRA.1': ['CazéTV'], 'POR.1': ['ESPN'],
+    'ARG.1': ['ESPN'],
+  };
+  
+  let todosJogosHtml = '';
+  let totalJogos = 0;
+  
+  // Buscar em paralelo (máx 5 por vez para não sobrecarregar)
+  const chunks = [];
+  for (let i = 0; i < todasLigas.length; i += 5) {
+    chunks.push(todasLigas.slice(i, i + 5));
+  }
+  
+  for (const chunk of chunks) {
+    const resultados = await Promise.allSettled(
+      chunk.map(liga => 
+        fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga.id}/scoreboard?dates=${dataFormatada}`)
+          .then(r => r.json())
+          .then(data => ({ liga, jogos: data.events || [] }))
+          .catch(() => ({ liga, jogos: [] }))
+      )
+    );
+    
+    for (const resultado of resultados) {
+      if (resultado.status !== 'fulfilled') continue;
+      const { liga, jogos } = resultado.value;
+      if (jogos.length === 0) continue;
+      
+      // Cabeçalho da liga
+      todosJogosHtml += `<div class="liga-header-grupo">${liga.nome}</div>`;
+      
+      jogos.forEach((jogo, index) => {
+        try {
+          const timeCasa = jogo.competitions[0].competitors.find(c => c.homeAway === 'home');
+          const timeVisitante = jogo.competitions[0].competitors.find(c => c.homeAway === 'away');
+          const dataJogo = new Date(jogo.date);
+          const horario = dataJogo.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          const statusRaw = jogo.status.type.description;
+          const traducaoStatus = {
+            'Scheduled': 'Agendado', 'In Progress': 'Ao Vivo',
+            'Final': 'Encerrado', 'Postponed': 'Adiado',
+            'Halftime': 'Intervalo', 'Full Time': 'Encerrado',
+          };
+          const status = traducaoStatus[statusRaw] || statusRaw;
+          
+          const canaisDisponiveis = canaisPorLiga[liga.id] || ['ESPN'];
+          const canal = canaisDisponiveis[Math.floor(Math.random() * canaisDisponiveis.length)];
+          
+          const jogoData = JSON.stringify({
+            id: `${liga.id}_${jogo.id}`,
+            timeCasa: timeCasa.team.displayName,
+            timeVisitante: timeVisitante.team.displayName,
+            horario, status, liga: liga.nome,
+            logoCasa: timeCasa.team.logo || '',
+            logoVisitante: timeVisitante.team.logo || '',
+            canal
+          });
+          
+          todosJogosHtml += `
+            <div class="jogo-api-item" onclick="toggleJogoSelecionado(${totalJogos}, this)" data-jogo='${jogoData}'>
+              <div class="jogo-api-header">
+                <div class="jogo-api-data">${horario}</div>
+                <div class="jogo-api-status">${status}</div>
+              </div>
+              <div class="jogo-api-times">
+                <div class="jogo-api-time">
+                  <div class="jogo-api-logo">${timeCasa.team.logo ? `<img src="${timeCasa.team.logo}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}</div>
+                  <div class="jogo-api-nome">${timeCasa.team.displayName}</div>
+                </div>
+                <div class="jogo-api-vs">VS</div>
+                <div class="jogo-api-time">
+                  <div class="jogo-api-logo">${timeVisitante.team.logo ? `<img src="${timeVisitante.team.logo}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}</div>
+                  <div class="jogo-api-nome">${timeVisitante.team.displayName}</div>
+                </div>
+              </div>
+              <div class="jogo-api-transmissao">📺 ${canal}</div>
+            </div>`;
+          totalJogos++;
+        } catch(e) { /* jogo inválido */ }
+      });
+    }
+  }
+  
+  if (totalJogos === 0) {
+    container.innerHTML = '<div class="empty-state">Nenhum jogo encontrado para hoje</div>';
+  } else {
+    container.innerHTML = todosJogosHtml;
+    showToast(`✅ ${totalJogos} jogos encontrados hoje!`);
+    atualizarBotaoSelecionarTodos();
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = '🌍 Todos do Dia';
+}
+
 async function buscarJogosFutebol() {
   const ligaSelect = document.getElementById('ligaSelect');
   const liga = ligaSelect.value;
