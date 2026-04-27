@@ -879,10 +879,7 @@
   <script src="app.js"></script>
   
   <script>
-    console.log('✅ Todos os scripts carregados com sucesso');
-    console.log('LicenseAuth disponível?', typeof LicenseAuth !== 'undefined');
-    console.log('fazerLoginComChave disponível?', typeof fazerLoginComChave !== 'undefined');
-    console.log('gerarBanner disponível?', typeof gerarBanner !== 'undefined');
+    // Scripts carregados
   </script>
   <!-- VERIFICAÇÃO DE EXPIRAÇÃO DE CHAVE -->
   <script>
@@ -897,7 +894,6 @@
       
       // Se os dias chegaram a 0 ou menos, deslogar
       if (dias <= 0) {
-        console.warn('⚠️ Chave expirada! Deslogando...');
         showToast('⏰ Sua chave de licença expirou. Faça login novamente.');
         fazerLogout();
         return;

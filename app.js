@@ -2930,12 +2930,7 @@ async function gerarBannerFutebolCanvas(jogos) {
 
 // Inicializar com um jogo exemplo
 document.addEventListener('DOMContentLoaded', function() {
-  // Adicionar jogo exemplo quando selecionar futebol
-  setTimeout(() => {
-    if (document.getElementById('painelFutebol')) {
-      adicionarJogo();
-    }
-  }, 100);
+  // Painel de futebol inicializado
 });
 function gerarBannerAtual() {
   

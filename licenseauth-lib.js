@@ -13,11 +13,6 @@ class LicenseAuth {
     this.sessionid = null;
     this.apiUrl = 'https://licenseauth.help/api/1.2/';
     
-      appName: this.appName,
-      ownerid: this.ownerid,
-      version: this.version
-    });
-    
     // Inicializa automaticamente
     this.init();
   }
