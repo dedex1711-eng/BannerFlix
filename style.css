@@ -1736,6 +1736,55 @@ body {
   color: var(--text-muted);
   font-weight: 600;
 }
+
+/* Estilos para imagens de futebol */
+.fut-img-options {
+  margin-top: 8px;
+}
+
+.fut-swatch {
+  position: relative;
+  border: 2px solid var(--border) !important;
+}
+
+.fut-label {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* Seletores de cor do futebol */
+.cor-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cor-opt {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.cor-opt:hover {
+  transform: scale(1.15);
+}
+
+.cor-opt.active {
+  border-color: #fff;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
 /* ===== SELETOR DE LIGA ===== */
 .liga-selector {
   display: flex;
@@ -1900,4 +1949,64 @@ body {
   font-size: 0.75rem;
   margin-top: 8px;
   font-weight: 600;
+}
+
+/* ===== TEMA FUTEBOL ===== */
+body.tema-futebol {
+  --accent: #2E7D32;
+  --accent2: #1B5E20;
+  --accent3: #4CAF50;
+  --accent-glow: rgba(46, 125, 50, 0.4);
+}
+
+body.tema-futebol .btn-gerar {
+  background: linear-gradient(135deg, #2E7D32, #1B5E20);
+}
+
+body.tema-futebol .btn-primary {
+  background: linear-gradient(135deg, #2E7D32, #4CAF50, #81C784);
+}
+
+body.tema-futebol .btn-nav {
+  background: #2E7D32;
+}
+
+body.tema-futebol .btn-nav:hover {
+  background: #1B5E20;
+}
+
+body.tema-futebol .step-num {
+  background: #2E7D32;
+}
+
+body.tema-futebol .search-box button {
+  background: #2E7D32;
+}
+
+body.tema-futebol .search-box button:hover {
+  background: #1B5E20;
+}
+
+body.tema-futebol .btn-download {
+  background: linear-gradient(135deg, #2E7D32, #1B5E20);
+}
+
+body.tema-futebol .step-circle {
+  background: linear-gradient(135deg, #2E7D32, #4CAF50);
+}
+
+body.tema-futebol .hero-content h1 span {
+  background: linear-gradient(135deg, #2E7D32, #4CAF50, #81C784);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+body.tema-futebol .type-btn.active {
+  background: linear-gradient(135deg, #2E7D32, #4CAF50, #81C784);
+}
+
+body.tema-futebol .banner-type-selector .type-btn#btnTipoFutebol {
+  background: linear-gradient(135deg, #2E7D32, #1B5E20);
+  color: white;
+  border-color: transparent;
 }

@@ -465,7 +465,7 @@
           <h3>Estilo do Banner</h3>
           <div class="template-options">
             <label class="template-option">
-              <input type="radio" name="template" value="simples" checked onchange="atualizarFormato()" />
+              <input type="radio" name="template" value="simples" checked onchange="alternarPainelTemplate(); atualizarFormato()" />
               <div class="template-box">
                 <span class="template-icon">🎬</span>
                 <strong>Simples</strong>
@@ -473,7 +473,7 @@
               </div>
             </label>
             <label class="template-option">
-              <input type="radio" name="template" value="promocional" onchange="atualizarFormato()" />
+              <input type="radio" name="template" value="promocional" onchange="alternarPainelTemplate(); atualizarFormato()" />
               <div class="template-box">
                 <span class="template-icon">🍿</span>
                 <strong>Promocional</strong>
@@ -518,6 +518,62 @@
         <!-- STEP 6: COR DO OVERLAY / FUNDO PROMOCIONAL -->
         <div class="step-card">
           <div class="step-num">6</div>
+
+          <!-- Cores do Banner de Futebol (só aparece na aba futebol) -->
+          <div id="coresFutebolOpcoes" style="display:none;">
+            <h3>🎨 Cores do Banner</h3>
+            
+            <!-- Cor do Destaque -->
+            <div style="margin-bottom:14px;">
+              <label style="font-size:0.8rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:8px;">Cor do DESTAQUES</label>
+              <div class="cor-selector" id="corDestaque">
+                <div class="cor-opt active" data-cor="#F77F30" style="background:#F77F30;" onclick="selecionarCor('destaque','#F77F30',this)"></div>
+                <div class="cor-opt" data-cor="#E14760" style="background:#E14760;" onclick="selecionarCor('destaque','#E14760',this)"></div>
+                <div class="cor-opt" data-cor="#ffffff" style="background:#ffffff;" onclick="selecionarCor('destaque','#ffffff',this)"></div>
+                <div class="cor-opt" data-cor="#FFD700" style="background:#FFD700;" onclick="selecionarCor('destaque','#FFD700',this)"></div>
+                <div class="cor-opt" data-cor="#00FF87" style="background:#00FF87;" onclick="selecionarCor('destaque','#00FF87',this)"></div>
+                <div class="cor-opt" data-cor="#00BFFF" style="background:#00BFFF;" onclick="selecionarCor('destaque','#00BFFF',this)"></div>
+                <div class="cor-opt" data-cor="#FF4500" style="background:#FF4500;" onclick="selecionarCor('destaque','#FF4500',this)"></div>
+                <div class="cor-opt" data-cor="#9D2BBD" style="background:#9D2BBD;" onclick="selecionarCor('destaque','#9D2BBD',this)"></div>
+                <div class="cor-opt" data-cor="#FF69B4" style="background:#FF69B4;" onclick="selecionarCor('destaque','#FF69B4',this)"></div>
+                <div class="cor-opt" data-cor="#C0C0C0" style="background:#C0C0C0;" onclick="selecionarCor('destaque','#C0C0C0',this)"></div>
+              </div>
+            </div>
+
+            <!-- Cor da Hora -->
+            <div style="margin-bottom:14px;">
+              <label style="font-size:0.8rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:8px;">Cor da Hora</label>
+              <div class="cor-selector" id="corHora">
+                <div class="cor-opt active" data-cor="#F77F30" style="background:#F77F30;" onclick="selecionarCor('hora','#F77F30',this)"></div>
+                <div class="cor-opt" data-cor="#E14760" style="background:#E14760;" onclick="selecionarCor('hora','#E14760',this)"></div>
+                <div class="cor-opt" data-cor="#ffffff" style="background:#ffffff;" onclick="selecionarCor('hora','#ffffff',this)"></div>
+                <div class="cor-opt" data-cor="#FFD700" style="background:#FFD700;" onclick="selecionarCor('hora','#FFD700',this)"></div>
+                <div class="cor-opt" data-cor="#00FF87" style="background:#00FF87;" onclick="selecionarCor('hora','#00FF87',this)"></div>
+                <div class="cor-opt" data-cor="#00BFFF" style="background:#00BFFF;" onclick="selecionarCor('hora','#00BFFF',this)"></div>
+                <div class="cor-opt" data-cor="#FF4500" style="background:#FF4500;" onclick="selecionarCor('hora','#FF4500',this)"></div>
+                <div class="cor-opt" data-cor="#9D2BBD" style="background:#9D2BBD;" onclick="selecionarCor('hora','#9D2BBD',this)"></div>
+                <div class="cor-opt" data-cor="#FF69B4" style="background:#FF69B4;" onclick="selecionarCor('hora','#FF69B4',this)"></div>
+                <div class="cor-opt" data-cor="#C0C0C0" style="background:#C0C0C0;" onclick="selecionarCor('hora','#C0C0C0',this)"></div>
+              </div>
+            </div>
+
+            <!-- Cor da Liga -->
+            <div style="margin-bottom:14px;">
+              <label style="font-size:0.8rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:8px;">Cor da Liga</label>
+              <div class="cor-selector" id="corLiga">
+                <div class="cor-opt active" data-cor="#F77F30" style="background:#F77F30;" onclick="selecionarCor('liga','#F77F30',this)"></div>
+                <div class="cor-opt" data-cor="#E14760" style="background:#E14760;" onclick="selecionarCor('liga','#E14760',this)"></div>
+                <div class="cor-opt" data-cor="#ffffff" style="background:#ffffff;" onclick="selecionarCor('liga','#ffffff',this)"></div>
+                <div class="cor-opt" data-cor="#FFD700" style="background:#FFD700;" onclick="selecionarCor('liga','#FFD700',this)"></div>
+                <div class="cor-opt" data-cor="#00FF87" style="background:#00FF87;" onclick="selecionarCor('liga','#00FF87',this)"></div>
+                <div class="cor-opt" data-cor="#00BFFF" style="background:#00BFFF;" onclick="selecionarCor('liga','#00BFFF',this)"></div>
+                <div class="cor-opt" data-cor="#FF4500" style="background:#FF4500;" onclick="selecionarCor('hora','#FF4500',this)"></div>
+                <div class="cor-opt" data-cor="#9D2BBD" style="background:#9D2BBD;" onclick="selecionarCor('liga','#9D2BBD',this)"></div>
+                <div class="cor-opt" data-cor="#FF69B4" style="background:#FF69B4;" onclick="selecionarCor('liga','#FF69B4',this)"></div>
+                <div class="cor-opt" data-cor="#C0C0C0" style="background:#C0C0C0;" onclick="selecionarCor('liga','#C0C0C0',this)"></div>
+              </div>
+            </div>
+          </div>
 
           <!-- Overlay (template simples) -->
           <div id="overlayOpcoes">
@@ -591,6 +647,43 @@
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#000,#1a1a1a);"></div>
               </label>
             </div>
+
+            <!-- Imagens de Futebol (só aparece na aba futebol) -->
+            <div id="fundoFutebolImagens" style="display:none;">
+              <h3 style="margin-top:14px;">⚽ Imagens de Futebol</h3>
+              <div class="overlay-options fut-img-options">
+              <label class="overlay-opt" title="Futebol 1">
+                <input type="radio" name="fundoPromo" value="fut1" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut1.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">1</span>
+                </div>
+              </label>
+              <label class="overlay-opt" title="Futebol 2">
+                <input type="radio" name="fundoPromo" value="fut2" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut2.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">2</span>
+                </div>
+              </label>
+              <label class="overlay-opt" title="Futebol 3">
+                <input type="radio" name="fundoPromo" value="fut3" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut3.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">3</span>
+                </div>
+              </label>
+              <label class="overlay-opt" title="Futebol 4">
+                <input type="radio" name="fundoPromo" value="fut4" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut4.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">4</span>
+                </div>
+              </label>
+              <label class="overlay-opt" title="Futebol 5">
+                <input type="radio" name="fundoPromo" value="fut5" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut5.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">5</span>
+                </div>
+              </label>
+            </div>
+            </div><!-- fecha fundoFutebolImagens -->
           </div>
         </div>
 
