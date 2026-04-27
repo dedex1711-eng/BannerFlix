@@ -704,7 +704,7 @@ async function gerarBannerPromocional() {
   // Texto ASSISTA
   const titleSize = w * 0.115;
   ctx.font      = `900 ${titleSize}px Inter, sans-serif`;
-  ctx.fillStyle = '#ffd700';
+  ctx.fillStyle = corDestaqueFilme;
   ctx.textAlign = 'right';
   ctx.fillText('ASSISTA', w * 0.95, h * 0.30);
 
@@ -1786,6 +1786,21 @@ let coresFutebol = {
   liga:     '#F77F30',
 };
 
+// Cor de destaque para filmes (borda poster, ASSISTA, botão play)
+let corDestaqueFilme = '#F77F30';
+
+function selecionarCorFilme(cor, el) {
+  corDestaqueFilme = cor;
+  
+  // Atualizar visual em ambos os seletores
+  document.querySelectorAll('#corDestaqueFilme .cor-opt, #corDestaqueFilmePromo .cor-opt').forEach(o => o.classList.remove('active'));
+  // Marcar todos os elementos com a mesma cor
+  document.querySelectorAll(`#corDestaqueFilme .cor-opt[data-cor="${cor}"], #corDestaqueFilmePromo .cor-opt[data-cor="${cor}"]`).forEach(o => o.classList.add('active'));
+  
+  // Regenerar banner
+  if (filmeAtual) gerarBanner(false);
+}
+
 function selecionarCor(tipo, cor, el) {
   coresFutebol[tipo] = cor;
   
@@ -1884,25 +1899,64 @@ async function buscarTodosJogosDoDia() {
   container.innerHTML = '<div class="loading-state">🔄 Buscando jogos de todos os campeonatos...</div>';
   
   const todasLigas = [
+    // Brasil
     { id: 'BRA.1',  nome: 'Brasileirão Série A' },
     { id: 'BRA.2',  nome: 'Brasileirão Série B' },
+    { id: 'BRA.3',  nome: 'Brasileirão Série C' },
+    { id: 'BRA.4',  nome: 'Brasileirão Série D' },
     { id: 'BRA.CB', nome: 'Copa do Brasil' },
     { id: 'BRA.RJ', nome: 'Campeonato Carioca' },
     { id: 'BRA.SP', nome: 'Campeonato Paulista' },
     { id: 'BRA.MG', nome: 'Campeonato Mineiro' },
     { id: 'BRA.RS', nome: 'Campeonato Gaúcho' },
-    { id: 'CONMEBOL.LIBERTADORES', nome: 'Copa Libertadores' },
-    { id: 'CONMEBOL.SUDAMERICANA', nome: 'Copa Sul-Americana' },
-    { id: 'UEFA.CHAMPIONS', nome: 'Champions League' },
-    { id: 'UEFA.EUROPA',    nome: 'Europa League' },
-    { id: 'UEFA.CONFERENCE',nome: 'Conference League' },
-    { id: 'ENG.1', nome: 'Premier League' },
-    { id: 'ESP.1', nome: 'La Liga' },
-    { id: 'GER.1', nome: 'Bundesliga' },
-    { id: 'ITA.1', nome: 'Serie A' },
-    { id: 'FRA.1', nome: 'Ligue 1' },
-    { id: 'POR.1', nome: 'Primeira Liga' },
+    { id: 'BRA.BA', nome: 'Campeonato Baiano' },
+    { id: 'BRA.PE', nome: 'Campeonato Pernambucano' },
+    { id: 'BRA.CE', nome: 'Campeonato Cearense' },
+    { id: 'BRA.GO', nome: 'Campeonato Goiano' },
+    { id: 'BRA.PR', nome: 'Campeonato Paranaense' },
+    { id: 'BRA.SC', nome: 'Campeonato Catarinense' },
+    { id: 'BRA.ES', nome: 'Campeonato Capixaba' },
+    { id: 'BRA.PA', nome: 'Campeonato Paraense' },
+    { id: 'BRA.AM', nome: 'Campeonato Amazonense' },
+    // América do Sul
+    { id: 'CONMEBOL.LIBERTADORES',  nome: 'Copa Libertadores' },
+    { id: 'CONMEBOL.SUDAMERICANA',  nome: 'Copa Sul-Americana' },
+    { id: 'CONMEBOL.RECOPA',        nome: 'Recopa Sul-Americana' },
     { id: 'ARG.1', nome: 'Liga Argentina' },
+    { id: 'COL.1', nome: 'Liga Colombiana' },
+    { id: 'CHI.1', nome: 'Liga Chilena' },
+    { id: 'URU.1', nome: 'Liga Uruguaia' },
+    { id: 'PER.1', nome: 'Liga Peruana' },
+    { id: 'ECU.1', nome: 'Liga Equatoriana' },
+    { id: 'VEN.1', nome: 'Liga Venezuelana' },
+    { id: 'PAR.1', nome: 'Liga Paraguaia' },
+    { id: 'BOL.1', nome: 'Liga Boliviana' },
+    // Europa
+    { id: 'UEFA.CHAMPIONS',  nome: 'Champions League' },
+    { id: 'UEFA.EUROPA',     nome: 'Europa League' },
+    { id: 'UEFA.CONFERENCE', nome: 'Conference League' },
+    { id: 'UEFA.NATIONS',    nome: 'Nations League' },
+    { id: 'ENG.1', nome: 'Premier League' },
+    { id: 'ENG.2', nome: 'Championship' },
+    { id: 'ESP.1', nome: 'La Liga' },
+    { id: 'ESP.2', nome: 'La Liga 2' },
+    { id: 'GER.1', nome: 'Bundesliga' },
+    { id: 'GER.2', nome: '2. Bundesliga' },
+    { id: 'ITA.1', nome: 'Serie A' },
+    { id: 'ITA.2', nome: 'Serie B' },
+    { id: 'FRA.1', nome: 'Ligue 1' },
+    { id: 'FRA.2', nome: 'Ligue 2' },
+    { id: 'POR.1', nome: 'Primeira Liga' },
+    { id: 'NED.1', nome: 'Eredivisie' },
+    { id: 'SCO.1', nome: 'Scottish Premiership' },
+    { id: 'TUR.1', nome: 'Süper Lig' },
+    { id: 'RUS.1', nome: 'Premier League Russa' },
+    { id: 'BEL.1', nome: 'Pro League Belga' },
+    { id: 'GRE.1', nome: 'Super League Grega' },
+    // Mundial
+    { id: 'FIFA.WORLDQ.CONMEBOL', nome: 'Eliminatórias Sul-Americanas' },
+    { id: 'CONCACAF.CHAMPIONS',   nome: 'CONCACAF Champions Cup' },
+    { id: 'CAF.CHAMPIONS',        nome: 'CAF Champions League' },
   ];
   
   const hoje = new Date();
@@ -1911,19 +1965,41 @@ async function buscarTodosJogosDoDia() {
   const canaisPorLiga = {
     'BRA.1':  ['Globo', 'SporTV', 'Premiere'],
     'BRA.2':  ['SporTV', 'Premiere'],
+    'BRA.3':  ['DAZN'],
+    'BRA.4':  ['DAZN'],
     'BRA.CB': ['Globo', 'SporTV', 'Premiere'],
     'BRA.RJ': ['Band', 'SporTV'],
     'BRA.SP': ['Record', 'SporTV'],
     'BRA.MG': ['SporTV'], 'BRA.RS': ['SporTV'],
+    'BRA.BA': ['SporTV'], 'BRA.PE': ['SporTV'],
+    'BRA.CE': ['SporTV'], 'BRA.GO': ['SporTV'],
+    'BRA.PR': ['SporTV'], 'BRA.SC': ['SporTV'],
+    'BRA.ES': ['SporTV'], 'BRA.PA': ['SporTV'],
+    'BRA.AM': ['SporTV'],
     'CONMEBOL.LIBERTADORES': ['ESPN', 'SporTV'],
     'CONMEBOL.SUDAMERICANA': ['ESPN', 'SporTV'],
+    'CONMEBOL.RECOPA':       ['SporTV'],
+    'ARG.1': ['ESPN'], 'COL.1': ['ESPN'],
+    'CHI.1': ['ESPN'], 'URU.1': ['ESPN'],
+    'PER.1': ['ESPN'], 'ECU.1': ['ESPN'],
+    'VEN.1': ['ESPN'], 'PAR.1': ['ESPN'],
+    'BOL.1': ['ESPN'],
     'UEFA.CHAMPIONS':  ['TNT Sports', 'HBO Max'],
     'UEFA.EUROPA':     ['ESPN'],
     'UEFA.CONFERENCE': ['ESPN'],
-    'ENG.1': ['ESPN'], 'ESP.1': ['ESPN'],
-    'GER.1': ['Fox Sports'], 'ITA.1': ['ESPN'],
-    'FRA.1': ['CazéTV'], 'POR.1': ['ESPN'],
-    'ARG.1': ['ESPN'],
+    'UEFA.NATIONS':    ['SporTV'],
+    'ENG.1': ['ESPN'], 'ENG.2': ['ESPN'],
+    'ESP.1': ['ESPN'], 'ESP.2': ['ESPN'],
+    'GER.1': ['Fox Sports'], 'GER.2': ['Fox Sports'],
+    'ITA.1': ['ESPN'], 'ITA.2': ['ESPN'],
+    'FRA.1': ['CazéTV'], 'FRA.2': ['CazéTV'],
+    'POR.1': ['ESPN'], 'NED.1': ['ESPN'],
+    'SCO.1': ['ESPN'], 'TUR.1': ['ESPN'],
+    'RUS.1': ['ESPN'], 'BEL.1': ['ESPN'],
+    'GRE.1': ['ESPN'],
+    'FIFA.WORLDQ.CONMEBOL': ['Globo', 'SporTV'],
+    'CONCACAF.CHAMPIONS':   ['DAZN'],
+    'CAF.CHAMPIONS':        ['DAZN'],
   };
 
   const traducaoStatus = {
@@ -2615,7 +2691,7 @@ async function gerarBannerFutebolCanvasMultiplo(jogos, numeroBanner, totalBanner
     ctx.fillStyle = '#000000';
     ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText(`${jogo.timeCasa} x ${jogo.timeVisitante}`, w/2, yPos + jogoHeight * 0.8);
+    ctx.fillText(`${abreviarTime(jogo.timeCasa)} x ${abreviarTime(jogo.timeVisitante)}`, w/2, yPos + jogoHeight * 0.8);
     
     // Canal de transmissão (direita)
     ctx.fillStyle = '#F77F30';
@@ -2968,7 +3044,7 @@ async function gerarBannerFutebolCanvas(jogos) {
       ctx.fillStyle = '#000000';
       ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText(`${jogo.timeCasa} x ${jogo.timeVisitante}`, w/2, yPos + jogoHeight * 0.8);
+      ctx.fillText(`${abreviarTime(jogo.timeCasa)} x ${abreviarTime(jogo.timeVisitante)}`, w/2, yPos + jogoHeight * 0.8);
       
       // Canal de transmissão (direita, mais centralizado)
       ctx.fillStyle = '#F77F30'; // Laranja para destacar
@@ -3219,9 +3295,9 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
     try {
       const logoImg = await carregarImagem(logoUrl);
       
-      // Multiplicador de tamanho por canal (alguns logos precisam ser maiores)
+      // Multiplicador de tamanho por canal (SporTV diminuído pois a imagem é maior)
       const multiplicadores = {
-        'SporTV': 1.8,
+        'SporTV': 0.55,
       };
       const mult = multiplicadores[canal] || 1.0;
       
@@ -3249,6 +3325,32 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
   ctx.font = `600 ${size * 0.35}px Inter, sans-serif`;
   ctx.textAlign = 'right';
   ctx.fillText(`📺 ${canal}`, x, y + size * 0.12);
+}
+
+// ===== FUNÇÃO PARA ABREVIAR NOME DE TIME =====
+function abreviarTime(nome, maxChars = 14) {
+  if (!nome || nome.length <= maxChars) return nome;
+  
+  const palavras = nome.split(' ');
+  
+  // Se tiver só 1 palavra, trunca com ...
+  if (palavras.length === 1) return nome.substring(0, maxChars - 1) + '.';
+  
+  // Tenta reduzir: mantém primeira palavra + iniciais das demais
+  // Ex: "FC Baltika Kaliningrad" → "FC Baltika K."
+  let resultado = palavras[0];
+  for (let i = 1; i < palavras.length; i++) {
+    const tentativa = resultado + ' ' + palavras[i];
+    if (tentativa.length <= maxChars) {
+      resultado = tentativa;
+    } else {
+      // Adiciona inicial da próxima palavra
+      resultado += ' ' + palavras[i][0] + '.';
+      break;
+    }
+  }
+  
+  return resultado;
 }
 
 // ===== FUNÇÃO PARA DESENHAR FUNDO SIMPLES DE FUTEBOL =====
