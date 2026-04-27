@@ -86,12 +86,17 @@ class LicenseAuth {
       return;
     }
 
+    // Gerar HWID do dispositivo
+    const hwid = await this.gerarHWID();
+    console.log('🖥️ HWID gerado:', hwid);
+
     const data = {
       type: 'license',
       key: licenseKey,
       sessionid: this.sessionid,
       name: this.appName,
-      ownerid: this.ownerid
+      ownerid: this.ownerid,
+      hwid: hwid  // Envia HWID para o LicenseAuth
     };
 
     console.log('🔑 Tentando login com chave:', licenseKey);
@@ -254,6 +259,63 @@ class LicenseAuth {
     const response = await this.request(data);
 
     return response.success;
+  }
+
+  // ===== GERAR HWID (Device Fingerprint) =====
+  async gerarHWID() {
+    // Verifica se já tem um HWID salvo
+    const saved = localStorage.getItem('bannerflix_hwid');
+    if (saved) return saved;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+      const partes = [
+        navigator.userAgent,
+        navigator.language,
+        `${screen.width}x${screen.height}x${screen.colorDepth}`,
+        new Date().getTimezoneOffset(),
+        navigator.hardwareConcurrency || 0,
+        navigator.deviceMemory || 0,
+        // Canvas fingerprint
+        (() => {
+          const c = document.createElement('canvas');
+          const ctx = c.getContext('2d');
+          ctx.textBaseline = 'top';
+          ctx.font = '14px Arial';
+          ctx.fillStyle = '#f60';
+          ctx.fillRect(125, 1, 62, 20);
+          ctx.fillStyle = '#069';
+          ctx.fillText('BannerFlix🎬⚽', 2, 15);
+          return c.toDataURL().slice(-60);
+        })(),
+        // WebGL fingerprint
+        gl ? `${gl.getParameter(gl.RENDERER)}|${gl.getParameter(gl.VENDOR)}` : 'no-webgl',
+      ].join('||');
+
+      // SHA-256
+      const encoder = new TextEncoder();
+      const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(partes));
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hwid = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32).toUpperCase();
+
+      // Salva para não recalcular
+      localStorage.setItem('bannerflix_hwid', hwid);
+      return hwid;
+
+    } catch (e) {
+      // Fallback simples
+      const raw = navigator.userAgent + screen.width + screen.height;
+      let hash = 0;
+      for (let i = 0; i < raw.length; i++) {
+        hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+        hash |= 0;
+      }
+      const hwid = Math.abs(hash).toString(16).toUpperCase().padStart(32, '0');
+      localStorage.setItem('bannerflix_hwid', hwid);
+      return hwid;
+    }
   }
 }
 

@@ -4,6 +4,71 @@
 
 let usuarioAtual = null;
 
+// ===== DEVICE ID (HWID para Web) =====
+async function gerarDeviceId() {
+  try {
+    // Coleta informações únicas do dispositivo
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    
+    const info = [
+      navigator.userAgent,
+      navigator.language,
+      screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
+      new Date().getTimezoneOffset(),
+      navigator.hardwareConcurrency || 0,
+      navigator.deviceMemory || 0,
+      // Canvas fingerprint
+      (() => {
+        const c = document.createElement('canvas');
+        const ctx2d = c.getContext('2d');
+        ctx2d.textBaseline = 'top';
+        ctx2d.font = '14px Arial';
+        ctx2d.fillStyle = '#f60';
+        ctx2d.fillRect(125, 1, 62, 20);
+        ctx2d.fillStyle = '#069';
+        ctx2d.fillText('BannerFlix🎬', 2, 15);
+        return c.toDataURL().slice(-50);
+      })(),
+      // WebGL fingerprint
+      gl ? (gl.getParameter(gl.RENDERER) + gl.getParameter(gl.VENDOR)) : 'no-webgl',
+    ].join('|');
+    
+    // Gerar hash SHA-256
+    const encoder = new TextEncoder();
+    const data = encoder.encode(info);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    return hashHex.substring(0, 32).toUpperCase(); // 32 chars
+  } catch (e) {
+    // Fallback simples
+    const fallback = navigator.userAgent + screen.width + screen.height + navigator.language;
+    let hash = 0;
+    for (let i = 0; i < fallback.length; i++) {
+      hash = ((hash << 5) - hash) + fallback.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash).toString(16).toUpperCase().padStart(32, '0');
+  }
+}
+
+function getDeviceIdSalvo() {
+  let deviceId = localStorage.getItem('bannerflix_device_id');
+  if (!deviceId) return null;
+  return deviceId;
+}
+
+async function obterOuGerarDeviceId() {
+  let deviceId = localStorage.getItem('bannerflix_device_id');
+  if (!deviceId) {
+    deviceId = await gerarDeviceId();
+    localStorage.setItem('bannerflix_device_id', deviceId);
+  }
+  return deviceId;
+}
+
 // Credenciais do BannerFlix
 const LICENSEAUTH_CONFIG = {
   appName: "BannerFllix",
