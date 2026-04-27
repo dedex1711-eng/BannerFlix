@@ -3307,7 +3307,7 @@ async function desenharFundoFutebol(ctx, w, h) {
   const imagensLocais = {
     'fut1': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut1.jpg',
     'fut2': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut2.jpg',
-    'fut3': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut3.jpg',
+    'fut3': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut3.png',
     'fut4': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut4.jpg',
     'fut5': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut5.jpg',
   };
