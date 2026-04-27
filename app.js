@@ -794,7 +794,7 @@ async function gerarBannerPromocional() {
   ctx.textAlign = 'center';
   ctx.fillText('Assista agora', textX, btnY + btnH*0.62);
 
-  // Faixa dispositivos
+  // Faixa inferior com contatos (substitui a seção de dispositivos)
   const faixaY = h * 0.68;
   const faixaH = h * 0.115;
   const fg = ctx.createLinearGradient(0, faixaY, w, faixaY);
@@ -805,18 +805,18 @@ async function gerarBannerPromocional() {
   ctx.fillStyle = fg;
   ctx.fillRect(0, faixaY, w, faixaH);
 
+  // Ícones dos dispositivos com título "ASSISTA EM QUALQUER DISPOSITIVO"
   ctx.font      = `700 ${formato === 'paisagem' ? w * 0.018 : w * 0.022}px Inter, sans-serif`;
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 10;
-  ctx.fillText('DISPONÍVEL PARA TODOS OS DISPOSITIVOS', w/2, faixaY + faixaH * 0.35);
+  ctx.fillText('ASSISTA EM QUALQUER DISPOSITIVO', w/2, faixaY + faixaH * 0.35);
   ctx.shadowBlur = 0;
 
-  // Ícones dos dispositivos
   const iconY    = faixaY + faixaH * 0.72;
-  const iconSize = formato === 'stories' ? faixaH * 0.30 : faixaH * 0.38; // Menor no Stories
+  const iconSize = formato === 'stories' ? faixaH * 0.30 : faixaH * 0.38;
   const devices  = ['LG','Roku','TCL','Samsung','Fire TV','Android TV','Mecool','Mi'];
-  const spacing  = formato === 'stories' ? iconSize * 1.8 : iconSize * 2.5; // Menos espaçamento no Stories
+  const spacing  = formato === 'stories' ? iconSize * 1.8 : iconSize * 2.5;
   const totalW   = devices.length * spacing;
   let   iconX    = w/2 - totalW/2;
   devices.forEach(name => {
@@ -824,10 +824,10 @@ async function gerarBannerPromocional() {
     iconX += spacing;
   });
 
-  // Logo (acima da faixa de dispositivos, centralizada)
+  // Logo (acima da faixa, centralizada)
   if (logoImg) {
-    const logoMaxW = w * 0.35; // Aumentado de 0.28 para 0.35
-    const logoMaxH = h * 0.13; // Aumentado de 0.10 para 0.13
+    const logoMaxW = w * 0.35;
+    const logoMaxH = h * 0.13;
     const ls = Math.min(logoMaxW/logoImg.width, logoMaxH/logoImg.height);
     const lw = logoImg.width*ls, lh = logoImg.height*ls;
     ctx.shadowColor = p.glow; ctx.shadowBlur = 30;
@@ -835,76 +835,27 @@ async function gerarBannerPromocional() {
     ctx.shadowBlur = 0;
   }
 
-  // Seção "ASSISTA EM QUALQUER DISPOSITIVO" (apenas para outros formatos, não Stories)
-  if (formato !== 'stories') {
-    const dispBoxW = w * 0.42;
-    const dispBoxH = h * 0.11;
-    const dispBoxX = w * 0.56;
-    const dispBoxY = h * 0.87;
-    
-    ctx.fillStyle = 'rgba(0,0,0,0.75)';
-    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-    ctx.lineWidth = 2;
-    roundRect(ctx, dispBoxX, dispBoxY, dispBoxW, dispBoxH, w * 0.012);
-    ctx.fill();
-    ctx.stroke();
-    
-    ctx.font = `700 ${w * 0.0135}px Inter, sans-serif`;
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.shadowColor = 'rgba(0,0,0,0.9)';
-    ctx.shadowBlur = 6;
-    ctx.fillText('ASSISTA EM QUALQUER DISPOSITIVO', dispBoxX + dispBoxW/2, dispBoxY + dispBoxH * 0.24);
-    ctx.shadowBlur = 0;
-    
-    const dispIconSize = dispBoxH * 0.38;
-    const dispDevices = ['TV SMART', 'TV BOX', 'PC/NOT', 'WHATSAPP', 'XBOX', 'CHROMECAST'];
-    
-    const totalIconsWidth = dispDevices.length * dispIconSize;
-    const availableSpace = dispBoxW - totalIconsWidth;
-    const dispSpacing = availableSpace / (dispDevices.length + 1);
-    
-    let dispIconX = dispBoxX + dispSpacing;
-    const dispIconY = dispBoxY + dispBoxH * 0.48;
-    
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    
-    dispDevices.forEach(device => {
-      const iconCenterX = dispIconX + dispIconSize / 2;
-      
-      desenharIconeDispositivoVisual(ctx, device, dispIconX, dispIconY, dispIconSize);
-      
-      ctx.font = `600 ${w * 0.0085}px Inter, sans-serif`;
-      ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      ctx.shadowColor = 'rgba(0,0,0,0.9)';
-      ctx.shadowBlur = 3;
-      ctx.fillText(device, iconCenterX, dispIconY + dispIconSize + w * 0.004);
-      
-      dispIconX += dispIconSize + dispSpacing;
-    });
-    
-    ctx.shadowBlur = 0;
-    ctx.textBaseline = 'alphabetic';
-  }
-
-  // Contatos (alinhados à esquerda)
+  // Caixa preta com ícones removida
   const whatsapp  = document.getElementById('inputWhatsapp').value.trim();
   const instagram = document.getElementById('inputInstagram').value.trim();
   const site      = document.getElementById('inputSite').value.trim();
+  const textoExtra = document.getElementById('inputTexto').value.trim();
   const mostrarSite = document.getElementById('checkMostrarSiteBanner').checked;
-  if (whatsapp || instagram || (site && mostrarSite)) {
-    const cSize = w * 0.028;
-    const cX = w * 0.08; // Posição à esquerda
+  
+  const contatos = [];
+  if (whatsapp)              contatos.push(`📱 ${whatsapp}`);
+  if (instagram)             contatos.push(`📸 ${instagram}`);
+  if (site && mostrarSite)   contatos.push(`🌐 ${site}`);
+  if (textoExtra)            contatos.push(`✨ ${textoExtra}`);
+  
+  if (contatos.length > 0) {
+    const cSize = w * 0.022;
     ctx.font = `700 ${cSize}px Inter, sans-serif`;
-    ctx.fillStyle = '#ffffff'; 
-    ctx.textAlign = 'left'; // Alinhamento à esquerda
-    ctx.shadowColor = 'rgba(0,0,0,0.9)'; 
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.9)';
     ctx.shadowBlur = 12;
-    let cy = h * 0.945;
-    if (site && mostrarSite) { ctx.fillText(`🌐 ${site}`, cX, cy); cy -= cSize*1.5; }
-    if (instagram) { ctx.fillText(`📸 ${instagram}`, cX, cy); cy -= cSize*1.5; }
-    if (whatsapp)  { ctx.fillText(`📱 ${whatsapp}`,  cX, cy); }
+    ctx.fillText(contatos.join('  •  '), w / 2, h * 0.955);
     ctx.shadowBlur = 0;
   }
 
@@ -1932,7 +1883,6 @@ async function buscarTodosJogosDoDia() {
   btn.innerHTML = '<span class="spinner"></span> Buscando...';
   container.innerHTML = '<div class="loading-state">🔄 Buscando jogos de todos os campeonatos...</div>';
   
-  // Todos os campeonatos disponíveis
   const todasLigas = [
     { id: 'BRA.1',  nome: 'Brasileirão Série A' },
     { id: 'BRA.2',  nome: 'Brasileirão Série B' },
@@ -1975,11 +1925,16 @@ async function buscarTodosJogosDoDia() {
     'FRA.1': ['CazéTV'], 'POR.1': ['ESPN'],
     'ARG.1': ['ESPN'],
   };
+
+  const traducaoStatus = {
+    'Scheduled': 'Agendado', 'In Progress': 'Ao Vivo',
+    'Final': 'Encerrado', 'Postponed': 'Adiado',
+    'Halftime': 'Intervalo', 'Full Time': 'Encerrado',
+  };
   
-  let todosJogosHtml = '';
-  let totalJogos = 0;
+  // Coletar todos os jogos em um array plano
+  let todosJogos = [];
   
-  // Buscar em paralelo (máx 5 por vez para não sobrecarregar)
   const chunks = [];
   for (let i = 0; i < todasLigas.length; i += 5) {
     chunks.push(todasLigas.slice(i, i + 5));
@@ -1998,68 +1953,75 @@ async function buscarTodosJogosDoDia() {
     for (const resultado of resultados) {
       if (resultado.status !== 'fulfilled') continue;
       const { liga, jogos } = resultado.value;
-      if (jogos.length === 0) continue;
       
-      // Cabeçalho da liga
-      todosJogosHtml += `<div class="liga-header-grupo">${liga.nome}</div>`;
-      
-      jogos.forEach((jogo, index) => {
+      jogos.forEach(jogo => {
         try {
           const timeCasa = jogo.competitions[0].competitors.find(c => c.homeAway === 'home');
           const timeVisitante = jogo.competitions[0].competitors.find(c => c.homeAway === 'away');
           const dataJogo = new Date(jogo.date);
           const horario = dataJogo.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-          const statusRaw = jogo.status.type.description;
-          const traducaoStatus = {
-            'Scheduled': 'Agendado', 'In Progress': 'Ao Vivo',
-            'Final': 'Encerrado', 'Postponed': 'Adiado',
-            'Halftime': 'Intervalo', 'Full Time': 'Encerrado',
-          };
-          const status = traducaoStatus[statusRaw] || statusRaw;
-          
+          const status = traducaoStatus[jogo.status.type.description] || jogo.status.type.description;
           const canaisDisponiveis = canaisPorLiga[liga.id] || ['ESPN'];
           const canal = canaisDisponiveis[Math.floor(Math.random() * canaisDisponiveis.length)];
           
-          const jogoData = JSON.stringify({
-            id: `${liga.id}_${jogo.id}`,
+          todosJogos.push({
+            timestamp: dataJogo.getTime(), // Para ordenação
+            horario, status, liga: liga.nome, canal,
             timeCasa: timeCasa.team.displayName,
             timeVisitante: timeVisitante.team.displayName,
-            horario, status, liga: liga.nome,
             logoCasa: timeCasa.team.logo || '',
             logoVisitante: timeVisitante.team.logo || '',
-            canal
+            id: `${liga.id}_${jogo.id}`,
           });
-          
-          todosJogosHtml += `
-            <div class="jogo-api-item" onclick="toggleJogoSelecionado(${totalJogos}, this)" data-jogo='${jogoData}'>
-              <div class="jogo-api-header">
-                <div class="jogo-api-data">${horario}</div>
-                <div class="jogo-api-status">${status}</div>
-              </div>
-              <div class="jogo-api-times">
-                <div class="jogo-api-time">
-                  <div class="jogo-api-logo">${timeCasa.team.logo ? `<img src="${timeCasa.team.logo}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}</div>
-                  <div class="jogo-api-nome">${timeCasa.team.displayName}</div>
-                </div>
-                <div class="jogo-api-vs">VS</div>
-                <div class="jogo-api-time">
-                  <div class="jogo-api-logo">${timeVisitante.team.logo ? `<img src="${timeVisitante.team.logo}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}</div>
-                  <div class="jogo-api-nome">${timeVisitante.team.displayName}</div>
-                </div>
-              </div>
-              <div class="jogo-api-transmissao">📺 ${canal}</div>
-            </div>`;
-          totalJogos++;
         } catch(e) { /* jogo inválido */ }
       });
     }
   }
   
-  if (totalJogos === 0) {
+  // Ordenar por horário (mais cedo primeiro)
+  todosJogos.sort((a, b) => a.timestamp - b.timestamp);
+  
+  if (todosJogos.length === 0) {
     container.innerHTML = '<div class="empty-state">Nenhum jogo encontrado para hoje</div>';
   } else {
-    container.innerHTML = todosJogosHtml;
-    showToast(`✅ ${totalJogos} jogos encontrados hoje!`);
+    // Renderizar ordenado por horário
+    let html = '';
+    todosJogos.forEach((jogo, index) => {
+      const jogoData = JSON.stringify({
+        id: jogo.id,
+        timeCasa: jogo.timeCasa,
+        timeVisitante: jogo.timeVisitante,
+        horario: jogo.horario,
+        status: jogo.status,
+        liga: jogo.liga,
+        logoCasa: jogo.logoCasa,
+        logoVisitante: jogo.logoVisitante,
+        canal: jogo.canal,
+      });
+      
+      html += `
+        <div class="jogo-api-item" onclick="toggleJogoSelecionado(${index}, this)" data-jogo='${jogoData}'>
+          <div class="jogo-api-header">
+            <div class="jogo-api-data">${jogo.horario}</div>
+            <div class="jogo-api-status">${jogo.status}</div>
+          </div>
+          <div class="jogo-api-times">
+            <div class="jogo-api-time">
+              <div class="jogo-api-logo">${jogo.logoCasa ? `<img src="${jogo.logoCasa}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}</div>
+              <div class="jogo-api-nome">${jogo.timeCasa}</div>
+            </div>
+            <div class="jogo-api-vs">VS</div>
+            <div class="jogo-api-time">
+              <div class="jogo-api-logo">${jogo.logoVisitante ? `<img src="${jogo.logoVisitante}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}</div>
+              <div class="jogo-api-nome">${jogo.timeVisitante}</div>
+            </div>
+          </div>
+          <div class="jogo-api-transmissao">📺 ${jogo.canal} • ${jogo.liga}</div>
+        </div>`;
+    });
+    
+    container.innerHTML = html;
+    showToast(`✅ ${todosJogos.length} jogos encontrados hoje!`);
     atualizarBotaoSelecionarTodos();
   }
   
