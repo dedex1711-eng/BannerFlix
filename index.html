@@ -562,57 +562,19 @@
 
           <!-- Cores do Banner de Futebol (só aparece na aba futebol) -->
           <div id="coresFutebolOpcoes" style="display:none;">
-            <h3>🎨 Cores do Banner</h3>
-            
-            <!-- Cor do Destaque -->
-            <div style="margin-bottom:14px;">
-              <label style="font-size:0.8rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:8px;">Cor do DESTAQUES</label>
-              <div class="cor-selector" id="corDestaque">
-                <div class="cor-opt active" data-cor="#F77F30" style="background:#F77F30;" onclick="selecionarCor('destaque','#F77F30',this)"></div>
-                <div class="cor-opt" data-cor="#E14760" style="background:#E14760;" onclick="selecionarCor('destaque','#E14760',this)"></div>
-                <div class="cor-opt" data-cor="#ffffff" style="background:#ffffff;" onclick="selecionarCor('destaque','#ffffff',this)"></div>
-                <div class="cor-opt" data-cor="#FFD700" style="background:#FFD700;" onclick="selecionarCor('destaque','#FFD700',this)"></div>
-                <div class="cor-opt" data-cor="#00FF87" style="background:#00FF87;" onclick="selecionarCor('destaque','#00FF87',this)"></div>
-                <div class="cor-opt" data-cor="#00BFFF" style="background:#00BFFF;" onclick="selecionarCor('destaque','#00BFFF',this)"></div>
-                <div class="cor-opt" data-cor="#FF4500" style="background:#FF4500;" onclick="selecionarCor('destaque','#FF4500',this)"></div>
-                <div class="cor-opt" data-cor="#9D2BBD" style="background:#9D2BBD;" onclick="selecionarCor('destaque','#9D2BBD',this)"></div>
-                <div class="cor-opt" data-cor="#FF69B4" style="background:#FF69B4;" onclick="selecionarCor('destaque','#FF69B4',this)"></div>
-                <div class="cor-opt" data-cor="#C0C0C0" style="background:#C0C0C0;" onclick="selecionarCor('destaque','#C0C0C0',this)"></div>
-              </div>
-            </div>
-
-            <!-- Cor da Hora -->
-            <div style="margin-bottom:14px;">
-              <label style="font-size:0.8rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:8px;">Cor da Hora</label>
-              <div class="cor-selector" id="corHora">
-                <div class="cor-opt active" data-cor="#F77F30" style="background:#F77F30;" onclick="selecionarCor('hora','#F77F30',this)"></div>
-                <div class="cor-opt" data-cor="#E14760" style="background:#E14760;" onclick="selecionarCor('hora','#E14760',this)"></div>
-                <div class="cor-opt" data-cor="#ffffff" style="background:#ffffff;" onclick="selecionarCor('hora','#ffffff',this)"></div>
-                <div class="cor-opt" data-cor="#FFD700" style="background:#FFD700;" onclick="selecionarCor('hora','#FFD700',this)"></div>
-                <div class="cor-opt" data-cor="#00FF87" style="background:#00FF87;" onclick="selecionarCor('hora','#00FF87',this)"></div>
-                <div class="cor-opt" data-cor="#00BFFF" style="background:#00BFFF;" onclick="selecionarCor('hora','#00BFFF',this)"></div>
-                <div class="cor-opt" data-cor="#FF4500" style="background:#FF4500;" onclick="selecionarCor('hora','#FF4500',this)"></div>
-                <div class="cor-opt" data-cor="#9D2BBD" style="background:#9D2BBD;" onclick="selecionarCor('hora','#9D2BBD',this)"></div>
-                <div class="cor-opt" data-cor="#FF69B4" style="background:#FF69B4;" onclick="selecionarCor('hora','#FF69B4',this)"></div>
-                <div class="cor-opt" data-cor="#C0C0C0" style="background:#C0C0C0;" onclick="selecionarCor('hora','#C0C0C0',this)"></div>
-              </div>
-            </div>
-
-            <!-- Cor da Liga -->
-            <div style="margin-bottom:14px;">
-              <label style="font-size:0.8rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:8px;">Cor da Liga</label>
-              <div class="cor-selector" id="corLiga">
-                <div class="cor-opt active" data-cor="#F77F30" style="background:#F77F30;" onclick="selecionarCor('liga','#F77F30',this)"></div>
-                <div class="cor-opt" data-cor="#E14760" style="background:#E14760;" onclick="selecionarCor('liga','#E14760',this)"></div>
-                <div class="cor-opt" data-cor="#ffffff" style="background:#ffffff;" onclick="selecionarCor('liga','#ffffff',this)"></div>
-                <div class="cor-opt" data-cor="#FFD700" style="background:#FFD700;" onclick="selecionarCor('liga','#FFD700',this)"></div>
-                <div class="cor-opt" data-cor="#00FF87" style="background:#00FF87;" onclick="selecionarCor('liga','#00FF87',this)"></div>
-                <div class="cor-opt" data-cor="#00BFFF" style="background:#00BFFF;" onclick="selecionarCor('liga','#00BFFF',this)"></div>
-                <div class="cor-opt" data-cor="#FF4500" style="background:#FF4500;" onclick="selecionarCor('hora','#FF4500',this)"></div>
-                <div class="cor-opt" data-cor="#9D2BBD" style="background:#9D2BBD;" onclick="selecionarCor('liga','#9D2BBD',this)"></div>
-                <div class="cor-opt" data-cor="#FF69B4" style="background:#FF69B4;" onclick="selecionarCor('liga','#FF69B4',this)"></div>
-                <div class="cor-opt" data-cor="#C0C0C0" style="background:#C0C0C0;" onclick="selecionarCor('liga','#C0C0C0',this)"></div>
-              </div>
+            <h3>🎨 Cor de Destaque</h3>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px;">Altera DESTAQUES, Hora e Liga</p>
+            <div class="cor-selector" id="corFutebolUnica">
+              <div class="cor-opt active" data-cor="#F77F30" style="background:#F77F30;" onclick="selecionarCorFutebol('#F77F30',this)"></div>
+              <div class="cor-opt" data-cor="#E14760" style="background:#E14760;" onclick="selecionarCorFutebol('#E14760',this)"></div>
+              <div class="cor-opt" data-cor="#ffffff" style="background:#ffffff;" onclick="selecionarCorFutebol('#ffffff',this)"></div>
+              <div class="cor-opt" data-cor="#FFD700" style="background:#FFD700;" onclick="selecionarCorFutebol('#FFD700',this)"></div>
+              <div class="cor-opt" data-cor="#00FF87" style="background:#00FF87;" onclick="selecionarCorFutebol('#00FF87',this)"></div>
+              <div class="cor-opt" data-cor="#00BFFF" style="background:#00BFFF;" onclick="selecionarCorFutebol('#00BFFF',this)"></div>
+              <div class="cor-opt" data-cor="#FF4500" style="background:#FF4500;" onclick="selecionarCorFutebol('#FF4500',this)"></div>
+              <div class="cor-opt" data-cor="#9D2BBD" style="background:#9D2BBD;" onclick="selecionarCorFutebol('#9D2BBD',this)"></div>
+              <div class="cor-opt" data-cor="#FF69B4" style="background:#FF69B4;" onclick="selecionarCorFutebol('#FF69B4',this)"></div>
+              <div class="cor-opt" data-cor="#C0C0C0" style="background:#C0C0C0;" onclick="selecionarCorFutebol('#C0C0C0',this)"></div>
             </div>
           </div>
 

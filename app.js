@@ -685,8 +685,8 @@ async function gerarBannerPromocional() {
       ctx.shadowBlur  = 30;
       ctx.shadowOffsetX = 6; ctx.shadowOffsetY = 6;
       
-      // Borda dourada (mesma cor do texto ASSISTA)
-      ctx.strokeStyle = '#ffd700';
+      // Borda com cor de destaque (mesma cor do texto ASSISTA)
+      ctx.strokeStyle = corDestaqueFilme;
       ctx.lineWidth   = Math.max(4, w * 0.005);
       ctx.strokeRect(posterX-2, posterY-2, posterW+4, posterH+4);
       
@@ -746,12 +746,12 @@ async function gerarBannerPromocional() {
   roundRect(ctx, btnX, btnY, btnW, btnH, btnH/2); 
   ctx.fill();
 
-  // Círculo play com gradiente dourado (por cima do fundo branco, no lado esquerdo)
+  // Círculo play com gradiente da cor de destaque
   const circX = btnX + circR;
   const circY = btnY + btnH / 2;
   const cg = ctx.createRadialGradient(circX-circR*0.25, circY-circR*0.25, 0, circX, circY, circR);
-  cg.addColorStop(0, '#ffe066'); // Dourado claro
-  cg.addColorStop(1, '#ffd700'); // Dourado (mesma cor do ASSISTA)
+  cg.addColorStop(0, corDestaqueFilme + 'cc'); // Cor mais clara
+  cg.addColorStop(1, corDestaqueFilme);
   ctx.fillStyle = cg;
   ctx.beginPath(); 
   ctx.arc(circX, circY, circR, 0, Math.PI*2); 
@@ -942,7 +942,7 @@ function desenharTextos(ctx, cw, ch) {
   
   const titleSize = titleSizeBase;
   ctx.font        = `900 ${titleSize}px Inter, sans-serif`;
-  ctx.fillStyle   = '#ffffff';
+  ctx.fillStyle   = corDestaqueFilme; // Cor de destaque configurável
   ctx.shadowColor = 'rgba(0,0,0,0.8)';
   ctx.shadowBlur  = 20;
 
@@ -1792,10 +1792,13 @@ let corDestaqueFilme = '#F77F30';
 function selecionarCorFilme(cor, el) {
   corDestaqueFilme = cor;
   
-  // Atualizar visual em ambos os seletores
+  // Atualizar visual — remover active de todos e marcar o clicado
   document.querySelectorAll('#corDestaqueFilme .cor-opt, #corDestaqueFilmePromo .cor-opt').forEach(o => o.classList.remove('active'));
-  // Marcar todos os elementos com a mesma cor
-  document.querySelectorAll(`#corDestaqueFilme .cor-opt[data-cor="${cor}"], #corDestaqueFilmePromo .cor-opt[data-cor="${cor}"]`).forEach(o => o.classList.add('active'));
+  el.classList.add('active');
+  // Sincronizar o mesmo cor no outro seletor
+  document.querySelectorAll(`#corDestaqueFilme .cor-opt, #corDestaqueFilmePromo .cor-opt`).forEach(o => {
+    if (o.getAttribute('data-cor') === cor) o.classList.add('active');
+  });
   
   // Regenerar banner
   if (filmeAtual) gerarBanner(false);
@@ -1807,6 +1810,19 @@ function selecionarCor(tipo, cor, el) {
   // Atualizar visual — remover active do grupo e adicionar no clicado
   const grupoId = tipo === 'destaque' ? 'corDestaque' : tipo === 'hora' ? 'corHora' : 'corLiga';
   document.querySelectorAll(`#${grupoId} .cor-opt`).forEach(o => o.classList.remove('active'));
+  el.classList.add('active');  
+  // Regenerar banner se houver jogos
+  if (jogosSelecionados.length > 0) gerarBannerAtual();
+}
+
+// Altera as 3 cores do futebol de uma vez
+function selecionarCorFutebol(cor, el) {
+  coresFutebol.destaque = cor;
+  coresFutebol.hora     = cor;
+  coresFutebol.liga     = cor;
+  
+  // Atualizar visual
+  document.querySelectorAll('#corFutebolUnica .cor-opt').forEach(o => o.classList.remove('active'));
   el.classList.add('active');
   
   // Regenerar banner se houver jogos
@@ -2317,6 +2333,9 @@ function atualizarJogosSelecionados() {
   
   // Atualizar botão "Selecionar Todos"
   atualizarBotaoSelecionarTodos();
+  
+  // Gerar resumo em tempo real com todos os jogos selecionados
+  gerarResumoFutebol();
 }
 
 function removerJogoSelecionado(index) {
