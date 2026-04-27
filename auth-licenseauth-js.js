@@ -83,7 +83,6 @@ let LicenseAuthApp = null;
 function inicializarLicenseAuth() {
   try {
     if (typeof LicenseAuth === 'undefined') {
-      console.error('❌ Biblioteca LicenseAuth não carregada!');
       mostrarErro('loginErro', 'Erro ao carregar sistema de autenticação');
       return false;
     }
@@ -95,10 +94,8 @@ function inicializarLicenseAuth() {
       LICENSEAUTH_CONFIG.version
     );
 
-    console.log('✅ LicenseAuth inicializado com sucesso');
     return true;
   } catch (err) {
-    console.error('❌ Erro ao inicializar LicenseAuth:', err);
     return false;
   }
 }
@@ -125,11 +122,9 @@ async function fazerLoginComChave() {
     }
 
     // Tenta fazer login com a chave
-    console.log('🔑 Tentando login com chave:', licenseKey);
 
     // Usar o método de login do LicenseAuth
     LicenseAuthApp.login(licenseKey, (response) => {
-      console.log('📨 Resposta do LicenseAuth:', response);
 
       if (response.success) {
         // Sucesso! Pega os dados do usuário
@@ -177,7 +172,6 @@ async function fazerLoginComChave() {
         localStorage.setItem('bannerflix_user', JSON.stringify(usuarioAtual));
         localStorage.setItem('bannerflix_token', usuarioAtual.token);
 
-        console.log('✅ Login realizado com sucesso!', usuarioAtual);
 
         // Atualiza interface
         atualizarNavbar();
@@ -199,7 +193,6 @@ async function fazerLoginComChave() {
 
         setBtnLoading('btnLoginChave', false, 'Entrar');
       } else {
-        console.error('❌ Erro no login:', response.message);
         mostrarErro('loginErro', response.message || 'Chave de licença inválida');
         setBtnLoading('btnLoginChave', false, 'Entrar');
       }
@@ -207,7 +200,6 @@ async function fazerLoginComChave() {
 
   } catch (err) {
     setBtnLoading('btnLoginChave', false, 'Entrar');
-    console.error('❌ Erro no login:', err);
     mostrarErro('loginErro', 'Erro de conexão. Verifique sua internet.');
   }
 }
@@ -221,7 +213,6 @@ function carregarPerfilDoUsuario(userData) {
   if (perfilJson) {
     try {
       const data = JSON.parse(perfilJson);
-      console.log('✅ Perfil carregado do localStorage:', data);
 
       const set = (id, val) => {
         const el = document.getElementById(id);
@@ -243,7 +234,6 @@ function carregarPerfilDoUsuario(userData) {
       }
       return;
     } catch (err) {
-      console.error('❌ Erro ao carregar perfil do localStorage:', err);
     }
   }
 
@@ -388,7 +378,6 @@ window.addEventListener('load', () => {
         fazerLogout();
       }
     } catch (err) {
-      console.error('Erro ao carregar usuário salvo:', err);
       fazerLogout();
     }
   }
@@ -397,7 +386,6 @@ window.addEventListener('load', () => {
   const btnAbrirAuth = document.getElementById('btnAbrirAuth');
   if (btnAbrirAuth) {
     btnAbrirAuth.addEventListener('click', () => {
-      console.log('🔵 Botão Entrar clicado');
       abrirModal('login');
     });
   }
@@ -454,7 +442,6 @@ function showToast(msg) {
   if (typeof window.showToast === 'function') {
     window.showToast(msg);
   } else {
-    console.log(msg);
   }
 }
 
@@ -470,20 +457,16 @@ function mostrarModalSemCreditos() {
 }
 
 function abrirModal(tipo) {
-  console.log('🔵 abrirModal chamado com tipo:', tipo);
   fecharTodosModais();
   if (tipo === 'login' || tipo === 'cadastro') {
     const modal = document.getElementById('modalAuth');
     if (!modal) {
-      console.error('❌ Modal modalAuth não encontrado');
       return;
     }
     modal.classList.add('open');
-    console.log('✅ Modal aberto');
   } else if (tipo === 'perfil') {
     const modal = document.getElementById('modalPerfil');
     if (!modal) {
-      console.error('❌ Modal modalPerfil não encontrado');
       return;
     }
     modal.classList.add('open');
@@ -620,7 +603,6 @@ function perfilRemoverLogo() {
 
 // ===== PERFIL — SALVAR =====
 async function salvarPerfil() {
-  console.log('🔵 salvarPerfil iniciado');
   if (!usuarioAtual) {
     mostrarErro('perfilErro', 'Você precisa estar logado.');
     return;
@@ -636,14 +618,12 @@ async function salvarPerfil() {
   const mostrar_site_banner = document.getElementById('perfilCheckMostrarSiteBanner')?.checked ?? true;
   const texto = document.getElementById('perfilTexto')?.value.trim() || '';
 
-  console.log('📝 Dados:', { nome, whatsapp, instagram, site, mostrar_site_banner, texto, temLogo: !!perfilLogoFile });
 
   let logo_url = null;
 
   try {
     // Converte e comprime logo para base64
     if (perfilLogoFile) {
-      console.log('📤 Convertendo e comprimindo logo...');
       logo_url = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = e => {
@@ -677,20 +657,16 @@ async function salvarPerfil() {
         reader.onerror = reject;
         reader.readAsDataURL(perfilLogoFile);
       });
-      console.log('✅ Logo comprimida (tamanho:', logo_url.length, 'chars)');
     } else {
       const logoPreview = document.getElementById('logoPreview');
       if (logoPreview && logoPreview.src && logoPreview.src !== window.location.href) {
         logo_url = logoPreview.src;
-        console.log('ℹ️ Mantendo logo existente da tela');
       } else {
         logo_url = null;
-        console.log('ℹ️ Sem logo');
       }
     }
 
     // Salva LOCALMENTE no navegador
-    console.log('💾 Salvando perfil no localStorage...');
     const perfil = {
       userId: usuarioAtual.id,
       email: usuarioAtual.email,
@@ -705,7 +681,6 @@ async function salvarPerfil() {
     };
 
     localStorage.setItem('bannerflix_perfil_' + usuarioAtual.id, JSON.stringify(perfil));
-    console.log('✅ Perfil salvo no localStorage!');
 
     // Atualiza campos na tela principal
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
@@ -733,7 +708,6 @@ async function salvarPerfil() {
     showToast('✅ Perfil salvo!');
 
   } catch (err) {
-    console.error('❌ Erro inesperado:', err);
     mostrarErro('perfilErro', 'Erro inesperado: ' + err.message);
     setBtnLoading('btnSalvarPerfil', false, '💾 Salvar Perfil');
   }
@@ -764,7 +738,6 @@ async function carregarLogoDeUrl(url) {
       resolve();
     };
     img.onerror = () => {
-      console.error('Erro ao carregar logo:', url);
       resolve();
     };
     img.src = url;

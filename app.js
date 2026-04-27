@@ -83,7 +83,6 @@ async function buscarFilme() {
 
   } catch (err) {
     resultsDiv.innerHTML = '<p style="color:#ef4444;font-size:0.85rem;padding:8px 0;">Erro ao buscar. Verifique sua conexão.</p>';
-    console.error(err);
   } finally {
     btn.disabled = false;
     btn.innerHTML = '🔍 Buscar';
@@ -199,7 +198,6 @@ async function buscarResumo(item) {
         trailerUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
       }
     } catch (err) {
-      console.log('Erro ao buscar trailer:', err);
     }
 
     resumoAtual = { overview, genres, tagline, rating, runtime, seasons, type: item.media_type, trailerUrl };
@@ -223,7 +221,6 @@ async function buscarResumo(item) {
   } catch (err) {
     textoEl.contentEditable = 'true';
     textoEl.textContent = 'Não foi possível carregar o resumo. Escreva sua descrição aqui.';
-    console.error(err);
   }
 }
 
@@ -431,33 +428,27 @@ async function gerarBannerFinal() {
 
 // ===== GERAR BANNER =====
 async function gerarBanner(verificarCredito = false) {
-  console.log('🎨 gerarBanner chamada, filmeAtual:', filmeAtual, 'verificarCredito:', verificarCredito);
   
   if (!filmeAtual) { 
-    console.log('❌ Nenhum filme selecionado');
     showToast('Selecione um filme primeiro'); 
     return; 
   }
 
   // Só verifica créditos quando for realmente gerar (botão "Gerar Banner")
   if (verificarCredito) {
-    console.log('🔍 Verificando créditos...');
     if (typeof verificarCreditos === 'function') {
       try {
         const { temCredito } = await verificarCreditos();
-        console.log('💳 Tem crédito:', temCredito);
         if (!temCredito) {
           mostrarModalSemCreditos();
           return;
         }
       } catch (error) {
-        console.log('⚠️ Erro ao verificar créditos, continuando...', error);
       }
     }
   }
 
   const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
-  console.log('🎭 Template selecionado:', template);
 
   // Alterna painel de opções conforme template
   const overlayOpcoes = document.getElementById('overlayOpcoes');
@@ -466,44 +457,36 @@ async function gerarBanner(verificarCredito = false) {
   if (overlayOpcoes) overlayOpcoes.style.display = template === 'simples' ? 'block' : 'none';
   if (fundoPromoOpcoes) fundoPromoOpcoes.style.display = template === 'promocional' ? 'block' : 'none';
 
-  console.log('🚀 Iniciando geração do banner...');
   
   try {
     // Gera o banner
     if (template === 'promocional') {
-      console.log('🍿 Gerando banner promocional...');
       await gerarBannerPromocional();
     } else {
-      console.log('🎬 Gerando banner simples...');
       await gerarBannerSimples();
     }
     
     // Só consome crédito quando for geração final (botão "Gerar Banner")
     if (verificarCredito) {
-      console.log('✅ Banner gerado com sucesso - consumindo crédito');
       if (typeof consumirCredito === 'function') {
         await consumirCredito();
       }
     } else {
-      console.log('✅ Preview atualizado');
     }
     
   } catch (error) {
-    console.error('❌ Erro ao gerar banner:', error);
     showToast('❌ Erro ao gerar banner: ' + error.message);
   }
 }
 
 // ===== GERAR BANNER SIMPLES =====
 async function gerarBannerSimples() {
-  console.log('🎬 gerarBannerSimples iniciada');
   
   const { w, h } = getDimensoes();
   const canvas   = document.getElementById('bannerCanvas');
   const ctx      = canvas.getContext('2d');
   
   if (!canvas || !ctx) {
-    console.error('❌ Canvas ou contexto não encontrado');
     return;
   }
   
@@ -521,11 +504,9 @@ async function gerarBannerSimples() {
     ? (filmeAtual.backdropPath || filmeAtual.posterPath)
     : (filmeAtual.posterPath   || filmeAtual.backdropPath);
 
-  console.log('🖼️ URL da imagem:', imgUrl);
 
   if (!imgUrl) {
     // Sem imagem - fundo sólido
-    console.log('⚠️ Sem imagem, usando fundo sólido');
     ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, w, h);
     desenharTextos(ctx, w, h);
@@ -534,17 +515,13 @@ async function gerarBannerSimples() {
   }
 
   try {
-    console.log('📥 Carregando imagem...');
     const bgImg = await carregarImagem(imgUrl);
-    console.log('✅ Imagem carregada:', bgImg.width, 'x', bgImg.height);
     
     // Desenha fundo
     desenharCover(ctx, bgImg, w, h);
-    console.log('🎨 Fundo desenhado');
 
     // Overlay
     const overlay = getOverlayStyle();
-    console.log('🎭 Overlay:', overlay);
     
     if (overlay && overlay !== 'none') {
       const grad = ctx.createLinearGradient(0, h * 0.3, 0, h);
@@ -561,25 +538,19 @@ async function gerarBannerSimples() {
       ctx.fillStyle = gradTop;
       ctx.fillRect(0, 0, w, h);
       
-      console.log('🎨 Overlay aplicado');
     }
 
     // Logo
     if (logoImg) {
-      console.log('🏷️ Desenhando logo...');
       desenharLogo(ctx, w, h);
     }
 
     // Textos
-    console.log('📝 Desenhando textos...');
     desenharTextos(ctx, w, h);
 
-    console.log('✅ Banner simples gerado');
     finalizarBanner();
     
   } catch (err) {
-    console.error('❌ Erro ao carregar imagem:', err);
-    console.log('🔄 Usando fallback com fundo sólido');
     
     // Fallback - fundo sólido
     ctx.fillStyle = '#1a1a2e';
@@ -608,7 +579,6 @@ async function finalizarBanner() {
   document.getElementById('previewActions').style.display = 'flex';
   
   // Não consome crédito aqui - será consumido apenas no botão "Gerar Banner"
-  console.log('✅ Banner finalizado (preview)');
 }
 
 // ===== GERAR BANNER PROMOCIONAL =====
@@ -663,7 +633,6 @@ async function gerarBannerPromocional() {
         ctx.fillRect(0, 0, w, h);
       }
     } catch(e) {
-      console.log('Erro ao carregar imagem de fundo:', e);
       // Fallback para roxo
       const grad = ctx.createLinearGradient(0, 0, 0, h);
       grad.addColorStop(0, '#0d0618');
@@ -724,7 +693,7 @@ async function gerarBannerPromocional() {
       ctx.drawImage(posterImg, posterX, posterY, posterW, posterH);
       ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
     }
-  } catch(e) { console.log('poster err', e); }
+  } catch(e) { /* erro ao carregar poster */ }
 
   // Pipoca (movida para cima, antes do texto ASSISTA)
   ctx.font = `${w * 0.13}px serif`;
@@ -1536,7 +1505,6 @@ async function buscarTrailer() {
     showToast('✅ Trailer encontrado!');
     
   } catch (err) {
-    console.error('Erro ao buscar trailer:', err);
     mostrarErroTrailer();
   }
 }
@@ -1842,7 +1810,6 @@ async function processarVideo() {
     video.onseeked = renderFrame;
     
   } catch (err) {
-    console.error('Erro ao processar vídeo:', err);
     showToast('❌ Erro ao processar vídeo: ' + err.message);
     progressDiv.style.display = 'none';
     btnProcessar.disabled = false;
@@ -2111,7 +2078,6 @@ async function buscarJogosFutebol() {
     atualizarBotaoSelecionarTodos();
     
   } catch (error) {
-    console.error('Erro ao buscar jogos:', error);
     container.innerHTML = '<div class="error-state">❌ Erro ao carregar jogos. Tente novamente.</div>';
   }
 }
@@ -2233,7 +2199,6 @@ function selecionarTodosJogos() {
         const jogoData = JSON.parse(el.getAttribute('data-jogo'));
         jogosSelecionados.push(jogoData);
       } catch (error) {
-        console.error('Erro ao extrair dados do jogo:', error);
       }
     });
     
@@ -2253,7 +2218,6 @@ function selecionarTodosJogos() {
     // Mostrar toast com quantidade selecionada
     showToast(`✅ ${jogosSelecionados.length} jogos selecionados!`);
     
-    console.log('Todos os jogos selecionados:', jogosSelecionados);
   }
   
   // Atualizar texto do botão
@@ -2345,8 +2309,6 @@ function gerarResumoFutebol() {
 }
 
 function gerarBannerFutebol() {
-  console.log('gerarBannerFutebol chamada');
-  console.log('Jogos selecionados:', jogosSelecionados.length);
   
   if (jogosSelecionados.length === 0) {
     alert('Selecione pelo menos um jogo!');
@@ -2355,10 +2317,8 @@ function gerarBannerFutebol() {
   
   // Se tiver mais de 5 jogos, dividir em grupos
   if (jogosSelecionados.length > 5) {
-    console.log('Mais de 5 jogos selecionados, gerando múltiplas imagens...');
     gerarMultiplosBannersFutebol();
   } else {
-    console.log('Iniciando geração do canvas...');
     // Gerar banner com os jogos selecionados
     gerarBannerFutebolCanvas(jogosSelecionados);
   }
@@ -2373,7 +2333,6 @@ async function gerarMultiplosBannersFutebol() {
       gruposDeJogos.push(jogosSelecionados.slice(i, i + 5));
     }
     
-    console.log(`Gerando ${gruposDeJogos.length} banners para ${jogosSelecionados.length} jogos`);
     
     // Mostrar mensagem de progresso
     showToast(`Gerando ${gruposDeJogos.length} banners com ${jogosSelecionados.length} jogos...`, 3000);
@@ -2384,7 +2343,6 @@ async function gerarMultiplosBannersFutebol() {
     // Gerar cada banner
     for (let i = 0; i < gruposDeJogos.length; i++) {
       const grupo = gruposDeJogos[i];
-      console.log(`Gerando banner ${i + 1}/${gruposDeJogos.length} com ${grupo.length} jogos`);
       
       // Criar um canvas temporário para este grupo
       const canvas = await gerarBannerFutebolCanvasMultiplo(grupo, i + 1, gruposDeJogos.length);
@@ -2427,7 +2385,6 @@ async function gerarMultiplosBannersFutebol() {
     showToast(`✅ ${gruposDeJogos.length} banners gerados com sucesso!`, 4000);
     
   } catch (error) {
-    console.error('Erro ao gerar múltiplos banners:', error);
     showToast('❌ Erro ao gerar banners múltiplos');
   }
 }
@@ -2492,13 +2449,10 @@ async function gerarBannerFutebolCanvasMultiplo(jogos, numeroBanner, totalBanner
   // Carregar todas as imagens primeiro
   const imagensCarregadas = await carregarImagensDosTimes(jogos);
   
-  console.log(`Total de jogos recebidos: ${jogos.length}`);
-  console.log('Jogos:', jogos.map(j => `${j.timeCasa} x ${j.timeVisitante}`));
   
   for (let i = 0; i < jogos.length && i < 5; i++) {
     const jogo = jogos[i];
     
-    console.log(`Desenhando jogo ${i + 1}/5:`, jogo.timeCasa, 'x', jogo.timeVisitante);
     
     // Fundo do jogo com bordas arredondadas
     ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
@@ -2638,9 +2592,7 @@ async function desenharLogoUsuarioCanvas(ctx, w, h) {
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
       
-      console.log('Logo do usuário desenhada no canvas');
     } catch (error) {
-      console.log('Erro ao desenhar logo do usuário:', error);
     }
   }
 }
@@ -2794,21 +2746,17 @@ function proximoBanner() {
 }
 
 async function gerarBannerFutebolCanvas(jogos) {
-  console.log('gerarBannerFutebolCanvas iniciada com jogos:', jogos);
   
   try {
     const canvas = document.getElementById('bannerCanvas');
     const ctx = canvas.getContext('2d');
     
-    console.log('Canvas encontrado:', canvas);
-    console.log('Context obtido:', ctx);
     
     // Configurar dimensões
     const { w, h } = getDimensoes();
     canvas.width = w;
     canvas.height = h;
     
-    console.log('Dimensões configuradas:', w, 'x', h);
     
     // Fundo baseado no template selecionado
     const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
@@ -2824,7 +2772,6 @@ async function gerarBannerFutebolCanvas(jogos) {
     // Marca d'água da logo (por cima do fundo, abaixo dos textos)
     await desenharMarcaDagua(ctx, w, h);
     
-    console.log('Fundo desenhado');
     
     // Título "DESTAQUES"
     ctx.fillStyle = coresFutebol.destaque; // Laranja
@@ -2835,7 +2782,6 @@ async function gerarBannerFutebolCanvas(jogos) {
     ctx.fillText('DESTAQUES', w/2, h * 0.10); // Movido de 0.12 para 0.10
     ctx.shadowBlur = 0;
     
-    console.log('Título desenhado');
     
     // Data
     const hoje = new Date();
@@ -2848,7 +2794,6 @@ async function gerarBannerFutebolCanvas(jogos) {
     ctx.fillStyle = '#ffffff'; // Branco
     ctx.fillText(`DA RODADA - ${dataFormatada.toUpperCase()}`, w/2, h * 0.14); // Movido de 0.16 para 0.14
     
-    console.log('Data desenhada');
     
     // Desenhar jogos
     let yPos = h * 0.18; // Movido de 0.22 para 0.18
@@ -2861,7 +2806,6 @@ async function gerarBannerFutebolCanvas(jogos) {
     for (let i = 0; i < jogos.length && i < 5; i++) {
       const jogo = jogos[i];
       
-      console.log('Desenhando jogo:', i, jogo);
       
       // Fundo do jogo com bordas arredondadas
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
@@ -2930,7 +2874,6 @@ async function gerarBannerFutebolCanvas(jogos) {
       yPos += jogoHeight + jogoSpacing;
     }
     
-    console.log('Jogos desenhados');
     
     // Logo do usuário no canto superior esquerdo
     await desenharLogoUsuario(ctx, w, h);
@@ -2966,7 +2909,6 @@ async function gerarBannerFutebolCanvas(jogos) {
       
       ctx.fillText(contatos.join('  •  '), w/2, h * 0.92);
       ctx.shadowBlur = 0;
-      console.log('Contatos desenhados');
     }
     
     // Mostrar canvas
@@ -2977,13 +2919,11 @@ async function gerarBannerFutebolCanvas(jogos) {
     // Marcar banner como gerado para permitir download
     bannerGerado = true;
     
-    console.log('Canvas exibido com sucesso!');
     
     // Gerar resumo dos jogos para redes sociais
     gerarResumoFutebol();
     
   } catch (error) {
-    console.error('Erro ao gerar banner de futebol:', error);
     alert('Erro ao gerar banner: ' + error.message);
   }
 }
@@ -2998,14 +2938,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 100);
 });
 function gerarBannerAtual() {
-  console.log('gerarBannerAtual chamada, tipo:', tipoAtual);
-  console.log('jogos selecionados:', jogosSelecionados);
   
   if (tipoAtual === 'futebol') {
-    console.log('Gerando banner de futebol...');
     gerarBannerFutebol();
   } else {
-    console.log('Gerando banner de filme...');
     gerarBanner(); // Função original para filmes
   }
 }
@@ -3024,9 +2960,7 @@ async function carregarImagensDosTimes(jogos) {
     if (jogo.logoCasa) {
       try {
         imagens.logoCasa = await carregarImagem(jogo.logoCasa);
-        console.log(`Logo do ${jogo.timeCasa} carregada`);
       } catch (e) {
-        console.log(`Erro ao carregar logo do ${jogo.timeCasa}:`, e);
       }
     }
     
@@ -3034,9 +2968,7 @@ async function carregarImagensDosTimes(jogos) {
     if (jogo.logoVisitante) {
       try {
         imagens.logoVisitante = await carregarImagem(jogo.logoVisitante);
-        console.log(`Logo do ${jogo.timeVisitante} carregada`);
       } catch (e) {
-        console.log(`Erro ao carregar logo do ${jogo.timeVisitante}:`, e);
       }
     }
     
@@ -3071,14 +3003,9 @@ function carregarImagem(url) {
 async function desenharLogoUsuario(ctx, w, h) {
   const logoElement = document.getElementById('logoPreview');
   
-  console.log('Verificando logo do usuário...');
-  console.log('logoElement:', logoElement);
-  console.log('logoElement.src:', logoElement ? logoElement.src : 'não encontrado');
-  console.log('logoElement.style.display:', logoElement ? logoElement.style.display : 'não encontrado');
   
   if (logoElement && logoElement.src && logoElement.style.display !== 'none') {
     try {
-      console.log('Carregando logo do elemento preview...');
       const logoImg = await carregarImagem(logoElement.src);
       
       // Calcular tamanho mantendo proporção original
@@ -3100,14 +3027,11 @@ async function desenharLogoUsuario(ctx, w, h) {
       const logoY = h * 0.05; // Canto superior
       
       ctx.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
-      console.log(`Logo desenhada no canto superior esquerdo! Tamanho: ${logoWidth}x${logoHeight}`);
       
     } catch(e) {
-      console.log('Erro ao carregar/desenhar logo:', e);
     }
   } else if (typeof logoAtual !== 'undefined' && logoAtual) {
     try {
-      console.log('Usando logoAtual...');
       
       // Calcular tamanho mantendo proporção original
       const maxLogoSize = Math.min(w, h) * 0.16; // Aumentado de 0.12 para 0.16
@@ -3128,13 +3052,10 @@ async function desenharLogoUsuario(ctx, w, h) {
       const logoY = h * 0.05; // Canto superior
       
       ctx.drawImage(logoAtual, logoX, logoY, logoWidth, logoHeight);
-      console.log(`Logo desenhada no canto superior esquerdo (logoAtual)! Tamanho: ${logoWidth}x${logoHeight}`);
       
     } catch(e) {
-      console.log('Erro ao desenhar logoAtual:', e);
     }
   } else {
-    console.log('Nenhuma logo encontrada para desenhar');
   }
 }
 // ===== FUNÇÃO PARA DESENHAR MARCA D'ÁGUA DA LOGO =====
@@ -3171,7 +3092,6 @@ async function desenharMarcaDagua(ctx, w, h) {
     ctx.restore();
     
   } catch (e) {
-    console.log('Erro ao desenhar marca d\'água:', e);
   }
 }
 
@@ -3220,7 +3140,6 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
       ctx.drawImage(logoImg, drawX, drawY, lw, lh);
       return;
     } catch (e) {
-      console.log('Erro ao carregar logo do canal:', canal, e);
     }
   }
   
@@ -3279,7 +3198,6 @@ async function desenharFundoSimplesFutebol(ctx, w, h) {
     ctx.fill();
   }
   
-  console.log('Fundo simples de futebol aplicado');
 }
 
 // ===== FUNÇÃO PARA DESENHAR FUNDO DE FUTEBOL =====
@@ -3309,12 +3227,10 @@ async function desenharFundoFutebol(ctx, w, h) {
   const fundoRadio = document.querySelector('input[name="fundoPromo"]:checked');
   const fundoVal = fundoRadio?.value || 'fut1';
   
-  console.log('🎨 desenharFundoFutebol - fundoVal:', fundoVal);
 
   // Se for uma das imagens de futebol
   if (imagensLocais[fundoVal]) {
     const url = imagensLocais[fundoVal];
-    console.log('📸 Carregando imagem:', url);
     
     try {
       const imagemFundo = await Promise.race([
@@ -3332,11 +3248,9 @@ async function desenharFundoFutebol(ctx, w, h) {
       ctx.fillStyle = overlay;
       ctx.fillRect(0, 0, w, h);
       
-      console.log('✅ Imagem aplicada:', fundoVal);
       return;
       
     } catch (error) {
-      console.error('❌ Erro ao carregar imagem:', error.message);
       // Fallback: fundo escuro em vez de verde
       const grad = ctx.createLinearGradient(0, 0, 0, h);
       grad.addColorStop(0, '#0a0a0f');
@@ -3360,7 +3274,6 @@ async function desenharFundoFutebol(ctx, w, h) {
   }
 
   // Fallback: fundo escuro
-  console.warn('⚠️ fundoVal não reconhecido:', fundoVal, '- usando fallback escuro');
   const grad = ctx.createLinearGradient(0, 0, 0, h);
   grad.addColorStop(0, '#0a0a0f');
   grad.addColorStop(1, '#1a1a24');

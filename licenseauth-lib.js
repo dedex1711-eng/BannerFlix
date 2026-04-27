@@ -13,7 +13,6 @@ class LicenseAuth {
     this.sessionid = null;
     this.apiUrl = 'https://licenseauth.help/api/1.2/';
     
-    console.log('🔐 LicenseAuth inicializado:', {
       appName: this.appName,
       ownerid: this.ownerid,
       version: this.version
@@ -47,11 +46,9 @@ class LicenseAuth {
       try {
         return JSON.parse(text);
       } catch (e) {
-        console.error('❌ Erro ao fazer parse da resposta:', text);
         return { success: false, message: 'Erro ao processar resposta do servidor' };
       }
     } catch (err) {
-      console.error('❌ Erro na requisição:', err);
       return { success: false, message: 'Erro de conexão: ' + err.message };
     }
   }
@@ -68,10 +65,8 @@ class LicenseAuth {
 
     if (response.success) {
       this.sessionid = response.sessionid;
-      console.log('✅ LicenseAuth inicializado com sucesso');
       return true;
     } else {
-      console.error('❌ Erro ao inicializar LicenseAuth:', response.message);
       return false;
     }
   }
@@ -79,7 +74,6 @@ class LicenseAuth {
   // ===== LOGIN COM CHAVE DE LICENÇA =====
   async login(licenseKey, callback) {
     if (!this.sessionid) {
-      console.error('❌ Sessão não inicializada');
       if (callback) {
         callback({ success: false, message: 'Sessão não inicializada' });
       }
@@ -88,7 +82,6 @@ class LicenseAuth {
 
     // Gerar HWID do dispositivo
     const hwid = await this.gerarHWID();
-    console.log('🖥️ HWID gerado:', hwid);
 
     const data = {
       type: 'license',
@@ -99,14 +92,11 @@ class LicenseAuth {
       hwid: hwid  // Envia HWID para o LicenseAuth
     };
 
-    console.log('🔑 Tentando login com chave:', licenseKey);
 
     const response = await this.request(data);
 
-    console.log('📨 Resposta do LicenseAuth:', response);
 
     if (response.success) {
-      console.log('✅ Login bem-sucedido!');
       
       // Detecta o nível baseado na chave
       let nivel = 'level1'; // padrão
@@ -127,7 +117,6 @@ class LicenseAuth {
         });
       }
     } else {
-      console.error('❌ Erro no login:', response.message);
       if (callback) {
         callback({
           success: false,
@@ -140,7 +129,6 @@ class LicenseAuth {
   // ===== REGISTRAR COM CHAVE =====
   async register(username, password, licenseKey, callback) {
     if (!this.sessionid) {
-      console.error('❌ Sessão não inicializada');
       if (callback) {
         callback({ success: false, message: 'Sessão não inicializada' });
       }
@@ -180,7 +168,6 @@ class LicenseAuth {
   // ===== FAZER LOGIN COM USUÁRIO/SENHA =====
   async loginUser(username, password, callback) {
     if (!this.sessionid) {
-      console.error('❌ Sessão não inicializada');
       if (callback) {
         callback({ success: false, message: 'Sessão não inicializada' });
       }
@@ -219,7 +206,6 @@ class LicenseAuth {
   // ===== OBTER VARIÁVEL =====
   async getvar(varname) {
     if (!this.sessionid) {
-      console.error('❌ Sessão não inicializada');
       return null;
     }
 
@@ -243,7 +229,6 @@ class LicenseAuth {
   // ===== DEFINIR VARIÁVEL =====
   async setvar(varname, vardata) {
     if (!this.sessionid) {
-      console.error('❌ Sessão não inicializada');
       return false;
     }
 
@@ -319,4 +304,3 @@ class LicenseAuth {
   }
 }
 
-console.log('✅ Biblioteca LicenseAuth carregada');
