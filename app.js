@@ -46,12 +46,16 @@ let resumoVariante = 0;
 
 // ===== COOKIES =====
 function acceptCookies() {
-  document.getElementById('cookieBanner').style.display = 'none';
+  const banner = document.getElementById('cookieBanner');
+  if (banner) banner.style.display = 'none';
   localStorage.setItem('cookiesAccepted', '1');
 }
-if (localStorage.getItem('cookiesAccepted')) {
-  document.getElementById('cookieBanner').style.display = 'none';
-}
+document.addEventListener('DOMContentLoaded', function() {
+  if (localStorage.getItem('cookiesAccepted')) {
+    const banner = document.getElementById('cookieBanner');
+    if (banner) banner.style.display = 'none';
+  }
+});
 
 // ===== TOAST =====
 function showToast(msg, duration = 2800) {
@@ -125,7 +129,7 @@ document.getElementById('searchInput').addEventListener('keydown', e => {
 });
 
 // ===== SELECIONAR FILME =====
-function selecionarFilme(item, el) {
+async function selecionarFilme(item, el) {
   // Remove seleção anterior
   document.querySelectorAll('.result-item').forEach(r => r.classList.remove('selected'));
   el.classList.add('selected');
@@ -142,7 +146,32 @@ function selecionarFilme(item, el) {
     backdropPath: item.backdrop_path ? `${TMDB_IMG}${item.backdrop_path}` : null,
     posterThumb:  item.poster_path   ? `${TMDB_IMG_W}${item.poster_path}` : null,
     overview:     item.overview || '',
+    nota:         item.vote_average ? item.vote_average.toFixed(1) : null,
+    genreIds:     item.genre_ids || [],
+    duracao:      null, // será preenchido via API de detalhes
   };
+
+  // Busca detalhes completos (duração e gêneros) via API
+  try {
+    const mediaType = item.media_type === 'movie' ? 'movie' : 'tv';
+    const detailUrl = `${TMDB_BASE}/${mediaType}/${item.id}?api_key=${TMDB_API_KEY}&language=pt-BR`;
+    const detailRes = await fetch(detailUrl);
+    const detailData = await detailRes.json();
+    
+    // Duração
+    if (mediaType === 'movie' && detailData.runtime) {
+      const h = Math.floor(detailData.runtime / 60);
+      const m = detailData.runtime % 60;
+      filmeAtual.duracao = h > 0 ? `${h}h${m > 0 ? m + 'min' : ''}` : `${m}min`;
+    } else if (mediaType === 'tv' && detailData.episode_run_time && detailData.episode_run_time[0]) {
+      filmeAtual.duracao = `${detailData.episode_run_time[0]}min/ep`;
+    }
+    
+    // Gêneros
+    if (detailData.genres && detailData.genres.length > 0) {
+      filmeAtual.generos = detailData.genres.slice(0, 2).map(g => g.name).join(' • ');
+    }
+  } catch(e) { /* erro ao buscar detalhes */ }
 
   showToast(`✅ "${title}" selecionado`);
   
@@ -844,9 +873,8 @@ async function gerarBannerPromocional() {
       ctx.shadowColor = 'rgba(0,0,0,0.8)';
       ctx.shadowBlur = 8;
       
-      // Badge colorido: Filme = laranja, Série = roxo
-      const isSeriePromo = filmeAtual.type === 'Série';
-      const badgeColor = isSeriePromo ? '#7c3aed' : corDestaqueFilme;
+      // Badge colorido: mesma cor de destaque para Filme e Série
+      const badgeColor = corDestaqueFilme;
       const badgeText = `${filmeAtual.year}  •  ${(filmeAtual.type || '').toUpperCase()}`;
       const badgeTextW = ctx.measureText(badgeText).width;
       const badgePad = w * 0.015;
@@ -863,15 +891,40 @@ async function gerarBannerPromocional() {
       ctx.fillStyle = '#ffffff';
       ctx.fillText(badgeText, posterX + posterW/2, badgeY2 + badgeH2 * 0.68);
       ctx.shadowBlur = 0;
+      
+      // Nota, duração e gêneros abaixo do badge
+      const infoSize = w * 0.018;
+      ctx.font = `600 ${infoSize}px Inter, sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.textAlign = 'center';
+      ctx.shadowBlur = 6;
+      
+      const infoParts = [];
+      if (filmeAtual.nota) infoParts.push(`${filmeAtual.nota}/10`);
+      if (filmeAtual.duracao) infoParts.push(`${filmeAtual.duracao}`);
+      if (infoParts.length > 0) {
+        ctx.fillText(infoParts.join('  •  '), posterX + posterW/2, badgeY2 + badgeH2 + infoSize * 1.4);
+      }
+      if (filmeAtual.generos) {
+        ctx.fillText(filmeAtual.generos, posterX + posterW/2, badgeY2 + badgeH2 + infoSize * 2.8);
+      }
+      ctx.shadowBlur = 0;
     }
   } catch(e) { /* erro ao carregar poster */ }
 
   // Texto com nome do filme (diminuído)
-  let titleSize = w * 0.095;
+  let titleSize = w * 0.115;
   ctx.font      = `900 ${titleSize}px Inter, sans-serif`;
   ctx.fillStyle = corDestaqueFilme;
   ctx.textAlign = 'right';
   let filmeName = (filmeAtual.title || filmeAtual.name || 'FILME').toUpperCase();
+  
+  // Se o nome tiver ":" e for muito grande, usa só a parte antes dos dois pontos
+  const maxWidth = w * 0.85;
+  ctx.font = `900 ${titleSize}px Inter, sans-serif`;
+  if (filmeName.includes(':') && ctx.measureText(filmeName).width > maxWidth) {
+    filmeName = filmeName.split(':')[0].trim();
+  }
   
   // Posição Y do nome
   const nameY = h * 0.28;
@@ -880,7 +933,6 @@ async function gerarBannerPromocional() {
   const capaBottomY = h * 0.07 + h * 0.44; // h * 0.51
   
   // Ajusta o tamanho da fonte se o nome for muito grande ou cobrir a capa
-  const maxWidth = w * 0.85; // Largura máxima disponível
   let textWidth = ctx.measureText(filmeName).width;
   
   // Verifica se o nome vai cobrir a capa (aproximadamente)
@@ -1003,7 +1055,7 @@ async function gerarBannerPromocional() {
 
   // Ícones dos dispositivos com título "ASSISTA EM QUALQUER DISPOSITIVO"
   ctx.font      = `700 ${formato === 'paisagem' ? w * 0.018 : w * 0.022}px Inter, sans-serif`;
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
   ctx.textAlign = 'center';
   ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 10;
   ctx.fillText('ASSISTA EM QUALQUER DISPOSITIVO', w/2, faixaY + faixaH * 0.35);
