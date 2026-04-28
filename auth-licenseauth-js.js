@@ -715,26 +715,25 @@ async function salvarPerfil() {
 
 // ===== CARREGAR LOGO DE URL =====
 async function carregarLogoDeUrl(url) {
+  // Chama a função definida em app.js
+  if (typeof definirLogoDeUrl === 'function') {
+    return await definirLogoDeUrl(url);
+  }
+  
+  // Fallback se a função não existir
   return new Promise(resolve => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
-      if (typeof window.logoImg !== 'undefined') {
-        window.logoImg = img;
-      }
-
       const preview = document.getElementById('logoPreview');
       if (preview) {
         preview.src = url;
         preview.style.display = 'block';
       }
-
       const placeholder = document.getElementById('logoPlaceholder');
       if (placeholder) placeholder.style.display = 'none';
-
       const btnRemove = document.getElementById('btnRemoveLogo');
       if (btnRemove) btnRemove.style.display = 'block';
-
       resolve();
     };
     img.onerror = () => {

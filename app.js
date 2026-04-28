@@ -10,6 +10,36 @@ let filmeAtual    = null;   // { title, year, posterPath, backdropPath, type }
 let logoImg       = null;   // HTMLImageElement da logo do usuário
 let bannerGerado  = false;
 
+async function obterLogo() {
+  if (logoImg) return logoImg;
+  return null;
+}
+
+// Função para definir a logo a partir de uma URL (chamada pelo sistema de autenticação)
+async function definirLogoDeUrl(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      logoImg = img;
+      const preview = document.getElementById('logoPreview');
+      if (preview) {
+        preview.src = url;
+        preview.style.display = 'block';
+      }
+      const placeholder = document.getElementById('logoPlaceholder');
+      if (placeholder) placeholder.style.display = 'none';
+      const btnRemove = document.getElementById('btnRemoveLogo');
+      if (btnRemove) btnRemove.style.display = 'block';
+      resolve();
+    };
+    img.onerror = () => {
+      resolve();
+    };
+    img.src = url;
+  });
+}
+
 // ===== RESUMO =====
 let resumoAtual = { overview: '', genres: [], tagline: '', rating: '', runtime: '' };
 let resumoVariante = 0;
@@ -124,7 +154,12 @@ function selecionarFilme(item, el) {
     document.getElementById('filmeAno').textContent  = `${year} • ${type}`;
     infoDiv.style.display = 'flex';
     
-    gerarBanner(false); // false = apenas preview, sem verificar crédito
+    // Só gera preview se tiver logo carregada
+    if (logoImg) {
+      gerarBanner(false); // false = apenas preview, sem verificar crédito
+    } else {
+      showToast('⚠️ Carregue uma logo para ver o preview');
+    }
     buscarResumo(item);
   }
 }
@@ -426,6 +461,12 @@ function getOverlayStyle() {
 
 // ===== GERAR BANNER FINAL (com verificação de crédito) =====
 async function gerarBannerFinal() {
+  // Valida se a logo foi carregada
+  if (!logoImg) {
+    showToast('❌ Você precisa carregar uma logo para gerar o banner');
+    return;
+  }
+
   await gerarBanner(true); // true = verificar e consumir crédito
   if (bannerGerado) {
     showToast('✅ Banner gerado com sucesso!');
@@ -488,6 +529,18 @@ async function gerarBanner(verificarCredito = false) {
 // ===== GERAR BANNER SIMPLES =====
 async function gerarBannerSimples() {
   
+  // Valida se a logo foi carregada
+  if (!logoImg) {
+    const placeholder = document.getElementById('canvasPlaceholder');
+    if (placeholder) {
+      placeholder.innerHTML = '<span>📁</span><p>Carregue uma logo para ver o preview</p>';
+      placeholder.style.display = 'block';
+    }
+    const canvas = document.getElementById('bannerCanvas');
+    if (canvas) canvas.style.display = 'none';
+    return;
+  }
+
   const { w, h } = getDimensoes();
   const canvas   = document.getElementById('bannerCanvas');
   const ctx      = canvas.getContext('2d');
@@ -547,8 +600,12 @@ async function gerarBannerSimples() {
     }
 
     // Logo
-    if (logoImg) {
+    const logoParaDesenhar = await obterLogo();
+    if (logoParaDesenhar) {
+      const _logoImgOriginal = logoImg;
+      logoImg = logoParaDesenhar;
       desenharLogo(ctx, w, h);
+      logoImg = _logoImgOriginal;
     }
 
     // Textos
@@ -589,6 +646,18 @@ async function finalizarBanner() {
 
 // ===== GERAR BANNER PROMOCIONAL =====
 async function gerarBannerPromocional() {
+  // Valida se a logo foi carregada
+  if (!logoImg) {
+    const placeholder = document.getElementById('canvasPlaceholder');
+    if (placeholder) {
+      placeholder.innerHTML = '<span>📁</span><p>Carregue uma logo para ver o preview</p>';
+      placeholder.style.display = 'block';
+    }
+    const canvas = document.getElementById('bannerCanvas');
+    if (canvas) canvas.style.display = 'none';
+    return;
+  }
+
   const { w, h } = getDimensoes();
   const canvas   = document.getElementById('bannerCanvas');
   const ctx      = canvas.getContext('2d');
@@ -831,13 +900,14 @@ async function gerarBannerPromocional() {
   });
 
   // Logo (acima da faixa, centralizada)
-  if (logoImg) {
+  const logoPromo = await obterLogo();
+  if (logoPromo) {
     const logoMaxW = w * 0.35;
     const logoMaxH = h * 0.13;
-    const ls = Math.min(logoMaxW/logoImg.width, logoMaxH/logoImg.height);
-    const lw = logoImg.width*ls, lh = logoImg.height*ls;
+    const ls = Math.min(logoMaxW/logoPromo.width, logoMaxH/logoPromo.height);
+    const lw = logoPromo.width*ls, lh = logoPromo.height*ls;
     ctx.shadowColor = p.glow; ctx.shadowBlur = 30;
-    ctx.drawImage(logoImg, w/2-lw/2, h*0.54, lw, lh);
+    ctx.drawImage(logoPromo, w/2-lw/2, h*0.54, lw, lh);
     ctx.shadowBlur = 0;
   }
 
@@ -2532,6 +2602,12 @@ function gerarBannerFutebol() {
     alert('Selecione pelo menos um jogo!');
     return;
   }
+
+  // Valida se a logo foi carregada
+  if (!logoImg) {
+    showToast('❌ Você precisa carregar uma logo para gerar o banner');
+    return;
+  }
   
   // Se tiver mais de 5 jogos, dividir em grupos
   if (jogosSelecionados.length > 5) {
@@ -2782,9 +2858,15 @@ async function gerarBannerFutebolCanvasMultiplo(jogos, numeroBanner, totalBanner
 async function desenharLogoUsuarioCanvas(ctx, w, h) {
   const logoElement = document.getElementById('logoPreview');
   
+  // Usar logo do usuário se disponível
+  let logoSrc = null;
   if (logoElement && logoElement.src && logoElement.style.display !== 'none') {
+    logoSrc = logoElement.src;
+  }
+  
+  if (logoSrc) {
     try {
-      const logoImg = await carregarImagem(logoElement.src);
+      const logoImg = await carregarImagem(logoSrc);
       
       // Calcular tamanho da logo (canto superior esquerdo)
       const logoMaxSize = Math.min(w * 0.16, h * 0.11);
@@ -3216,10 +3298,15 @@ function carregarImagem(url) {
 async function desenharLogoUsuario(ctx, w, h) {
   const logoElement = document.getElementById('logoPreview');
   
-  
+  // Usar logo do usuário se disponível
+  let logoSrc = null;
   if (logoElement && logoElement.src && logoElement.style.display !== 'none') {
+    logoSrc = logoElement.src;
+  }
+  
+  if (logoSrc) {
     try {
-      const logoImg = await carregarImagem(logoElement.src);
+      const logoImg = await carregarImagem(logoSrc);
       
       // Calcular tamanho mantendo proporção original
       const maxLogoSize = Math.min(w, h) * 0.16; // Aumentado de 0.12 para 0.16
