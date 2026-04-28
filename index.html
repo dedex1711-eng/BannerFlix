@@ -578,6 +578,49 @@
             </div>
           </div>
 
+          <!-- Overlay (futebol) -->
+          <div id="overlayFutebolOpcoes" style="display:none;">
+            <h3 style="margin-top:14px;">Estilo do Overlay</h3>
+            <div class="overlay-options">
+              <label class="overlay-opt" title="Escuro">
+                <input type="radio" name="overlayFutebol" value="dark" checked onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch dark-swatch"></div>
+              </label>
+              <label class="overlay-opt" title="Roxo">
+                <input type="radio" name="overlayFutebol" value="purple" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch purple-swatch"></div>
+              </label>
+              <label class="overlay-opt" title="Azul">
+                <input type="radio" name="overlayFutebol" value="blue" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch blue-swatch"></div>
+              </label>
+              <label class="overlay-opt" title="Vermelho">
+                <input type="radio" name="overlayFutebol" value="red" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch red-swatch"></div>
+              </label>
+              <label class="overlay-opt" title="Verde">
+                <input type="radio" name="overlayFutebol" value="green" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch" style="background:rgba(20,83,45,0.6);"></div>
+              </label>
+              <label class="overlay-opt" title="Laranja">
+                <input type="radio" name="overlayFutebol" value="orange" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch" style="background:rgba(124,45,18,0.6);"></div>
+              </label>
+              <label class="overlay-opt" title="Rosa">
+                <input type="radio" name="overlayFutebol" value="pink" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch" style="background:rgba(131,24,67,0.6);"></div>
+              </label>
+              <label class="overlay-opt" title="Cinza">
+                <input type="radio" name="overlayFutebol" value="gray" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch" style="background:rgba(55,65,81,0.6);"></div>
+              </label>
+              <label class="overlay-opt" title="Sem overlay">
+                <input type="radio" name="overlayFutebol" value="none" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch none-swatch">✕</div>
+              </label>
+            </div>
+          </div>
+
           <!-- Overlay (template simples) -->
           <div id="overlayOpcoes">
             <h3>Estilo do Overlay</h3>
@@ -668,96 +711,145 @@
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#000,#1a1a1a);"></div>
               </label>
             </div>
+          </div><!-- fecha fundoPromoOpcoes -->
 
-            <!-- Imagens de Futebol (só aparece na aba futebol) -->
-            <div id="fundoFutebolImagens" style="display:none;">
-              <h3 style="margin-top:14px;">⚽ Imagens de Futebol</h3>
-              <div class="overlay-options fut-img-options">
-              <label class="overlay-opt" title="Futebol 1">
-                <input type="radio" name="fundoPromo" value="fut1" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut1.jpg');background-size:cover;background-position:center;">
-                  <span class="fut-label">1</span>
-                </div>
+          <!-- Overlay (template promocional) -->
+          <div id="overlayPromoOpcoes" style="display:none;">
+            <h3>Estilo do Overlay</h3>
+            <div class="overlay-options">
+              <label class="overlay-opt" title="Escuro">
+                <input type="radio" name="overlayPromo" value="dark" checked onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch dark-swatch"></div>
               </label>
-              <label class="overlay-opt" title="Futebol 2">
-                <input type="radio" name="fundoPromo" value="fut2" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut2.jpg');background-size:cover;background-position:center;">
-                  <span class="fut-label">2</span>
-                </div>
+              <label class="overlay-opt" title="Roxo">
+                <input type="radio" name="overlayPromo" value="purple" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch purple-swatch"></div>
               </label>
-              <label class="overlay-opt" title="Futebol 3">
-                <input type="radio" name="fundoPromo" value="fut3" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut3.png');background-size:cover;background-position:center;">
-                  <span class="fut-label">3</span>
-                </div>
+              <label class="overlay-opt" title="Azul">
+                <input type="radio" name="overlayPromo" value="blue" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch blue-swatch"></div>
               </label>
-              <label class="overlay-opt" title="Futebol 4">
-                <input type="radio" name="fundoPromo" value="fut4" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut4.jpg');background-size:cover;background-position:center;">
-                  <span class="fut-label">4</span>
-                </div>
+              <label class="overlay-opt" title="Vermelho">
+                <input type="radio" name="overlayPromo" value="red" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch red-swatch"></div>
               </label>
-              <label class="overlay-opt" title="Futebol 5">
-                <input type="radio" name="fundoPromo" value="fut5" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut5.jpg');background-size:cover;background-position:center;">
-                  <span class="fut-label">5</span>
-                </div>
+              <label class="overlay-opt" title="Verde">
+                <input type="radio" name="overlayPromo" value="green" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch" style="background:rgba(20,83,45,0.6);"></div>
               </label>
-              <label class="overlay-opt" title="Futebol 6">
-                <input type="radio" name="fundoPromo" value="fut6" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut6.jpg');background-size:cover;background-position:center;">
-                  <span class="fut-label">6</span>
-                </div>
+              <label class="overlay-opt" title="Laranja">
+                <input type="radio" name="overlayPromo" value="orange" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch" style="background:rgba(124,45,18,0.6);"></div>
               </label>
-              <label class="overlay-opt" title="Futebol 7">
-                <input type="radio" name="fundoPromo" value="fut7" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/fut7.jpg');background-size:cover;background-position:center;">
-                  <span class="fut-label">7</span>
-                </div>
+              <label class="overlay-opt" title="Rosa">
+                <input type="radio" name="overlayPromo" value="pink" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch" style="background:rgba(131,24,67,0.6);"></div>
               </label>
-              <label class="overlay-opt" title="Futebol 8">
-                <input type="radio" name="fundoPromo" value="fut8" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut8.jpg');background-size:cover;background-position:center;">
-                  <span class="fut-label">8</span>
-                </div>
+              <label class="overlay-opt" title="Cinza">
+                <input type="radio" name="overlayPromo" value="gray" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch" style="background:rgba(55,65,81,0.6);"></div>
               </label>
-              <label class="overlay-opt" title="Futebol 9">
-                <input type="radio" name="fundoPromo" value="fut9" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut9.jpg');background-size:cover;background-position:center;">
-                  <span class="fut-label">9</span>
-                </div>
-              </label>
-              <label class="overlay-opt" title="Futebol 10">
-                <input type="radio" name="fundoPromo" value="fut10" onchange="gerarBannerAtual()" />
-                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut10.jpg');background-size:cover;background-position:center;">
-                  <span class="fut-label">10</span>
-                </div>
+              <label class="overlay-opt" title="Sem overlay">
+                <input type="radio" name="overlayPromo" value="none" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch none-swatch">✕</div>
               </label>
             </div>
-            </div><!-- fecha fundoFutebolImagens -->
+          </div>
 
-            <!-- Cor de Destaque (filmes promocional) -->
-            <div id="corDestaquePromoOpcoes">
-              <div style="margin-top:14px;">
-                <label style="font-size:0.8rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:8px;">Cor de Destaque</label>
-                <div class="cor-selector" id="corDestaqueFilmePromo">
-                  <div class="cor-opt active" data-cor="#F77F30" style="background:#F77F30;" onclick="selecionarCorFilme('#F77F30',this)"></div>
-                  <div class="cor-opt" data-cor="#E14760" style="background:#E14760;" onclick="selecionarCorFilme('#E14760',this)"></div>
-                  <div class="cor-opt" data-cor="#ffffff" style="background:#ffffff;" onclick="selecionarCorFilme('#ffffff',this)"></div>
-                  <div class="cor-opt" data-cor="#FFD700" style="background:#FFD700;" onclick="selecionarCorFilme('#FFD700',this)"></div>
-                  <div class="cor-opt" data-cor="#00FF87" style="background:#00FF87;" onclick="selecionarCorFilme('#00FF87',this)"></div>
-                  <div class="cor-opt" data-cor="#00BFFF" style="background:#00BFFF;" onclick="selecionarCorFilme('#00BFFF',this)"></div>
-                  <div class="cor-opt" data-cor="#FF4500" style="background:#FF4500;" onclick="selecionarCorFilme('#FF4500',this)"></div>
-                  <div class="cor-opt" data-cor="#9D2BBD" style="background:#9D2BBD;" onclick="selecionarCorFilme('#9D2BBD',this)"></div>
-                  <div class="cor-opt" data-cor="#FF69B4" style="background:#FF69B4;" onclick="selecionarCorFilme('#FF69B4',this)"></div>
-                  <div class="cor-opt" data-cor="#C0C0C0" style="background:#C0C0C0;" onclick="selecionarCorFilme('#C0C0C0',this)"></div>
-                </div>
+          <!-- Imagens de Futebol (só aparece na aba futebol) -->
+          <div id="fundoFutebolImagens" style="display:none !important;">
+            <h3 style="margin-top:14px;">⚽ Imagens de Futebol</h3>
+            <div class="overlay-options fut-img-options">
+            <label class="overlay-opt" title="Futebol 1">
+              <input type="radio" name="fundoPromo" value="fut1" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut1.jpg');background-size:cover;background-position:center;">
+                <span class="fut-label">1</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 2">
+              <input type="radio" name="fundoPromo" value="fut2" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut2.jpg');background-size:cover;background-position:center;">
+                <span class="fut-label">2</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 3">
+              <input type="radio" name="fundoPromo" value="fut3" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut3.png');background-size:cover;background-position:center;">
+                <span class="fut-label">3</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 4">
+              <input type="radio" name="fundoPromo" value="fut4" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut4.jpg');background-size:cover;background-position:center;">
+                <span class="fut-label">4</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 5">
+              <input type="radio" name="fundoPromo" value="fut5" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut5.jpg');background-size:cover;background-position:center;">
+                <span class="fut-label">5</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 6">
+              <input type="radio" name="fundoPromo" value="fut6" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut6.jpg');background-size:cover;background-position:center;">
+                <span class="fut-label">6</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 7">
+              <input type="radio" name="fundoPromo" value="fut7" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/fut7.jpg');background-size:cover;background-position:center;">
+                <span class="fut-label">7</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 8">
+              <input type="radio" name="fundoPromo" value="fut8" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut8.jpg');background-size:cover;background-position:center;">
+                <span class="fut-label">8</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 9">
+              <input type="radio" name="fundoPromo" value="fut9" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut9.jpg');background-size:cover;background-position:center;">
+                <span class="fut-label">9</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 10">
+              <input type="radio" name="fundoPromo" value="fut10" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut10.jpg');background-size:cover;background-position:center;">
+                <span class="fut-label">10</span>
+              </div>
+            </label>
+            <label class="overlay-opt" title="Futebol 11">
+              <input type="radio" name="fundoPromo" value="fut11" onchange="gerarBannerAtual()" />
+              <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut11.png');background-size:cover;background-position:center;">
+                <span class="fut-label">11</span>
+              </div>
+            </label>
+            </div>
+          </div><!-- fecha fundoFutebolImagens -->
+
+          <!-- Cor de Destaque (filmes promocional) -->
+          <div id="corDestaquePromoOpcoes" style="display:none;">
+            <div style="margin-top:14px;">
+              <label style="font-size:0.8rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:8px;">Cor de Destaque</label>
+              <div class="cor-selector" id="corDestaqueFilmePromo">
+                <div class="cor-opt active" data-cor="#F77F30" style="background:#F77F30;" onclick="selecionarCorFilme('#F77F30',this)"></div>
+                <div class="cor-opt" data-cor="#E14760" style="background:#E14760;" onclick="selecionarCorFilme('#E14760',this)"></div>
+                <div class="cor-opt" data-cor="#ffffff" style="background:#ffffff;" onclick="selecionarCorFilme('#ffffff',this)"></div>
+                <div class="cor-opt" data-cor="#FFD700" style="background:#FFD700;" onclick="selecionarCorFilme('#FFD700',this)"></div>
+                <div class="cor-opt" data-cor="#00FF87" style="background:#00FF87;" onclick="selecionarCorFilme('#00FF87',this)"></div>
+                <div class="cor-opt" data-cor="#00BFFF" style="background:#00BFFF;" onclick="selecionarCorFilme('#00BFFF',this)"></div>
+                <div class="cor-opt" data-cor="#FF4500" style="background:#FF4500;" onclick="selecionarCorFilme('#FF4500',this)"></div>
+                <div class="cor-opt" data-cor="#9D2BBD" style="background:#9D2BBD;" onclick="selecionarCorFilme('#9D2BBD',this)"></div>
+                <div class="cor-opt" data-cor="#FF69B4" style="background:#FF69B4;" onclick="selecionarCorFilme('#FF69B4',this)"></div>
+                <div class="cor-opt" data-cor="#C0C0C0" style="background:#C0C0C0;" onclick="selecionarCorFilme('#C0C0C0',this)"></div>
               </div>
             </div>
           </div>
-        </div>
 
-        <button class="btn-gerar" onclick="gerarBannerAtual()">✨ Gerar Banner</button>
+          <button class="btn-gerar" onclick="gerarBannerAtual()">✨ Gerar Banner</button>
+        </div>
       </div>
 
       <!-- PAINEL DIREITO: PREVIEW -->

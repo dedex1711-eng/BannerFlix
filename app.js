@@ -429,20 +429,37 @@ function alternarPainelTemplate() {
   const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
   const overlayOpcoes = document.getElementById('overlayOpcoes');
   const fundoPromoOpcoes = document.getElementById('fundoPromoOpcoes');
+  const overlayPromoOpcoes = document.getElementById('overlayPromoOpcoes');
   const fundoFutebolImagens = document.getElementById('fundoFutebolImagens');
   const corDestaquePromoOpcoes = document.getElementById('corDestaquePromoOpcoes');
+  const overlayFutebolOpcoes = document.getElementById('overlayFutebolOpcoes');
   
+  // Overlay simples: só aparece em filmes com template simples
   if (overlayOpcoes) overlayOpcoes.style.display = (template === 'simples' && tipoAtual !== 'futebol') ? 'block' : 'none';
-  if (fundoPromoOpcoes) fundoPromoOpcoes.style.display = template === 'promocional' ? 'block' : 'none';
   
-  // Imagens de futebol só aparecem na aba futebol + template promocional
+  // Fundo promocional: só aparece em filmes com template promocional
+  if (fundoPromoOpcoes) fundoPromoOpcoes.style.display = (template === 'promocional' && tipoAtual !== 'futebol') ? 'block' : 'none';
+  
+  // Overlay promocional: só aparece em filmes com template promocional
+  if (overlayPromoOpcoes) overlayPromoOpcoes.style.display = (template === 'promocional' && tipoAtual !== 'futebol') ? 'block' : 'none';
+  
+  // Imagens de futebol aparecem na aba futebol + template promocional (com !important para sobrescrever o pai)
   if (fundoFutebolImagens) {
-    fundoFutebolImagens.style.display = (tipoAtual === 'futebol' && template === 'promocional') ? 'block' : 'none';
+    if (tipoAtual === 'futebol' && template === 'promocional') {
+      fundoFutebolImagens.style.setProperty('display', 'block', 'important');
+    } else {
+      fundoFutebolImagens.style.setProperty('display', 'none', 'important');
+    }
   }
   
-  // Cor de destaque de filmes só aparece na aba filmes
+  // Overlay de futebol só aparece na aba futebol
+  if (overlayFutebolOpcoes) {
+    overlayFutebolOpcoes.style.display = tipoAtual === 'futebol' ? 'block' : 'none';
+  }
+  
+  // Cor de destaque promocional só aparece em filmes com template promocional
   if (corDestaquePromoOpcoes) {
-    corDestaquePromoOpcoes.style.display = tipoAtual === 'futebol' ? 'none' : 'block';
+    corDestaquePromoOpcoes.style.display = (template === 'promocional' && tipoAtual !== 'futebol') ? 'block' : 'none';
   }
 }
 
@@ -454,6 +471,44 @@ function getOverlayStyle() {
     purple: 'rgba(76,29,149,0.6)',
     blue:   'rgba(30,58,95,0.6)',
     red:    'rgba(127,29,29,0.6)',
+    green:  'rgba(20,83,45,0.6)',
+    orange: 'rgba(124,45,18,0.6)',
+    pink:   'rgba(131,24,67,0.6)',
+    gray:   'rgba(55,65,81,0.6)',
+    none:   null,
+  };
+  return map[v] || null;
+}
+
+// ===== OVERLAY COLOR PROMOCIONAL =====
+function getOverlayStylePromo() {
+  const v = document.querySelector('input[name="overlayPromo"]:checked')?.value || 'dark';
+  const map = {
+    dark:   'rgba(0,0,0,0.55)',
+    purple: 'rgba(76,29,149,0.6)',
+    blue:   'rgba(30,58,95,0.6)',
+    red:    'rgba(127,29,29,0.6)',
+    green:  'rgba(20,83,45,0.6)',
+    orange: 'rgba(124,45,18,0.6)',
+    pink:   'rgba(131,24,67,0.6)',
+    gray:   'rgba(55,65,81,0.6)',
+    none:   null,
+  };
+  return map[v] || null;
+}
+
+// ===== OVERLAY COLOR FUTEBOL =====
+function getOverlayStyleFutebol() {
+  const v = document.querySelector('input[name="overlayFutebol"]:checked')?.value || 'dark';
+  const map = {
+    dark:   'rgba(0,0,0,0.55)',
+    purple: 'rgba(76,29,149,0.6)',
+    blue:   'rgba(30,58,95,0.6)',
+    red:    'rgba(127,29,29,0.6)',
+    green:  'rgba(20,83,45,0.6)',
+    orange: 'rgba(124,45,18,0.6)',
+    pink:   'rgba(131,24,67,0.6)',
+    gray:   'rgba(55,65,81,0.6)',
     none:   null,
   };
   return map[v] || null;
@@ -691,13 +746,16 @@ async function gerarBannerPromocional() {
         const bgImg = await carregarImagem(imgUrl);
         desenharCover(ctx, bgImg, w, h);
         
-        // Overlay escuro para legibilidade
-        const overlayGrad = ctx.createLinearGradient(0, 0, 0, h);
-        overlayGrad.addColorStop(0, 'rgba(0,0,0,0.75)');
-        overlayGrad.addColorStop(0.5, 'rgba(0,0,0,0.65)');
-        overlayGrad.addColorStop(1, 'rgba(0,0,0,0.85)');
-        ctx.fillStyle = overlayGrad;
-        ctx.fillRect(0, 0, w, h);
+        // Overlay configurável para legibilidade
+        const overlayStyle = getOverlayStylePromo();
+        if (overlayStyle && overlayStyle !== 'none') {
+          const overlayGrad = ctx.createLinearGradient(0, 0, 0, h);
+          overlayGrad.addColorStop(0, overlayStyle.replace(/0\.\d+\)/, '0.75)'));
+          overlayGrad.addColorStop(0.5, overlayStyle.replace(/0\.\d+\)/, '0.65)'));
+          overlayGrad.addColorStop(1, overlayStyle.replace(/0\.\d+\)/, '0.85)'));
+          ctx.fillStyle = overlayGrad;
+          ctx.fillRect(0, 0, w, h);
+        }
       } else {
         // Fallback para roxo se não tiver imagem
         const grad = ctx.createLinearGradient(0, 0, 0, h);
@@ -737,6 +795,13 @@ async function gerarBannerPromocional() {
     glowGrad.addColorStop(1, 'transparent');
     ctx.fillStyle = glowGrad;
     ctx.fillRect(0, 0, w, h);
+    
+    // Overlay configurável para legibilidade
+    const overlayStyle = getOverlayStylePromo();
+    if (overlayStyle && overlayStyle !== 'none') {
+      ctx.fillStyle = overlayStyle;
+      ctx.fillRect(0, 0, w, h);
+    }
   }
 
   // Partículas
@@ -1756,7 +1821,11 @@ async function processarVideo() {
           dark: 'rgba(0,0,0,0.4)',
           purple: 'rgba(76,29,149,0.5)',
           blue: 'rgba(30,58,95,0.5)',
-          red: 'rgba(127,29,29,0.5)'
+          red: 'rgba(127,29,29,0.5)',
+          green: 'rgba(20,83,45,0.5)',
+          orange: 'rgba(124,45,18,0.5)',
+          pink: 'rgba(131,24,67,0.5)',
+          gray: 'rgba(55,65,81,0.5)'
         };
         ctx.fillStyle = overlayColors[overlay];
         ctx.fillRect(0, 0, width, height);
@@ -3501,6 +3570,26 @@ async function desenharFundoSimplesFutebol(ctx, w, h) {
     gradient.addColorStop(0, '#1a0a0a');
     gradient.addColorStop(0.5, '#7f1d1d');
     gradient.addColorStop(1, '#dc2626');
+  } else if (overlayStyle === 'rgba(20,83,45,0.6)') { // Green
+    gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#0a1f0f');
+    gradient.addColorStop(0.5, '#14532d');
+    gradient.addColorStop(1, '#16a34a');
+  } else if (overlayStyle === 'rgba(124,45,18,0.6)') { // Orange
+    gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#1a0a00');
+    gradient.addColorStop(0.5, '#7c2d12');
+    gradient.addColorStop(1, '#ea580c');
+  } else if (overlayStyle === 'rgba(131,24,67,0.6)') { // Pink
+    gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#1a0a14');
+    gradient.addColorStop(0.5, '#831843');
+    gradient.addColorStop(1, '#ec4899');
+  } else if (overlayStyle === 'rgba(55,65,81,0.6)') { // Gray
+    gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#0f1419');
+    gradient.addColorStop(0.5, '#374151');
+    gradient.addColorStop(1, '#6b7280');
   } else { // Dark (default)
     gradient = ctx.createLinearGradient(0, 0, w, h);
     gradient.addColorStop(0, '#0a0a0f');
@@ -3542,6 +3631,7 @@ async function desenharFundoFutebol(ctx, w, h) {
     'fut8': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut8.jpg',
     'fut9': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut9.jpg',
     'fut10': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut10.jpg',
+    'fut11': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut11.png',
   };
 
   // Paletas de cores para fundos coloridos
@@ -3573,13 +3663,16 @@ async function desenharFundoFutebol(ctx, w, h) {
       
       desenharCover(ctx, imagemFundo, w, h);
       
-      // Overlay sutil para legibilidade
-      const overlay = ctx.createLinearGradient(0, 0, w, h);
-      overlay.addColorStop(0, 'rgba(0,0,0,0.45)');
-      overlay.addColorStop(0.5, 'rgba(0,0,0,0.35)');
-      overlay.addColorStop(1, 'rgba(0,0,0,0.45)');
-      ctx.fillStyle = overlay;
-      ctx.fillRect(0, 0, w, h);
+      // Overlay configurável para legibilidade
+      const overlayStyle = getOverlayStyleFutebol();
+      if (overlayStyle && overlayStyle !== 'none') {
+        const overlay = ctx.createLinearGradient(0, 0, w, h);
+        overlay.addColorStop(0, overlayStyle.replace(/0\.\d+\)/, '0.45)'));
+        overlay.addColorStop(0.5, overlayStyle.replace(/0\.\d+\)/, '0.35)'));
+        overlay.addColorStop(1, overlayStyle.replace(/0\.\d+\)/, '0.45)'));
+        ctx.fillStyle = overlay;
+        ctx.fillRect(0, 0, w, h);
+      }
       
       return;
       
@@ -3659,3 +3752,4 @@ function desenharPadraoFutebol(ctx, w, h) {
   ctx.fillStyle = overlayGradient;
   ctx.fillRect(0, 0, w, h);
 }
+''
