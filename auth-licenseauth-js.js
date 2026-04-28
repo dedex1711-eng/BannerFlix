@@ -505,7 +505,7 @@ function atualizarNavbar() {
 
     const email = usuarioAtual.email || '';
     if (navEmail) navEmail.textContent = email;
-    if (navAvatar) navAvatar.textContent = email.charAt(0).toUpperCase();
+    if (navAvatar) navAvatar.textContent = email.charAt(0).toUpperCase() || '👤';
 
     if (criadorBloqueado) criadorBloqueado.style.display = 'none';
     if (criadorConteudo) criadorConteudo.style.display = 'block';
