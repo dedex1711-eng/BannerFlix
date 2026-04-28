@@ -395,13 +395,19 @@ function alternarPainelTemplate() {
   const overlayOpcoes = document.getElementById('overlayOpcoes');
   const fundoPromoOpcoes = document.getElementById('fundoPromoOpcoes');
   const fundoFutebolImagens = document.getElementById('fundoFutebolImagens');
+  const corDestaquePromoOpcoes = document.getElementById('corDestaquePromoOpcoes');
   
-  if (overlayOpcoes) overlayOpcoes.style.display = template === 'simples' ? 'block' : 'none';
+  if (overlayOpcoes) overlayOpcoes.style.display = (template === 'simples' && tipoAtual !== 'futebol') ? 'block' : 'none';
   if (fundoPromoOpcoes) fundoPromoOpcoes.style.display = template === 'promocional' ? 'block' : 'none';
   
   // Imagens de futebol só aparecem na aba futebol + template promocional
   if (fundoFutebolImagens) {
     fundoFutebolImagens.style.display = (tipoAtual === 'futebol' && template === 'promocional') ? 'block' : 'none';
+  }
+  
+  // Cor de destaque de filmes só aparece na aba filmes
+  if (corDestaquePromoOpcoes) {
+    corDestaquePromoOpcoes.style.display = tipoAtual === 'futebol' ? 'none' : 'block';
   }
 }
 
@@ -3314,9 +3320,11 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
     try {
       const logoImg = await carregarImagem(logoUrl);
       
-      // Multiplicador de tamanho por canal (SporTV diminuído pois a imagem é maior)
+      // Multiplicador de tamanho por canal (SporTV, TNT Sports e HBO Max diminuídos pois as imagens são maiores)
       const multiplicadores = {
-        'SporTV': 0.55,
+        'SporTV':    0.55,
+        'TNT Sports': 0.55,
+        'HBO Max':   0.55,
       };
       const mult = multiplicadores[canal] || 1.0;
       
