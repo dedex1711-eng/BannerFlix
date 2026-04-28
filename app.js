@@ -1905,6 +1905,17 @@ function selecionarTipo(tipo) {
   // Se for futebol, buscar jogos automaticamente
   if (tipo === 'futebol') {
     buscarJogosFutebol();
+  } else {
+    // Ao voltar para filmes, recarregar logoImg sem crossOrigin para evitar problema de CORS no canvas
+    const logoPreview = document.getElementById('logoPreview');
+    if (logoPreview && logoPreview.src && logoPreview.style.display !== 'none') {
+      const img = new Image();
+      img.onload = () => {
+        logoImg = img;
+        if (filmeAtual) gerarBanner(false);
+      };
+      img.src = logoPreview.src;
+    }
   }
   
   // Atualizar visibilidade das imagens de futebol
@@ -3282,7 +3293,7 @@ async function desenharMarcaDagua(ctx, w, h) {
     
     // Aplicar opacidade baixa (marca d'água)
     ctx.save();
-    ctx.globalAlpha = 0.15; // 15% de opacidade — visível mas não intrusivo
+    ctx.globalAlpha = 0.25; // 25% de opacidade — mais visível
     
     // Primeira marca d'água — topo (atrás de DESTAQUES)
     ctx.drawImage(logoImg, marcaX, marcaY, marcaW, marcaH);
