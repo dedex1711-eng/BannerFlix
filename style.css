@@ -2037,3 +2037,25 @@ body.tema-futebol .banner-type-selector .type-btn#btnTipoFutebol {
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
+
+/* Esconde opção de imagem do filme quando estiver no tema futebol */
+body.tema-futebol .overlay-opt-filme-only {
+  display: none !important;
+}
+
+/* Numeração correta dos steps na aba futebol */
+body.tema-futebol .step-num-logo::after    { content: '3'; }
+body.tema-futebol .step-num-logo           { font-size: 0; }
+body.tema-futebol .step-num-logo::after    { font-size: 0.75rem; }
+
+body.tema-futebol .step-num-contato { font-size: 0 !important; }
+body.tema-futebol .step-num-contato::after { content: '4'; font-size: 0.75rem; font-weight: 700; }
+
+body.tema-futebol .step-num-estilo { font-size: 0 !important; }
+body.tema-futebol .step-num-estilo::after { content: '5'; font-size: 0.75rem; font-weight: 700; }
+
+body.tema-futebol .step-num-formato { font-size: 0 !important; }
+body.tema-futebol .step-num-formato::after { content: '6'; font-size: 0.75rem; font-weight: 700; }
+
+body.tema-futebol .step-num-cor { font-size: 0 !important; }
+body.tema-futebol .step-num-cor::after { content: '7'; font-size: 0.75rem; font-weight: 700; }

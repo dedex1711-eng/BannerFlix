@@ -3324,7 +3324,7 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
       const multiplicadores = {
         'SporTV':    0.55,
         'TNT Sports': 0.55,
-        'HBO Max':   0.55,
+        'HBO Max':   0.35,
       };
       const mult = multiplicadores[canal] || 1.0;
       
@@ -3439,6 +3439,11 @@ async function desenharFundoFutebol(ctx, w, h) {
     'fut3': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut3.png',
     'fut4': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut4.jpg',
     'fut5': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut5.jpg',
+    'fut6': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut6.jpg',
+    'fut7': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/fut7.jpg',
+    'fut8': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut8.jpg',
+    'fut9': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut9.jpg',
+    'fut10': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut10.jpg',
   };
 
   // Paletas de cores para fundos coloridos

@@ -455,7 +455,7 @@
 
         <!-- STEP 2: LOGO -->
         <div class="step-card">
-          <div class="step-num">2</div>
+          <div class="step-num step-num-logo">2</div>
           <h3>Sua Logo</h3>
           <div class="logo-upload-area" id="logoUploadArea" onclick="document.getElementById('logoInput').click()">
             <img id="logoPreview" src="" alt="" style="display:none;" />
@@ -471,7 +471,7 @@
 
         <!-- STEP 3: TEXTO -->
         <div class="step-card">
-          <div class="step-num">3</div>
+          <div class="step-num step-num-contato">3</div>
           <h3>Informações de Contato</h3>
           <div class="form-group">
             <label>WhatsApp</label>
@@ -502,7 +502,7 @@
 
         <!-- STEP 4: FORMATO -->
         <div class="step-card">
-          <div class="step-num">4</div>
+          <div class="step-num step-num-estilo">4</div>
           <h3>Estilo do Banner</h3>
           <div class="template-options">
             <label class="template-option">
@@ -526,7 +526,7 @@
 
         <!-- STEP 5: FORMATO -->
         <div class="step-card">
-          <div class="step-num">5</div>
+          <div class="step-num step-num-formato">5</div>
           <h3>Formato do Banner</h3>
           <div class="format-options">
             <label class="format-option">
@@ -558,7 +558,7 @@
 
         <!-- STEP 6: COR DO OVERLAY / FUNDO PROMOCIONAL -->
         <div class="step-card">
-          <div class="step-num">6</div>
+          <div class="step-num step-num-cor">6</div>
 
           <!-- Cores do Banner de Futebol (só aparece na aba futebol) -->
           <div id="coresFutebolOpcoes" style="display:none;">
@@ -626,7 +626,8 @@
           <div id="fundoPromoOpcoes" style="display:none;">
             <h3>Cor do Fundo</h3>
             <div class="overlay-options">
-              <label class="overlay-opt" title="Imagem do Filme">
+              <!-- Opção de imagem do filme: só aparece na aba filmes -->
+              <label class="overlay-opt overlay-opt-filme-only" title="Imagem do Filme">
                 <input type="radio" name="fundoPromo" value="imagem" checked onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a1a2e,#4a4a5e);font-size:1.2rem;">🎬</div>
               </label>
@@ -700,6 +701,36 @@
                 <input type="radio" name="fundoPromo" value="fut5" onchange="gerarBannerAtual()" />
                 <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/Fut5.jpg');background-size:cover;background-position:center;">
                   <span class="fut-label">5</span>
+                </div>
+              </label>
+              <label class="overlay-opt" title="Futebol 6">
+                <input type="radio" name="fundoPromo" value="fut6" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut6.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">6</span>
+                </div>
+              </label>
+              <label class="overlay-opt" title="Futebol 7">
+                <input type="radio" name="fundoPromo" value="fut7" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/fut7.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">7</span>
+                </div>
+              </label>
+              <label class="overlay-opt" title="Futebol 8">
+                <input type="radio" name="fundoPromo" value="fut8" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut8.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">8</span>
+                </div>
+              </label>
+              <label class="overlay-opt" title="Futebol 9">
+                <input type="radio" name="fundoPromo" value="fut9" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut9.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">9</span>
+                </div>
+              </label>
+              <label class="overlay-opt" title="Futebol 10">
+                <input type="radio" name="fundoPromo" value="fut10" onchange="gerarBannerAtual()" />
+                <div class="overlay-swatch fut-swatch" style="background-image:url('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Fut10.jpg');background-size:cover;background-position:center;">
+                  <span class="fut-label">10</span>
                 </div>
               </label>
             </div>
