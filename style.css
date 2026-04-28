@@ -492,14 +492,14 @@ body {
 .overlay-opt { cursor: pointer; }
 .overlay-opt input { display: none; }
 .overlay-swatch {
-  width: 36px; height: 36px;
+  width: 28px; height: 28px;
   border-radius: 50%;
   border: 3px solid transparent;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.65rem;
 }
 .overlay-opt input:checked + .overlay-swatch { 
   border-color: #fff; 
@@ -1745,18 +1745,20 @@ body {
 .fut-swatch {
   position: relative;
   border: 2px solid var(--border) !important;
+  width: 28px !important;
+  height: 28px !important;
 }
 
 .fut-label {
   position: absolute;
-  bottom: 2px;
-  right: 2px;
+  bottom: 1px;
+  right: 1px;
   background: rgba(0,0,0,0.7);
   color: #fff;
-  font-size: 0.7rem;
+  font-size: 0.55rem;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 1px 3px;
+  border-radius: 2px;
 }
 
 /* Seletores de cor do futebol */
