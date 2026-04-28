@@ -141,6 +141,7 @@ function selecionarFilme(item, el) {
     posterPath:   item.poster_path   ? `${TMDB_IMG}${item.poster_path}`   : null,
     backdropPath: item.backdrop_path ? `${TMDB_IMG}${item.backdrop_path}` : null,
     posterThumb:  item.poster_path   ? `${TMDB_IMG_W}${item.poster_path}` : null,
+    overview:     item.overview || '',
   };
 
   showToast(`✅ "${title}" selecionado`);
@@ -812,6 +813,9 @@ async function gerarBannerPromocional() {
     ctx.fill();
   }
 
+  // Marca d'água da logo (abaixo do overlay, antes dos textos)
+  await desenharMarcaDaguaBaixo(ctx, w, h);
+
   // Poster
   try {
     const posterUrl = filmeAtual.posterPath || filmeAtual.posterThumb;
@@ -832,29 +836,81 @@ async function gerarBannerPromocional() {
       
       ctx.drawImage(posterImg, posterX, posterY, posterW, posterH);
       ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+      
+      // Tipo (Filme/Série) e ano abaixo da capa
+      const badgeSize = w * 0.022;
+      ctx.font = `700 ${badgeSize}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 8;
+      
+      // Badge colorido: Filme = laranja, Série = roxo
+      const isSeriePromo = filmeAtual.type === 'Série';
+      const badgeColor = isSeriePromo ? '#7c3aed' : corDestaqueFilme;
+      const badgeText = `${filmeAtual.year}  •  ${(filmeAtual.type || '').toUpperCase()}`;
+      const badgeTextW = ctx.measureText(badgeText).width;
+      const badgePad = w * 0.015;
+      const badgeH2 = badgeSize * 1.6;
+      const badgeX = posterX + posterW/2 - badgeTextW/2 - badgePad;
+      const badgeY2 = posterY + posterH + h * 0.01;
+      
+      // Fundo do badge
+      ctx.fillStyle = badgeColor;
+      roundRect(ctx, badgeX, badgeY2, badgeTextW + badgePad*2, badgeH2, badgeH2/2);
+      ctx.fill();
+      
+      // Texto do badge
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(badgeText, posterX + posterW/2, badgeY2 + badgeH2 * 0.68);
+      ctx.shadowBlur = 0;
     }
   } catch(e) { /* erro ao carregar poster */ }
 
-  // Pipoca (movida para cima, antes do texto ASSISTA)
-  ctx.font = `${w * 0.13}px serif`;
-  ctx.textAlign = 'right';
-  ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 25;
-  ctx.fillText('🍿', w * 0.87, h * 0.14);
-
-  // Texto ASSISTA
-  const titleSize = w * 0.115;
+  // Texto com nome do filme (diminuído)
+  let titleSize = w * 0.095;
   ctx.font      = `900 ${titleSize}px Inter, sans-serif`;
   ctx.fillStyle = corDestaqueFilme;
   ctx.textAlign = 'right';
-  ctx.fillText('ASSISTA', w * 0.95, h * 0.30);
+  let filmeName = (filmeAtual.title || filmeAtual.name || 'FILME').toUpperCase();
+  
+  // Posição Y do nome
+  const nameY = h * 0.28;
+  
+  // Posição máxima que o nome pode ocupar (topo da capa está em h * 0.07, altura da capa é h * 0.44)
+  const capaBottomY = h * 0.07 + h * 0.44; // h * 0.51
+  
+  // Ajusta o tamanho da fonte se o nome for muito grande ou cobrir a capa
+  const maxWidth = w * 0.85; // Largura máxima disponível
+  let textWidth = ctx.measureText(filmeName).width;
+  
+  // Verifica se o nome vai cobrir a capa (aproximadamente)
+  while ((textWidth > maxWidth || nameY - titleSize < capaBottomY) && titleSize > w * 0.025) {
+    titleSize -= w * 0.005; // Reduz 0.5% da largura do canvas
+    ctx.font = `900 ${titleSize}px Inter, sans-serif`;
+    textWidth = ctx.measureText(filmeName).width;
+  }
+  
+  ctx.fillText(filmeName, w * 0.95, nameY);
 
-  // Texto EM ALTA RESOLUÇÃO
-  const subSize = titleSize * 0.33;
-  ctx.font      = `700 ${subSize}px Inter, sans-serif`;
-  ctx.fillStyle = '#ffffff';
-  ctx.shadowBlur = 15;
-  ctx.fillText('EM ALTA RESOLUÇÃO', w * 0.95, h * 0.30 + subSize * 1.4);
-  ctx.shadowBlur = 0;
+  // Sinopse completa (resumo gerado do filme)
+  const sinopseSize = titleSize * 0.60;
+  ctx.font      = `400 ${sinopseSize}px Inter, sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.textAlign = 'right';
+  const sinopse = filmeAtual.overview || 'Sinopse não disponível';
+  
+  // Quebra a sinopse em múltiplas linhas
+  const maxCharsPerLine = 70;
+  const sinopseLines = [];
+  for (let i = 0; i < sinopse.length; i += maxCharsPerLine) {
+    sinopseLines.push(sinopse.substring(i, i + maxCharsPerLine));
+  }
+  
+  let sinopseY = h * 0.28 + titleSize * 0.8;
+  for (let i = 0; i < Math.min(sinopseLines.length, 6); i++) {
+    ctx.fillText(sinopseLines[i], w * 0.95, sinopseY);
+    sinopseY += sinopseSize * 1.3;
+  }
 
   // Botão "Assista agora" - Canto inferior direito com play integrado
   const formato = getFormato();
@@ -967,12 +1023,12 @@ async function gerarBannerPromocional() {
   // Logo (acima da faixa, centralizada)
   const logoPromo = await obterLogo();
   if (logoPromo) {
-    const logoMaxW = w * 0.35;
-    const logoMaxH = h * 0.13;
+    const logoMaxW = w * 0.40;
+    const logoMaxH = h * 0.15;
     const ls = Math.min(logoMaxW/logoPromo.width, logoMaxH/logoPromo.height);
     const lw = logoPromo.width*ls, lh = logoPromo.height*ls;
     ctx.shadowColor = p.glow; ctx.shadowBlur = 30;
-    ctx.drawImage(logoPromo, w/2-lw/2, h*0.54, lw, lh);
+    ctx.drawImage(logoPromo, w - lw - w * 0.05, h*0.12, lw, lh);
     ctx.shadowBlur = 0;
   }
 
@@ -3456,6 +3512,38 @@ async function desenharMarcaDagua(ctx, w, h) {
     
     // Segunda marca d'água — parte inferior do banner, centralizada
     const marcaY2 = h - marcaH - h * 0.01; // Próximo ao rodapé
+    ctx.drawImage(logoImg, marcaX, marcaY2, marcaW, marcaH);
+    
+    ctx.restore();
+    
+  } catch (e) {
+  }
+}
+
+// ===== FUNÇÃO PARA DESENHAR MARCA D'ÁGUA APENAS EMBAIXO =====
+async function desenharMarcaDaguaBaixo(ctx, w, h) {
+  const logoElement = document.getElementById('logoPreview');
+  
+  if (!logoElement || !logoElement.src || logoElement.style.display === 'none') return;
+  
+  try {
+    const logoImg = await carregarImagem(logoElement.src);
+    
+    // Tamanho grande para marca d'água (40% da largura)
+    const marcaMaxW = w * 0.40;
+    const marcaMaxH = h * 0.30;
+    const scale = Math.min(marcaMaxW / logoImg.width, marcaMaxH / logoImg.height);
+    const marcaW = logoImg.width * scale;
+    const marcaH = logoImg.height * scale;
+    
+    const marcaX = (w - marcaW) / 2;
+    
+    // Aplicar opacidade baixa (marca d'água)
+    ctx.save();
+    ctx.globalAlpha = 0.25;
+    
+    // Só marca d'água embaixo
+    const marcaY2 = h - marcaH - h * 0.01;
     ctx.drawImage(logoImg, marcaX, marcaY2, marcaW, marcaH);
     
     ctx.restore();
