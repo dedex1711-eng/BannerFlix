@@ -221,14 +221,7 @@ async function fazerLogin() {
   setBtnLoading('btnLogin', true, 'Entrar');
   
   try {
-    // Timeout de 10 segundos
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Timeout')), 10000)
-    );
-    
-    const loginPromise = sb.auth.signInWithPassword({ email, password: senha });
-    
-    const { error } = await Promise.race([loginPromise, timeoutPromise]);
+    const { error } = await sb.auth.signInWithPassword({ email, password: senha });
     
     setBtnLoading('btnLogin', false, 'Entrar');
 
@@ -242,12 +235,8 @@ async function fazerLogin() {
     }
   } catch (err) {
     setBtnLoading('btnLogin', false, 'Entrar');
-    
-    if (err.message === 'Timeout') {
-      mostrarErro('loginErro', '⏱️ Tempo esgotado. Verifique sua conexão e tente novamente.');
-    } else {
-      mostrarErro('loginErro', 'Erro ao fazer login: ' + err.message);
-    }
+    console.error('Erro no login:', err);
+    mostrarErro('loginErro', 'Erro ao fazer login. Tente novamente.');
   }
 }
 
