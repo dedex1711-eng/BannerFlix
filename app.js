@@ -2312,6 +2312,14 @@ function selecionarTipo(tipo) {
 }
 
 // ===== BUSCAR TODOS OS JOGOS DO DIA =====
+// Retorna data formatada YYYYMMDD no fuso de Brasília. offset=0 hoje, offset=1 amanhã
+function getDataFormatadaBR(offset = 0) {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' })
+          .split('/').reverse().join('');
+}
+
 async function buscarTodosJogosDoDia() {
   const container = document.getElementById('jogosDisponiveis');
   const btn = document.getElementById('btnBuscarTodos');
@@ -2381,18 +2389,10 @@ async function buscarTodosJogosDoDia() {
     { id: 'CAF.CHAMPIONS',        nome: 'CAF Champions League' },
   ];
   
-  const hoje = new Date();
-  const dataFormatada = hoje.toISOString().split('T')[0].replace(/-/g, '');
+  let dataFormatada = getDataFormatadaBR(0);
+  let buscandoAmanha = false;
   
   const canaisPorLiga = {
-    'BRA.1':  ['Globo', 'SporTV', 'Premiere'],
-    'BRA.2':  ['SporTV', 'Premiere'],
-    'BRA.3':  ['DAZN'],
-    'BRA.4':  ['DAZN'],
-    'BRA.CB': ['Globo', 'SporTV', 'Premiere'],
-    'BRA.RJ': ['Band', 'SporTV'],
-    'BRA.SP': ['Record', 'SporTV'],
-    'BRA.MG': ['SporTV'], 'BRA.RS': ['SporTV'],
     'BRA.BA': ['SporTV'], 'BRA.PE': ['SporTV'],
     'BRA.CE': ['SporTV'], 'BRA.GO': ['SporTV'],
     'BRA.PR': ['SporTV'], 'BRA.SC': ['SporTV'],
@@ -2478,9 +2478,54 @@ async function buscarTodosJogosDoDia() {
   
   // Ordenar por horário (mais cedo primeiro)
   todosJogos.sort((a, b) => a.timestamp - b.timestamp);
-  
+
+  // Se não há jogos hoje ou todos encerraram, busca amanhã automaticamente
+  const todosEncerrados = todosJogos.length > 0 && todosJogos.every(j => j.status === 'Encerrado' || j.status === 'Adiado' || j.status === 'Cancelado');
+  if ((todosJogos.length === 0 || todosEncerrados) && !buscandoAmanha) {
+    buscandoAmanha = true;
+    dataFormatada = getDataFormatadaBR(1);
+    container.innerHTML = '<div class="loading-state">🔄 Sem jogos hoje, buscando jogos de amanhã...</div>';
+    // Rebusca com a data de amanhã
+    todosJogos = [];
+    for (const chunk of chunks) {
+      const resultados = await Promise.allSettled(
+        chunk.map(liga =>
+          fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga.id}/scoreboard?dates=${dataFormatada}`)
+            .then(r => r.json())
+            .then(data => ({ liga, jogos: data.events || [] }))
+            .catch(() => ({ liga, jogos: [] }))
+        )
+      );
+      for (const resultado of resultados) {
+        if (resultado.status !== 'fulfilled') continue;
+        const { liga, jogos } = resultado.value;
+        jogos.forEach(jogo => {
+          try {
+            const timeCasa = jogo.competitions[0].competitors.find(c => c.homeAway === 'home');
+            const timeVisitante = jogo.competitions[0].competitors.find(c => c.homeAway === 'away');
+            const dataJogo = new Date(jogo.date);
+            const horario = dataJogo.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const status = traducaoStatus[jogo.status.type.description] || jogo.status.type.description;
+            const canaisDisponiveis = canaisPorLiga[liga.id] || ['ESPN'];
+            const canal = canaisDisponiveis[Math.floor(Math.random() * canaisDisponiveis.length)];
+            todosJogos.push({
+              timestamp: dataJogo.getTime(),
+              horario, status, liga: liga.nome, canal,
+              timeCasa: timeCasa.team.displayName,
+              timeVisitante: timeVisitante.team.displayName,
+              logoCasa: timeCasa.team.logo || '',
+              logoVisitante: timeVisitante.team.logo || '',
+              id: `${liga.id}_${jogo.id}`,
+            });
+          } catch(e) { /* jogo inválido */ }
+        });
+      }
+    }
+    todosJogos.sort((a, b) => a.timestamp - b.timestamp);
+  }
+
   if (todosJogos.length === 0) {
-    container.innerHTML = '<div class="empty-state">Nenhum jogo encontrado para hoje</div>';
+    container.innerHTML = '<div class="empty-state">Nenhum jogo encontrado para hoje ou amanhã</div>';
   } else {
     // Renderizar ordenado por horário
     let html = '';
@@ -2519,7 +2564,7 @@ async function buscarTodosJogosDoDia() {
     });
     
     container.innerHTML = html;
-    showToast(`✅ ${todosJogos.length} jogos encontrados hoje!`);
+    showToast(buscandoAmanha ? `📅 ${todosJogos.length} jogos encontrados para amanhã!` : `✅ ${todosJogos.length} jogos encontrados hoje!`);
     atualizarBotaoSelecionarTodos();
   }
   
@@ -2540,21 +2585,34 @@ async function buscarJogosFutebol() {
   container.innerHTML = '<div class="loading-state">🔄 Buscando jogos...</div>';
   
   try {
-    // Buscar jogos da ESPN API
-    const hoje = new Date();
-    const dataFormatada = hoje.toISOString().split('T')[0].replace(/-/g, '');
-    
-    const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=${dataFormatada}`);
-    
-    if (!response.ok) {
-      throw new Error('Erro ao buscar jogos');
+    // Buscar jogos da ESPN API — tenta hoje, se vazio ou todos encerrados busca amanhã
+    let dataFormatada = getDataFormatadaBR(0);
+    let buscandoAmanha = false;
+
+    let response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=${dataFormatada}`);
+    if (!response.ok) throw new Error('Erro ao buscar jogos');
+    let data = await response.json();
+    let jogos = data.events || [];
+
+    // Verifica se todos estão encerrados
+    const traducaoStatusCheck = { 'Final':'Encerrado','Postponed':'Adiado','Canceled':'Cancelado','Full Time':'Encerrado' };
+    const todosEncerrados = jogos.length > 0 && jogos.every(j => {
+      const s = traducaoStatusCheck[j.status.type.description];
+      return !!s;
+    });
+
+    if (jogos.length === 0 || todosEncerrados) {
+      buscandoAmanha = true;
+      dataFormatada = getDataFormatadaBR(1);
+      container.innerHTML = '<div class="loading-state">🔄 Sem jogos hoje, buscando amanhã...</div>';
+      response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=${dataFormatada}`);
+      if (!response.ok) throw new Error('Erro ao buscar jogos');
+      data = await response.json();
+      jogos = data.events || [];
     }
-    
-    const data = await response.json();
-    const jogos = data.events || [];
-    
+
     if (jogos.length === 0) {
-      container.innerHTML = '<div class="empty-state">Nenhum jogo encontrado para hoje nesta liga</div>';
+      container.innerHTML = `<div class="empty-state">Nenhum jogo encontrado para hoje ou amanhã nesta liga</div>`;
       return;
     }
     
@@ -2677,6 +2735,7 @@ async function buscarJogosFutebol() {
     });
     
     container.innerHTML = jogosHtml;
+    showToast(buscandoAmanha ? `📅 Jogos de amanhã carregados!` : `✅ Jogos carregados!`);
     
     // Atualizar botão "Selecionar Todos" após carregar jogos
     atualizarBotaoSelecionarTodos();
@@ -3024,7 +3083,7 @@ async function gerarBannerFutebolCanvasMultiplo(jogos, numeroBanner, totalBanner
     await desenharFundoSimplesFutebol(ctx, w, h);
   }
   
-  // Marca d'água da logo (por cima do fundo, abaixo dos textos)
+  // Marca d'água da logo (apenas rodapé)
   await desenharMarcaDagua(ctx, w, h);
   
   // Título "DESTAQUES" com indicador de página
@@ -3388,9 +3447,8 @@ async function gerarBannerFutebolCanvas(jogos) {
       await desenharFundoSimplesFutebol(ctx, w, h);
     }
     
-    // Marca d'água da logo (por cima do fundo, abaixo dos textos)
+    // Marca d'água da logo (apenas rodapé)
     await desenharMarcaDagua(ctx, w, h);
-    
     
     // Título "DESTAQUES"
     ctx.fillStyle = coresFutebol.destaque; // Laranja
@@ -3701,11 +3759,8 @@ async function desenharMarcaDagua(ctx, w, h) {
     ctx.save();
     ctx.globalAlpha = 0.25; // 25% de opacidade — mais visível
     
-    // Primeira marca d'água — topo (atrás de DESTAQUES)
-    ctx.drawImage(logoImg, marcaX, marcaY, marcaW, marcaH);
-    
-    // Segunda marca d'água — parte inferior do banner, centralizada
-    const marcaY2 = h - marcaH - h * 0.01; // Próximo ao rodapé
+    // Apenas marca d'água inferior — rodapé
+    const marcaY2 = h - marcaH - h * 0.01;
     ctx.drawImage(logoImg, marcaX, marcaY2, marcaW, marcaH);
     
     ctx.restore();
