@@ -145,6 +145,12 @@ body {
   overflow: hidden;
   box-shadow: 0 0 60px rgba(124,58,237,0.3);
   border: 1px solid var(--border);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.preview-card:hover {
+  transform: scale(1.03) translateY(-4px);
+  box-shadow: 0 16px 50px rgba(0,0,0,0.6), 0 0 40px rgba(124,58,237,0.55);
 }
 .preview-card img {
   width: 100%;
@@ -152,6 +158,10 @@ body {
   aspect-ratio: auto;
   object-fit: contain;
   background: rgba(0,0,0,0.3);
+  transition: filter 0.3s ease;
+}
+.preview-card:hover img {
+  filter: brightness(1.08);
 }
 .preview-badge {
   position: absolute;
@@ -546,7 +556,7 @@ body {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   min-height: 400px;
   display: flex;
@@ -558,6 +568,13 @@ body {
   max-height: 600px;
   display: none;
   border-radius: var(--radius);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
+}
+#bannerCanvas:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 30px rgba(124,58,237,0.4);
+  filter: brightness(1.08);
 }
 .canvas-placeholder {
   text-align: center;
