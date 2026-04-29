@@ -893,7 +893,7 @@ async function gerarBannerPromocional() {
       ctx.shadowBlur = 0;
       
       // Nota, duração e gêneros abaixo do badge
-      const infoSize = w * 0.018;
+      const infoSize = w * 0.012;
       ctx.font = `600 ${infoSize}px Inter, sans-serif`;
       ctx.fillStyle = 'rgba(255,255,255,0.9)';
       ctx.textAlign = 'center';
@@ -913,18 +913,15 @@ async function gerarBannerPromocional() {
   } catch(e) { /* erro ao carregar poster */ }
 
   // Texto com nome do filme (diminuído)
-  let titleSize = w * 0.115;
+  let titleSize = w * 0.140;
   ctx.font      = `900 ${titleSize}px Inter, sans-serif`;
   ctx.fillStyle = corDestaqueFilme;
   ctx.textAlign = 'right';
   let filmeName = (filmeAtual.title || filmeAtual.name || 'FILME').toUpperCase();
   
-  // Se o nome tiver ":" e for muito grande, usa só a parte antes dos dois pontos
+  // Se o nome for muito grande, o loop abaixo reduz a fonte automaticamente
   const maxWidth = w * 0.85;
   ctx.font = `900 ${titleSize}px Inter, sans-serif`;
-  if (filmeName.includes(':') && ctx.measureText(filmeName).width > maxWidth) {
-    filmeName = filmeName.split(':')[0].trim();
-  }
   
   // Posição Y do nome
   const nameY = h * 0.28;
@@ -972,14 +969,14 @@ async function gerarBannerPromocional() {
     // Proporções para Stories (9:16)
     btnH  = h * 0.060; // Diminuído de 0.070
     btnW  = w * 0.30;
-    btnX  = w * 0.95 - btnW;
+    btnX  = w * 0.72 - btnW;
     btnY  = h * 0.42;
     circR = btnH * 0.55;
   } else {
     // Proporções padrão para outros formatos
     btnH  = h * 0.065;
     btnW  = w * 0.30;
-    btnX  = w * 0.95 - btnW;
+    btnX  = w * 0.72 - btnW;
     btnY  = h * 0.42;
     circR = btnH * 0.65;
   }
@@ -1043,33 +1040,33 @@ async function gerarBannerPromocional() {
   ctx.fillText('Assista agora', textX, btnY + btnH*0.62);
 
   // Faixa inferior com contatos (substitui a seção de dispositivos)
-  const faixaY = h * 0.68;
-  const faixaH = h * 0.115;
+  // Faixa de dispositivos — altura aumentada para caber ícones + labels
+  const faixaY = h * 0.63;
+  const faixaH = h * 0.20;
   const fg = ctx.createLinearGradient(0, faixaY, w, faixaY);
   fg.addColorStop(0, 'transparent');
-  fg.addColorStop(0.08, 'rgba(0,0,0,0.6)');
-  fg.addColorStop(0.92, 'rgba(0,0,0,0.6)');
+  fg.addColorStop(0.06, 'rgba(0,0,0,0.72)');
+  fg.addColorStop(0.94, 'rgba(0,0,0,0.72)');
   fg.addColorStop(1, 'transparent');
   ctx.fillStyle = fg;
   ctx.fillRect(0, faixaY, w, faixaH);
 
-  // Ícones dos dispositivos com título "ASSISTA EM QUALQUER DISPOSITIVO"
+  // Título da faixa
   ctx.font      = `700 ${formato === 'paisagem' ? w * 0.018 : w * 0.022}px Inter, sans-serif`;
-  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
   ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 10;
-  ctx.fillText('ASSISTA EM QUALQUER DISPOSITIVO', w/2, faixaY + faixaH * 0.35);
+  ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 10;
+  ctx.fillText('ASSISTA EM QUALQUER DISPOSITIVO', w/2, faixaY + faixaH * 0.18);
   ctx.shadowBlur = 0;
 
-  const iconY    = faixaY + faixaH * 0.72;
-  const iconSize = formato === 'stories' ? faixaH * 0.30 : faixaH * 0.38;
-  const devices  = ['LG','Roku','TCL','Samsung','Fire TV','Android TV','Mecool','Mi'];
-  const spacing  = formato === 'stories' ? iconSize * 1.8 : iconSize * 2.5;
-  const totalW   = devices.length * spacing;
-  let   iconX    = w/2 - totalW/2;
-  devices.forEach(name => {
-    desenharIconeDispositivo(ctx, name, iconX, iconY, iconSize, p.accent);
-    iconX += spacing;
+  // Ícones em linha única, bem espaçados
+  const devices  = ['Smart TV','Celular','Computador','Tablet','TV Box','Projetor'];
+  const iconSize = Math.min(w * 0.055, faixaH * 0.30); // tamanho controlado
+  const iconY    = faixaY + faixaH * 0.58;             // centro vertical dos ícones
+  const spacing  = w / (devices.length + 1);           // espaçamento uniforme
+  devices.forEach((name, i) => {
+    const iconCX = spacing * (i + 1); // centro X de cada ícone
+    desenharIconeDispositivo(ctx, name, iconCX, iconY, iconSize, p.accent);
   });
 
   // Logo (acima da faixa, centralizada)
@@ -1080,7 +1077,7 @@ async function gerarBannerPromocional() {
     const ls = Math.min(logoMaxW/logoPromo.width, logoMaxH/logoPromo.height);
     const lw = logoPromo.width*ls, lh = logoPromo.height*ls;
     ctx.shadowColor = p.glow; ctx.shadowBlur = 30;
-    ctx.drawImage(logoPromo, w - lw - w * 0.05, h*0.12, lw, lh);
+    ctx.drawImage(logoPromo, w - lw - w * 0.05, h*0.04, lw, lh);
     ctx.shadowBlur = 0;
   }
 
@@ -1115,35 +1112,180 @@ async function gerarBannerPromocional() {
 // Desenha ícone de dispositivo
 function desenharIconeDispositivo(ctx, nome, x, y, size, accent) {
   ctx.save();
-  const cx = x + size * 1.1;
+  const cx = x; // x já é o centro horizontal
+  const cor = accent || '#ffffff';
 
-  // Fundo do badge (um pouco maior)
-  const badgeW = size * 1.5;
-  const badgeH = size * 1.2;
-  ctx.fillStyle = 'rgba(255,255,255,0.13)';
-  roundRect(ctx, cx - badgeW/2, y - badgeH/2, badgeW, badgeH, size*0.2);
-  ctx.fill();
+  ctx.strokeStyle = '#ffffff';
+  ctx.fillStyle   = '#ffffff';
+  ctx.lineWidth   = size * 0.08;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
 
-  ctx.textAlign    = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.shadowBlur   = 0;
+  const iconTop = y - size * 0.72;
 
-  // Configurações por dispositivo (tamanhos ajustados)
-  const cores = {
-    'LG':         { cor:'#a50034', fs: size*0.50, txt:'LG' },
-    'Roku':       { cor:'#6c1d8e', fs: size*0.45, txt:'Roku' },
-    'TCL':        { cor:'#1a73e8', fs: size*0.50, txt:'TCL' },
-    'Samsung':    { cor:'#1428a0', fs: size*0.32, txt:'Samsung' },
-    'Fire TV':    { cor:'#ff9900', fs: size*0.34, txt:'Fire TV' },
-    'Android TV': { cor:'#3ddc84', fs: size*0.28, txt:'Android' },
-    'Mecool':     { cor:'#ffffff', fs: size*0.34, txt:'Mecool' },
-    'Mi':         { cor:'#ff6900', fs: size*0.58, txt:'mi' },
-  };
-  
-  const cfg = cores[nome] || { cor:'#ffffff', fs: size*0.38, txt:nome };
-  ctx.fillStyle = cfg.cor;
-  ctx.font      = `700 ${cfg.fs}px Inter, sans-serif`;
-  ctx.fillText(cfg.txt, cx, y);
+  if (nome === 'Smart TV') {
+    // Tela
+    const tw = size * 1.6, th = size * 1.1;
+    const tx = cx - tw/2, ty = iconTop;
+    roundRect(ctx, tx, ty, tw, th, size * 0.1);
+    ctx.stroke();
+    // Pé
+    ctx.beginPath();
+    ctx.moveTo(cx, ty + th);
+    ctx.lineTo(cx, ty + th + size * 0.22);
+    ctx.stroke();
+    // Base
+    ctx.beginPath();
+    ctx.moveTo(cx - size * 0.4, ty + th + size * 0.22);
+    ctx.lineTo(cx + size * 0.4, ty + th + size * 0.22);
+    ctx.stroke();
+
+  } else if (nome === 'Celular') {
+    const pw = size * 0.7, ph = size * 1.3;
+    const px = cx - pw/2, py = iconTop;
+    roundRect(ctx, px, py, pw, ph, size * 0.12);
+    ctx.stroke();
+    // Notch
+    ctx.beginPath();
+    ctx.arc(cx, py + size * 0.1, size * 0.07, 0, Math.PI * 2);
+    ctx.fill();
+
+  } else if (nome === 'Computador') {
+    // Tela
+    const sw = size * 1.5, sh = size * 1.0;
+    const sx = cx - sw/2, sy = iconTop;
+    roundRect(ctx, sx, sy, sw, sh, size * 0.08);
+    ctx.stroke();
+    // Base teclado
+    ctx.beginPath();
+    ctx.moveTo(cx - size * 0.7, sy + sh + size * 0.18);
+    ctx.lineTo(cx + size * 0.7, sy + sh + size * 0.18);
+    ctx.stroke();
+    // Dobradiça
+    ctx.beginPath();
+    ctx.moveTo(cx - size * 0.2, sy + sh);
+    ctx.lineTo(cx - size * 0.5, sy + sh + size * 0.18);
+    ctx.moveTo(cx + size * 0.2, sy + sh);
+    ctx.lineTo(cx + size * 0.5, sy + sh + size * 0.18);
+    ctx.stroke();
+
+  } else if (nome === 'Tablet') {
+    const tw = size * 1.0, th = size * 1.35;
+    const tx = cx - tw/2, ty = iconTop;
+    roundRect(ctx, tx, ty, tw, th, size * 0.1);
+    ctx.stroke();
+    // Botão home
+    ctx.beginPath();
+    ctx.arc(cx, ty + th - size * 0.12, size * 0.07, 0, Math.PI * 2);
+    ctx.stroke();
+
+  } else if (nome === 'TV Box') {
+    // Box
+    const bw = size * 1.1, bh = size * 0.65;
+    const bx = cx - bw/2 - size * 0.2, by = iconTop + size * 0.4;
+    roundRect(ctx, bx, by, bw, bh, size * 0.1);
+    ctx.stroke();
+    // Ponto no box
+    ctx.beginPath();
+    ctx.arc(bx + bw/2, by + bh/2, size * 0.07, 0, Math.PI * 2);
+    ctx.fill();
+    // Controle remoto
+    const rx = cx + size * 0.55, ry = iconTop;
+    const rw = size * 0.38, rh = size * 1.1;
+    roundRect(ctx, rx - rw/2, ry, rw, rh, size * 0.1);
+    ctx.stroke();
+    // Botão do controle
+    ctx.beginPath();
+    ctx.arc(rx, ry + rh * 0.35, size * 0.1, 0, Math.PI * 2);
+    ctx.stroke();
+
+  } else if (nome === 'Videogame') {
+    // Controle estilo Xbox — forma fiel com bezier
+    const s  = size * 1.1;
+    const gx = cx;
+    const gy = iconTop + s * 0.55;
+
+    ctx.beginPath();
+    // Topo esquerdo → entalhe central esquerdo
+    ctx.moveTo(gx - s * 0.25, gy - s * 0.55);
+    ctx.bezierCurveTo(gx - s * 0.55, gy - s * 0.65, gx - s * 0.90, gy - s * 0.55, gx - s * 0.90, gy - s * 0.20);
+    // Alça esquerda (desce e arredonda)
+    ctx.bezierCurveTo(gx - s * 0.92, gy + s * 0.15, gx - s * 0.85, gy + s * 0.55, gx - s * 0.60, gy + s * 0.65);
+    ctx.bezierCurveTo(gx - s * 0.40, gy + s * 0.72, gx - s * 0.20, gy + s * 0.55, gx - s * 0.10, gy + s * 0.35);
+    // Base central
+    ctx.bezierCurveTo(gx - s * 0.05, gy + s * 0.25, gx + s * 0.05, gy + s * 0.25, gx + s * 0.10, gy + s * 0.35);
+    // Alça direita (sobe)
+    ctx.bezierCurveTo(gx + s * 0.20, gy + s * 0.55, gx + s * 0.40, gy + s * 0.72, gx + s * 0.60, gy + s * 0.65);
+    ctx.bezierCurveTo(gx + s * 0.85, gy + s * 0.55, gx + s * 0.92, gy + s * 0.15, gx + s * 0.90, gy - s * 0.20);
+    // Topo direito → entalhe central direito
+    ctx.bezierCurveTo(gx + s * 0.90, gy - s * 0.55, gx + s * 0.55, gy - s * 0.65, gx + s * 0.25, gy - s * 0.55);
+    // Entalhe no topo (curva côncava)
+    ctx.bezierCurveTo(gx + s * 0.15, gy - s * 0.52, gx + s * 0.08, gy - s * 0.42, gx, gy - s * 0.42);
+    ctx.bezierCurveTo(gx - s * 0.08, gy - s * 0.42, gx - s * 0.15, gy - s * 0.52, gx - s * 0.25, gy - s * 0.55);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Cruz direcional (esquerda)
+    const dx = gx - s * 0.42, dy = gy + s * 0.05;
+    const ca = s * 0.10, cb = s * 0.22;
+    ctx.beginPath();
+    // Horizontal
+    ctx.moveTo(dx - cb, dy - ca); ctx.lineTo(dx - cb, dy + ca);
+    ctx.lineTo(dx - ca, dy + ca); ctx.lineTo(dx - ca, dy + cb);
+    ctx.lineTo(dx + ca, dy + cb); ctx.lineTo(dx + ca, dy + ca);
+    ctx.lineTo(dx + cb, dy + ca); ctx.lineTo(dx + cb, dy - ca);
+    ctx.lineTo(dx + ca, dy - ca); ctx.lineTo(dx + ca, dy - cb);
+    ctx.lineTo(dx - ca, dy - cb); ctx.lineTo(dx - ca, dy - ca);
+    ctx.closePath();
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+
+    // 4 botões ABXY (direita)
+    const bx = gx + s * 0.42, by = gy + s * 0.05;
+    const br = s * 0.10;
+    [[-s*0.18, 0],[s*0.18, 0],[0, -s*0.18],[0, s*0.18]].forEach(([ox, oy]) => {
+      ctx.beginPath();
+      ctx.arc(bx + ox, by + oy, br, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+    });
+
+  } else if (nome === 'Projetor') {
+    // Corpo
+    const pw = size * 1.5, ph = size * 0.75;
+    const px = cx - pw/2, py = iconTop + size * 0.25;
+    roundRect(ctx, px, py, pw, ph, size * 0.12);
+    ctx.stroke();
+    // Lente
+    ctx.beginPath();
+    ctx.arc(cx + size * 0.35, py + ph/2, size * 0.22, 0, Math.PI * 2);
+    ctx.stroke();
+    // Pés
+    ctx.beginPath();
+    ctx.moveTo(px + pw*0.25, py + ph);
+    ctx.lineTo(px + pw*0.25, py + ph + size*0.18);
+    ctx.moveTo(px + pw*0.75, py + ph);
+    ctx.lineTo(px + pw*0.75, py + ph + size*0.18);
+    ctx.stroke();
+    // Feixe de luz (triângulo branco sólido)
+    ctx.beginPath();
+    ctx.moveTo(cx + size * 0.57, py + ph/2);
+    ctx.lineTo(cx + size * 1.1, py + ph/2 - size * 0.3);
+    ctx.lineTo(cx + size * 1.1, py + ph/2 + size * 0.3);
+    ctx.closePath();
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+  }
+
+  // Label abaixo do ícone
+  ctx.fillStyle   = 'rgba(255,255,255,0.9)';
+  ctx.font        = `600 ${size * 0.28}px Inter, sans-serif`;
+  ctx.textAlign   = 'center';
+  ctx.textBaseline = 'top';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur  = 6;
+  ctx.fillText(nome, cx, y + size * 0.95);
+  ctx.shadowBlur  = 0;
 
   ctx.textBaseline = 'alphabetic';
   ctx.restore();
@@ -3581,9 +3723,9 @@ async function desenharMarcaDaguaBaixo(ctx, w, h) {
   try {
     const logoImg = await carregarImagem(logoElement.src);
     
-    // Tamanho grande para marca d'água (40% da largura)
-    const marcaMaxW = w * 0.40;
-    const marcaMaxH = h * 0.30;
+    // Tamanho menor para marca d'água (20% da largura)
+    const marcaMaxW = w * 0.20;
+    const marcaMaxH = h * 0.12;
     const scale = Math.min(marcaMaxW / logoImg.width, marcaMaxH / logoImg.height);
     const marcaW = logoImg.width * scale;
     const marcaH = logoImg.height * scale;
@@ -3594,8 +3736,8 @@ async function desenharMarcaDaguaBaixo(ctx, w, h) {
     ctx.save();
     ctx.globalAlpha = 0.25;
     
-    // Só marca d'água embaixo
-    const marcaY2 = h - marcaH - h * 0.01;
+    // Posiciona abaixo da faixa preta (faixa termina em h * 0.83)
+    const marcaY2 = h * 0.83 + h * 0.01;
     ctx.drawImage(logoImg, marcaX, marcaY2, marcaW, marcaH);
     
     ctx.restore();
