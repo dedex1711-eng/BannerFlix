@@ -4095,7 +4095,7 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
   const hoje = new Date();
   const dia = hoje.getDate().toString().padStart(2, '0');
   const mes = (hoje.getMonth() + 1).toString().padStart(2, '0');
-  const diaSemana = hoje.toLocaleDateString('pt-BR', { weekday: 'short' }).toUpperCase().replace('.', '');
+  const diaSemana = hoje.toLocaleDateString('pt-BR', { weekday: 'long' }).toUpperCase().replace('-FEIRA', '');
   
   // Caixa da data (BRANCA)
   const dataBoxW = w * 0.10;
