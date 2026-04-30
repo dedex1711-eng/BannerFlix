@@ -1443,6 +1443,12 @@ body {
   color: var(--text-muted);
   font-size: 0.75rem;
 }
+
+/* Esconder opção de template jogador por padrão (só aparece no futebol) */
+.template-jogador-option {
+  display: none;
+}
+
 /* ===== SELETOR DE TIPO DE BANNER ===== */
 .banner-type-selector {
   display: flex;

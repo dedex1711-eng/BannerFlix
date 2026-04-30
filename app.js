@@ -8,11 +8,221 @@ const TMDB_IMG_W   = 'https://image.tmdb.org/t/p/w500';
 // ===== ESTADO =====
 let filmeAtual    = null;   // { title, year, posterPath, backdropPath, type }
 let logoImg       = null;   // HTMLImageElement da logo do usuário
+let jogadorImg    = null;   // HTMLImageElement da foto do jogador
+let jogadorAutomatico = false; // Flag para indicar se está usando jogador automático
 let bannerGerado  = false;
+
+// ===== BANCO DE DADOS DE JOGADORES FAMOSOS =====
+// Array de imagens disponíveis (fallback aleatório)
+const imagensJogadoresDisponiveis = [
+  { nome: 'Giorgian De Arrascaeta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
+  { nome: 'Harry Kane', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Harry%20Kane%20Bayern%20Munich.png' },
+  { nome: 'Kylian Mbappé', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
+  { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  { nome: 'Lionel Messi', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lionel%20Messi%20Inter%20Miami.png' },
+  { nome: 'Luka Modrić', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luka%20Modrić%20Real%20Madrid.png' },
+  { nome: 'Erling Haaland', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Manchester%20City%20Erling%20Haaland.png' },
+  { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  { nome: 'Gustavo Gómez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gustavo%20Gómez.png' },
+  { nome: 'Vinícius Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Vinicius%20Junior%20Real%20Madrid.png' },
+  { nome: 'Memphis Depay', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Memphis%20Depay.png' },
+  { nome: 'Mohamed Salah', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mohamed%20Salah.png' },
+  { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' }
+];
+
+const jogadoresFamosos = {
+  // Campeonato Saudita
+  'Al Nassr': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Ahli': { nome: 'Roberto Firmino', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Hilal': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Ittihad': { nome: 'Karim Benzema', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
+  'Al Riyadh': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Qadsiah': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Ettifaq': { nome: 'Roberto Firmino', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Fateh': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Taawoun': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Shabab': { nome: 'Karim Benzema', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
+  
+  // Premier League
+  'Manchester City': { nome: 'Erling Haaland', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Manchester%20City%20Erling%20Haaland.png' },
+  'Arsenal': { nome: 'Bukayo Saka', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  'Liverpool': { nome: 'Mohamed Salah', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mohamed%20Salah.png' },
+  'Manchester United': { nome: 'Bruno Fernandes', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luka%20Modrić%20Real%20Madrid.png' },
+  'Chelsea': { nome: 'Cole Palmer', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  'Tottenham': { nome: 'Son Heung-min', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
+  'Newcastle': { nome: 'Bruno Fernandes', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luka%20Modrić%20Real%20Madrid.png' },
+  'Aston Villa': { nome: 'Erling Haaland', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Manchester%20City%20Erling%20Haaland.png' },
+  
+  // La Liga
+  'Real Madrid': { nome: 'Vinícius Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Vinicius%20Junior%20Real%20Madrid.png' },
+  'Barcelona': { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  'Atlético Madrid': { nome: 'Antoine Griezmann', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
+  'Sevilla': { nome: 'Vinícius Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Vinicius%20Junior%20Real%20Madrid.png' },
+  'Valencia': { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  
+  // Brasileirão
+  'Flamengo': { nome: 'Giorgian De Arrascaeta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
+  'Palmeiras': { nome: 'Gustavo Gómez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gustavo%20Gómez.png' },
+  'São Paulo': { nome: 'Lucas Moura', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
+  'Corinthians': { nome: 'Memphis Depay', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Memphis%20Depay.png' },
+  'Estudiantes de La Plata': { nome: 'Lionel Messi', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lionel%20Messi%20Inter%20Miami.png' },
+  'Atlético Mineiro': { nome: 'Gabigol', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
+  'Grêmio': { nome: 'Lucas Moura', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
+  'Internacional': { nome: 'Yuri Alberto', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
+  'Brighton': { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
+  
+  // Outros times populares
+  'Paris Saint Germain': { nome: 'Kylian Mbappé', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
+  'Bayern Munich': { nome: 'Harry Kane', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Harry%20Kane%20Bayern%20Munich.png' },
+  'Inter Miami': { nome: 'Lionel Messi', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lionel%20Messi%20Inter%20Miami.png' },
+  'Juventus': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'AC Milan': { nome: 'Kylian Mbappé', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
+  'Inter Milan': { nome: 'Harry Kane', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Harry%20Kane%20Bayern%20Munich.png' },
+};
 
 async function obterLogo() {
   if (logoImg) return logoImg;
   return null;
+}
+
+// ===== FUNÇÃO PARA BUSCAR JOGADOR AUTOMATICAMENTE =====
+async function buscarJogadorAutomatico() {
+  if (jogosSelecionados.length === 0) {
+    showToast('❌ Selecione pelo menos um jogo primeiro!');
+    return;
+  }
+  
+  console.log('🔍 Analisando jogos selecionados:', jogosSelecionados.length);
+  
+  // Tentar encontrar jogador em TODOS os jogos selecionados
+  let jogadorEncontrado = null;
+  let timeEncontrado = null;
+  let usouAleatorio = false;
+  
+  // Percorrer todos os jogos para encontrar um time cadastrado
+  for (let i = 0; i < jogosSelecionados.length; i++) {
+    const jogo = jogosSelecionados[i];
+    
+    if (jogadoresFamosos[jogo.timeCasa]) {
+      jogadorEncontrado = jogadoresFamosos[jogo.timeCasa];
+      timeEncontrado = jogo.timeCasa;
+      console.log(`✅ Encontrado jogador do time da casa no jogo ${i+1}:`, timeEncontrado);
+      break;
+    } else if (jogadoresFamosos[jogo.timeVisitante]) {
+      jogadorEncontrado = jogadoresFamosos[jogo.timeVisitante];
+      timeEncontrado = jogo.timeVisitante;
+      console.log(`✅ Encontrado jogador do time visitante no jogo ${i+1}:`, timeEncontrado);
+      break;
+    }
+  }
+  
+  // Se não encontrou nenhum time, usar jogador aleatório
+  if (!jogadorEncontrado) {
+    const indiceAleatorio = Math.floor(Math.random() * imagensJogadoresDisponiveis.length);
+    jogadorEncontrado = imagensJogadoresDisponiveis[indiceAleatorio];
+    timeEncontrado = 'Jogador Aleatório';
+    usouAleatorio = true;
+    console.log('⚠️ Nenhum time cadastrado encontrado! Usando jogador aleatório:', jogadorEncontrado.nome);
+  }
+  
+  // Carregar a imagem do jogador
+  const mensagem = usouAleatorio 
+    ? `🎲 Usando ${jogadorEncontrado.nome} (aleatório)`
+    : `🔍 Buscando ${jogadorEncontrado.nome} (${timeEncontrado})`;
+  showToast(mensagem, 2000);
+  
+  try {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    await new Promise((resolve, reject) => {
+      img.onload = () => {
+        jogadorImg = img;
+        jogadorAutomatico = true;
+        
+        // Atualizar preview
+        const preview = document.getElementById('jogadorPreview');
+        if (preview) {
+          preview.src = jogadorEncontrado.url;
+          preview.style.display = 'block';
+        }
+        const placeholder = document.getElementById('jogadorPlaceholder');
+        if (placeholder) placeholder.style.display = 'none';
+        const btnRemove = document.getElementById('btnRemoveJogador');
+        if (btnRemove) btnRemove.style.display = 'block';
+        
+        showToast(`✅ ${jogadorEncontrado.nome} carregado!`);
+        resolve();
+      };
+      
+      img.onerror = () => {
+        showToast(`❌ Erro ao carregar imagem de ${jogadorEncontrado.nome}. Use upload manual ou tente outro jogo.`);
+        reject();
+      };
+      
+      img.src = jogadorEncontrado.url;
+    });
+    
+  } catch (error) {
+    console.error('Erro ao buscar jogador:', error);
+    showToast('💡 Dica: Faça upload manual da imagem do jogador', 4000);
+  }
+}
+
+// ===== FUNÇÃO PARA BUSCAR JOGADOR PARA BANNER ESPECÍFICO (MÚLTIPLOS BANNERS) =====
+async function buscarJogadorParaBanner(jogos, indiceBanner) {
+  console.log(`🔍 Buscando jogador para banner ${indiceBanner + 1} com ${jogos.length} jogos`);
+  
+  // Tentar encontrar jogador em TODOS os jogos deste banner
+  let jogadorEncontrado = null;
+  
+  for (let i = 0; i < jogos.length; i++) {
+    const jogo = jogos[i];
+    
+    // Alternar entre time casa e visitante baseado no índice do banner
+    const usarTimeCasa = indiceBanner % 2 === 0;
+    const timePrincipal = usarTimeCasa ? jogo.timeCasa : jogo.timeVisitante;
+    const timeAlternativo = usarTimeCasa ? jogo.timeVisitante : jogo.timeCasa;
+    
+    if (jogadoresFamosos[timePrincipal]) {
+      jogadorEncontrado = jogadoresFamosos[timePrincipal];
+      console.log(`✅ Banner ${indiceBanner + 1}: Encontrado ${jogadorEncontrado.nome} (${timePrincipal})`);
+      break;
+    } else if (jogadoresFamosos[timeAlternativo]) {
+      jogadorEncontrado = jogadoresFamosos[timeAlternativo];
+      console.log(`✅ Banner ${indiceBanner + 1}: Encontrado ${jogadorEncontrado.nome} (${timeAlternativo})`);
+      break;
+    }
+  }
+  
+  // Se não encontrou nenhum time cadastrado, usar jogador aleatório baseado no índice
+  if (!jogadorEncontrado) {
+    const indiceAleatorio = indiceBanner % imagensJogadoresDisponiveis.length;
+    jogadorEncontrado = imagensJogadoresDisponiveis[indiceAleatorio];
+    console.log(`⚠️ Banner ${indiceBanner + 1}: Nenhum time cadastrado, usando ${jogadorEncontrado.nome} (aleatório)`);
+  }
+  
+  if (!jogadorEncontrado) {
+    return null;
+  }
+  
+  // Carregar a imagem do jogador
+  try {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    await new Promise((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject();
+      img.src = jogadorEncontrado.url;
+    });
+    
+    return img;
+    
+  } catch (error) {
+    console.error(`❌ Erro ao carregar jogador para banner ${indiceBanner + 1}:`, error);
+    return null;
+  }
 }
 
 // Função para definir a logo a partir de uma URL (chamada pelo sistema de autenticação)
@@ -55,7 +265,144 @@ document.addEventListener('DOMContentLoaded', function() {
     const banner = document.getElementById('cookieBanner');
     if (banner) banner.style.display = 'none';
   }
+  
+  // Carregar preferências salvas
+  carregarPreferencias();
 });
+
+// ===== SALVAR E CARREGAR PREFERÊNCIAS =====
+function salvarPreferencias() {
+  // Salvar template baseado no tipo atual (filme ou futebol)
+  const template = document.querySelector('input[name="template"]:checked');
+  if (template) {
+    if (tipoAtual === 'futebol') {
+      localStorage.setItem('templateFutebol', template.value);
+    } else {
+      localStorage.setItem('templateFilme', template.value);
+    }
+  }
+  
+  // Salvar formato
+  const formato = document.querySelector('input[name="formato"]:checked');
+  if (formato) {
+    localStorage.setItem('formatoSelecionado', formato.value);
+  }
+  
+  // Salvar overlay futebol
+  const overlayFutebol = document.querySelector('input[name="overlayFutebol"]:checked');
+  if (overlayFutebol) {
+    localStorage.setItem('overlayFutebol', overlayFutebol.value);
+  }
+  
+  // Salvar fundo promocional
+  const fundoPromo = document.querySelector('input[name="fundoPromo"]:checked');
+  if (fundoPromo) {
+    localStorage.setItem('fundoPromo', fundoPromo.value);
+  }
+  
+  // Salvar overlay promocional
+  const overlayPromo = document.querySelector('input[name="overlayPromo"]:checked');
+  if (overlayPromo) {
+    localStorage.setItem('overlayPromo', overlayPromo.value);
+  }
+  
+  // Salvar overlay filmes (template simples)
+  const overlayFilme = document.querySelector('input[name="overlay"]:checked');
+  if (overlayFilme) {
+    localStorage.setItem('overlayFilme', overlayFilme.value);
+  }
+}
+
+function carregarPreferencias() {
+  // Carregar template baseado no tipo atual
+  const templateSalvo = tipoAtual === 'futebol' 
+    ? localStorage.getItem('templateFutebol')
+    : localStorage.getItem('templateFilme');
+    
+  if (templateSalvo) {
+    const radio = document.querySelector(`input[name="template"][value="${templateSalvo}"]`);
+    if (radio) {
+      radio.checked = true;
+      // Atualizar painéis após um pequeno delay para garantir que tudo está carregado
+      setTimeout(() => {
+        alternarPainelTemplate();
+      }, 50);
+    }
+  }
+  
+  // Carregar formato
+  const formatoSalvo = localStorage.getItem('formatoSelecionado');
+  if (formatoSalvo) {
+    const radio = document.querySelector(`input[name="formato"][value="${formatoSalvo}"]`);
+    if (radio) {
+      radio.checked = true;
+    }
+  }
+  
+  // Carregar cor de destaque futebol
+  const corSalva = localStorage.getItem('corFutebolDestaque');
+  if (corSalva) {
+    coresFutebol.destaque = corSalva;
+    coresFutebol.hora = corSalva;
+    coresFutebol.liga = corSalva;
+    
+    // Atualizar visual
+    setTimeout(() => {
+      document.querySelectorAll('#corFutebolUnica .cor-opt').forEach(opt => {
+        if (opt.dataset.cor === corSalva) {
+          opt.classList.add('active');
+        } else {
+          opt.classList.remove('active');
+        }
+      });
+    }, 100);
+  }
+  
+  // Carregar cor de destaque filme
+  const corFilmeSalva = localStorage.getItem('corDestaqueFilme');
+  if (corFilmeSalva) {
+    corDestaqueFilme = corFilmeSalva;
+    
+    // Atualizar visual
+    setTimeout(() => {
+      document.querySelectorAll('#corDestaqueFilme .cor-opt, #corDestaqueFilmePromo .cor-opt').forEach(opt => {
+        if (opt.dataset.cor === corFilmeSalva) {
+          opt.classList.add('active');
+        } else {
+          opt.classList.remove('active');
+        }
+      });
+    }, 100);
+  }
+  
+  // Carregar overlay futebol
+  const overlayFutebolSalvo = localStorage.getItem('overlayFutebol');
+  if (overlayFutebolSalvo) {
+    const radio = document.querySelector(`input[name="overlayFutebol"][value="${overlayFutebolSalvo}"]`);
+    if (radio) radio.checked = true;
+  }
+  
+  // Carregar fundo promocional
+  const fundoPromoSalvo = localStorage.getItem('fundoPromo');
+  if (fundoPromoSalvo) {
+    const radio = document.querySelector(`input[name="fundoPromo"][value="${fundoPromoSalvo}"]`);
+    if (radio) radio.checked = true;
+  }
+  
+  // Carregar overlay promocional
+  const overlayPromoSalvo = localStorage.getItem('overlayPromo');
+  if (overlayPromoSalvo) {
+    const radio = document.querySelector(`input[name="overlayPromo"][value="${overlayPromoSalvo}"]`);
+    if (radio) radio.checked = true;
+  }
+  
+  // Carregar overlay filmes (template simples)
+  const overlayFilmeSalvo = localStorage.getItem('overlayFilme');
+  if (overlayFilmeSalvo) {
+    const radio = document.querySelector(`input[name="overlay"][value="${overlayFilmeSalvo}"]`);
+    if (radio) radio.checked = true;
+  }
+}
 
 // ===== TOAST =====
 function showToast(msg, duration = 2800) {
@@ -432,6 +779,47 @@ function removerLogo() {
   }
 }
 
+// ===== IMAGEM DO JOGADOR =====
+function carregarImagemJogador(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      jogadorImg = img;
+      jogadorAutomatico = false; // Reset flag automático quando carregar manualmente
+      const preview = document.getElementById('jogadorPreview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      document.getElementById('jogadorPlaceholder').style.display = 'none';
+      document.getElementById('btnRemoveJogador').style.display = 'block';
+      showToast('✅ Imagem do jogador carregada!');
+      // Regenera se tiver jogos selecionados
+      if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
+        gerarBannerAtual();
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removerImagemJogador() {
+  jogadorImg = null;
+  jogadorAutomatico = false; // Reset flag automático
+  document.getElementById('jogadorPreview').style.display = 'none';
+  document.getElementById('jogadorPreview').src = '';
+  document.getElementById('jogadorPlaceholder').style.display = 'block';
+  document.getElementById('btnRemoveJogador').style.display = 'none';
+  document.getElementById('jogadorInput').value = '';
+  // Regenera se tiver jogos selecionados
+  if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
+    gerarBannerAtual();
+  }
+}
+
 // ===== FORMATO =====
 function getFormato() {
   return document.querySelector('input[name="formato"]:checked').value;
@@ -454,7 +842,7 @@ function atualizarFormato() {
   }
 }
 
-// ===== ALTERNAR PAINEL DE TEMPLATE (SIMPLES / PROMOCIONAL) =====
+// ===== ALTERNAR PAINEL DE TEMPLATE (SIMPLES / PROMOCIONAL / JOGADOR) =====
 function alternarPainelTemplate() {
   const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
   const overlayOpcoes = document.getElementById('overlayOpcoes');
@@ -463,15 +851,26 @@ function alternarPainelTemplate() {
   const fundoFutebolImagens = document.getElementById('fundoFutebolImagens');
   const corDestaquePromoOpcoes = document.getElementById('corDestaquePromoOpcoes');
   const overlayFutebolOpcoes = document.getElementById('overlayFutebolOpcoes');
+  const coresFutebolOpcoes = document.getElementById('coresFutebolOpcoes');
+  const templateJogadorOption = document.querySelector('.template-jogador-option');
+  
+  // Mostrar/esconder opção de template jogador baseado no tipo
+  if (templateJogadorOption) {
+    templateJogadorOption.style.display = tipoAtual === 'futebol' ? 'block' : 'none';
+  }
   
   // Overlay simples: só aparece em filmes com template simples
   if (overlayOpcoes) overlayOpcoes.style.display = (template === 'simples' && tipoAtual !== 'futebol') ? 'block' : 'none';
   
-  // Fundo promocional: só aparece em filmes com template promocional
-  if (fundoPromoOpcoes) fundoPromoOpcoes.style.display = (template === 'promocional' && tipoAtual !== 'futebol') ? 'block' : 'none';
+  // Fundo promocional: aparece em filmes com template promocional OU futebol com template jogador
+  if (fundoPromoOpcoes) {
+    fundoPromoOpcoes.style.display = ((template === 'promocional' && tipoAtual !== 'futebol') || (template === 'jogador' && tipoAtual === 'futebol')) ? 'block' : 'none';
+  }
   
-  // Overlay promocional: só aparece em filmes com template promocional
-  if (overlayPromoOpcoes) overlayPromoOpcoes.style.display = (template === 'promocional' && tipoAtual !== 'futebol') ? 'block' : 'none';
+  // Overlay promocional: aparece em filmes com template promocional OU futebol com template jogador
+  if (overlayPromoOpcoes) {
+    overlayPromoOpcoes.style.display = ((template === 'promocional' && tipoAtual !== 'futebol') || (template === 'jogador' && tipoAtual === 'futebol')) ? 'block' : 'none';
+  }
   
   // Imagens de futebol aparecem na aba futebol + template promocional (com !important para sobrescrever o pai)
   if (fundoFutebolImagens) {
@@ -482,12 +881,17 @@ function alternarPainelTemplate() {
     }
   }
   
-  // Overlay de futebol só aparece na aba futebol
+  // Overlay de futebol só aparece na aba futebol (simples e promocional, não no jogador)
   if (overlayFutebolOpcoes) {
-    overlayFutebolOpcoes.style.display = tipoAtual === 'futebol' ? 'block' : 'none';
+    overlayFutebolOpcoes.style.display = (tipoAtual === 'futebol' && template !== 'jogador') ? 'block' : 'none';
   }
   
-  // Cor de destaque promocional só aparece em filmes com template promocional
+  // Cores de futebol: aparece em futebol com todos os templates (simples, promocional E jogador)
+  if (coresFutebolOpcoes) {
+    coresFutebolOpcoes.style.display = tipoAtual === 'futebol' ? 'block' : 'none';
+  }
+  
+  // Cor de destaque promocional: só aparece em filmes com template promocional (NÃO no futebol)
   if (corDestaquePromoOpcoes) {
     corDestaquePromoOpcoes.style.display = (template === 'promocional' && tipoAtual !== 'futebol') ? 'block' : 'none';
   }
@@ -2187,6 +2591,9 @@ let corDestaqueFilme = '#F77F30';
 function selecionarCorFilme(cor, el) {
   corDestaqueFilme = cor;
   
+  // Salvar no localStorage
+  localStorage.setItem('corDestaqueFilme', cor);
+  
   // Atualizar visual — remover active de todos e marcar o clicado
   document.querySelectorAll('#corDestaqueFilme .cor-opt, #corDestaqueFilmePromo .cor-opt').forEach(o => o.classList.remove('active'));
   el.classList.add('active');
@@ -2216,6 +2623,9 @@ function selecionarCorFutebol(cor, el) {
   coresFutebol.hora     = cor;
   coresFutebol.liga     = cor;
   
+  // Salvar no localStorage
+  localStorage.setItem('corFutebolDestaque', cor);
+  
   // Atualizar visual
   document.querySelectorAll('#corFutebolUnica .cor-opt').forEach(o => o.classList.remove('active'));
   el.classList.add('active');
@@ -2241,6 +2651,30 @@ function selecionarTipo(tipo) {
   // Mostrar/esconder painéis
   document.getElementById('painelFilmes').style.display = tipo === 'filme' ? 'block' : 'none';
   document.getElementById('painelFutebol').style.display = tipo === 'futebol' ? 'block' : 'none';
+  
+  // Carregar template salvo para o tipo selecionado
+  const templateSalvo = tipo === 'futebol' 
+    ? localStorage.getItem('templateFutebol')
+    : localStorage.getItem('templateFilme');
+    
+  if (templateSalvo) {
+    const radio = document.querySelector(`input[name="template"][value="${templateSalvo}"]`);
+    if (radio) {
+      radio.checked = true;
+      setTimeout(() => {
+        alternarPainelTemplate();
+      }, 50);
+    }
+  } else {
+    // Se não tem template salvo, usar o padrão (simples)
+    const radioSimples = document.querySelector(`input[name="template"][value="simples"]`);
+    if (radioSimples) {
+      radioSimples.checked = true;
+      setTimeout(() => {
+        alternarPainelTemplate();
+      }, 50);
+    }
+  }
   
   // Atualizar placeholder do preview
   const placeholder = document.getElementById('canvasPlaceholder');
@@ -2383,6 +2817,7 @@ async function buscarTodosJogosDoDia() {
     { id: 'RUS.1', nome: 'Premier League Russa' },
     { id: 'BEL.1', nome: 'Pro League Belga' },
     { id: 'GRE.1', nome: 'Super League Grega' },
+    { id: 'KSA.1', nome: 'Campeonato Saudita' },
     // Mundial
     { id: 'FIFA.WORLDQ.CONMEBOL', nome: 'Eliminatórias Sul-Americanas' },
     { id: 'CONCACAF.CHAMPIONS',   nome: 'CONCACAF Champions Cup' },
@@ -2418,7 +2853,7 @@ async function buscarTodosJogosDoDia() {
     'POR.1': ['ESPN'], 'NED.1': ['ESPN'],
     'SCO.1': ['ESPN'], 'TUR.1': ['ESPN'],
     'RUS.1': ['ESPN'], 'BEL.1': ['ESPN'],
-    'GRE.1': ['ESPN'],
+    'GRE.1': ['ESPN'], 'KSA.1': ['ESPN'],
     'FIFA.WORLDQ.CONMEBOL': ['Globo', 'SporTV'],
     'CONCACAF.CHAMPIONS':   ['DAZN'],
     'CAF.CHAMPIONS':        ['DAZN'],
@@ -2566,6 +3001,11 @@ async function buscarTodosJogosDoDia() {
     container.innerHTML = html;
     showToast(buscandoAmanha ? `📅 ${todosJogos.length} jogos encontrados para amanhã!` : `✅ ${todosJogos.length} jogos encontrados hoje!`);
     atualizarBotaoSelecionarTodos();
+    
+    // Selecionar todos automaticamente
+    setTimeout(() => {
+      selecionarTodosJogos();
+    }, 100);
   }
   
   btn.disabled = false;
@@ -2981,9 +3421,27 @@ function gerarBannerFutebol() {
     return;
   }
 
-  // Valida se a logo foi carregada
-  if (!logoImg) {
+  const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
+  
+  // Valida se a logo foi carregada (exceto para template jogador que é opcional)
+  if (!logoImg && template !== 'jogador') {
     showToast('❌ Você precisa carregar uma logo para gerar o banner');
+    return;
+  }
+  
+  // Para template jogador, se não tiver imagem, buscar automaticamente
+  if (template === 'jogador' && !jogadorImg) {
+    showToast('🔍 Buscando jogador automaticamente...', 2000);
+    buscarJogadorAutomatico().then(() => {
+      // Após buscar, gerar o banner
+      if (jogosSelecionados.length > 5) {
+        gerarMultiplosBannersFutebol();
+      } else {
+        gerarBannerFutebolCanvas(jogosSelecionados);
+      }
+    }).catch(() => {
+      showToast('❌ Erro ao buscar jogador. Tente fazer upload manual.');
+    });
     return;
   }
   
@@ -3074,159 +3532,34 @@ async function gerarBannerFutebolCanvasMultiplo(jogos, numeroBanner, totalBanner
   
   // Fundo baseado no template selecionado
   const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
+  console.log('🎯 Template múltiplo:', template, 'Banner', numeroBanner); // Debug
   
-  if (template === 'promocional') {
+  if (template === 'jogador') {
+    // Se estiver usando jogador automático, buscar jogador diferente para cada banner
+    if (jogadorAutomatico) {
+      const jogadorParaBanner = await buscarJogadorParaBanner(jogos, numeroBanner - 1);
+      if (jogadorParaBanner) {
+        // Temporariamente substituir jogadorImg para este banner
+        const jogadorOriginal = jogadorImg;
+        jogadorImg = jogadorParaBanner;
+        await desenharBannerComJogador(ctx, w, h, jogos);
+        jogadorImg = jogadorOriginal;
+      } else {
+        // Se não encontrar jogador, usar o padrão ou pular
+        await desenharBannerComJogador(ctx, w, h, jogos);
+      }
+    } else {
+      // Template com jogador manual: usar a mesma imagem para todos
+      await desenharBannerComJogador(ctx, w, h, jogos);
+    }
+  } else if (template === 'promocional') {
     // Template promocional: usar imagens de futebol
     await desenharFundoFutebol(ctx, w, h);
+    await desenharJogosNoBanner(ctx, w, h, jogos);
   } else {
     // Template simples: usar gradiente de cor
     await desenharFundoSimplesFutebol(ctx, w, h);
-  }
-  
-  // Marca d'água da logo (apenas rodapé)
-  await desenharMarcaDagua(ctx, w, h);
-  
-  // Título "DESTAQUES" com indicador de página
-  ctx.fillStyle = coresFutebol.destaque; // Laranja
-  ctx.font = `900 ${w * 0.08}px Inter, sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(0,0,0,0.5)';
-  ctx.shadowBlur = 10;
-  ctx.fillText('DESTAQUES', w/2, h * 0.10); // Movido de 0.12 para 0.10
-  ctx.shadowBlur = 0;
-  
-  // Indicador de página (removido - não mostrar mais)
-  // if (totalBanners > 1) {
-  //   ctx.fillStyle = '#F77F30'; // Laranja
-  //   ctx.font = `700 ${w * 0.025}px Inter, sans-serif`;
-  //   ctx.fillText(`PÁGINA ${numeroBanner} DE ${totalBanners}`, w/2, h * 0.155);
-  // }
-  
-  // Data
-  const hoje = new Date();
-  const dataFormatada = hoje.toLocaleDateString('pt-BR', { 
-    weekday: 'short', 
-    day: '2-digit', 
-    month: '2-digit' 
-  });
-  ctx.font = `700 ${w * 0.025}px Inter, sans-serif`;
-  ctx.fillStyle = '#ffffff'; // Branco
-  ctx.fillText(`DA RODADA - ${dataFormatada.toUpperCase()}`, w/2, h * 0.14); // Movido de 0.19 para 0.14
-  
-  // Desenhar jogos
-  let yPos = h * 0.18; // Movido de 0.25 para 0.18
-  const jogoHeight = h * 0.11;
-  const jogoSpacing = h * 0.015;
-  
-  // Carregar todas as imagens primeiro
-  const imagensCarregadas = await carregarImagensDosTimes(jogos);
-  
-  
-  for (let i = 0; i < jogos.length && i < 5; i++) {
-    const jogo = jogos[i];
-    
-    
-    // Fundo do jogo com bordas arredondadas
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-    roundRect(ctx, w * 0.05, yPos, w * 0.9, jogoHeight, 12);
-    ctx.fill();
-    
-    // Campeonato/Liga (topo)
-    ctx.fillStyle = coresFutebol.liga;
-    ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText(jogo.liga, w/2, yPos + jogoHeight * 0.2);
-    
-    // Horário (esquerda)
-    ctx.fillStyle = coresFutebol.hora; // Laranja (igual ao canal)
-    ctx.font = `900 ${w * 0.032}px Inter, sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.fillText(jogo.horario, w * 0.08, yPos + jogoHeight * 0.6);
-    
-    // Desenhar brasões dos times
-    const logoSize = w * 0.06;
-    const logoY = yPos + jogoHeight * 0.22; // Centralizado verticalmente
-    
-    // Logo time casa (esquerda)
-    if (imagensCarregadas[i] && imagensCarregadas[i].logoCasa) {
-      ctx.drawImage(imagensCarregadas[i].logoCasa, w * 0.28, logoY, logoSize, logoSize);
-    } else {
-      // Fallback: círculo com emoji
-      ctx.fillStyle = '#f0f0f0';
-      ctx.beginPath();
-      ctx.arc(w * 0.28 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#666';
-      ctx.font = `${logoSize * 0.6}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.fillText('⚽', w * 0.28 + logoSize/2, logoY + logoSize * 0.7);
-    }
-    
-    // Logo time visitante (direita)
-    if (imagensCarregadas[i] && imagensCarregadas[i].logoVisitante) {
-      ctx.drawImage(imagensCarregadas[i].logoVisitante, w * 0.66, logoY, logoSize, logoSize);
-    } else {
-      // Fallback: círculo com emoji
-      ctx.fillStyle = '#f0f0f0';
-      ctx.beginPath();
-      ctx.arc(w * 0.66 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#666';
-      ctx.font = `${logoSize * 0.6}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.fillText('⚽', w * 0.66 + logoSize/2, logoY + logoSize * 0.7);
-    }
-    
-    // Times (centro)
-    ctx.fillStyle = '#000000';
-    ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText(`${abreviarTime(jogo.timeCasa)} x ${abreviarTime(jogo.timeVisitante)}`, w/2, yPos + jogoHeight * 0.8);
-    
-    // Canal de transmissão (direita)
-    ctx.fillStyle = '#F77F30';
-    ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
-    ctx.textAlign = 'right';
-    const canalTransmissao = jogo.canal || 'A definir';
-    await desenharIconeCanal(ctx, canalTransmissao, w * 0.92, yPos + jogoHeight * 0.5, jogoHeight * 0.55);
-    
-    yPos += jogoHeight + jogoSpacing;
-  }
-  
-  // Logo do usuário no canto superior esquerdo
-  await desenharLogoUsuarioCanvas(ctx, w, h);
-  
-  // Informações do usuário (se houver)
-  const whatsappEl = document.getElementById('inputWhatsapp');
-  const instagramEl = document.getElementById('inputInstagram');
-  const siteEl = document.getElementById('inputSite');
-  const textoEl = document.getElementById('inputTexto');
-  
-  const whatsapp = whatsappEl ? whatsappEl.value : '';
-  const instagram = instagramEl ? instagramEl.value : '';
-  const site = siteEl ? siteEl.value : '';
-  const textoExtra = textoEl ? textoEl.value : '';
-  
-  // Verificar se deve mostrar site no banner
-  const mostrarSiteEl = document.getElementById('checkMostrarSiteBanner');
-  const mostrarSite = mostrarSiteEl ? mostrarSiteEl.checked : true;
-  
-  // Criar array de contatos
-  let contatos = [];
-  if (whatsapp) contatos.push(`📱 ${whatsapp}`);
-  if (instagram) contatos.push(`📷 ${instagram}`);
-  if (site && mostrarSite) contatos.push(`🌐 ${site}`);
-  if (textoExtra) contatos.push(`✨ ${textoExtra}`);
-  
-  if (contatos.length > 0) {
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.shadowColor = 'rgba(0,0,0,0.8)';
-    ctx.shadowBlur = 5;
-    
-    ctx.fillText(contatos.join('  •  '), w/2, h * 0.92);
-    ctx.shadowBlur = 0;
+    await desenharJogosNoBanner(ctx, w, h, jogos);
   }
   
   return canvas;
@@ -3438,154 +3771,25 @@ async function gerarBannerFutebolCanvas(jogos) {
     
     // Fundo baseado no template selecionado
     const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
+    console.log('🎯 Template selecionado:', template); // Debug
+    console.log('🖼️ Jogador IMG existe?', !!jogadorImg); // Debug
+    console.log('📊 Total de jogos:', jogos.length); // Debug
     
-    if (template === 'promocional') {
+    if (template === 'jogador') {
+      console.log('✅ Gerando banner com jogador...'); // Debug
+      alert('Template JOGADOR detectado! Gerando banner especial...'); // TESTE
+      // Template com jogador: desenhar layout especial
+      await desenharBannerComJogador(ctx, w, h, jogos);
+    } else if (template === 'promocional') {
+      console.log('✅ Gerando banner promocional...'); // Debug
       // Template promocional: usar imagens de futebol
       await desenharFundoFutebol(ctx, w, h);
+      await desenharJogosNoBanner(ctx, w, h, jogos);
     } else {
+      console.log('✅ Gerando banner simples...'); // Debug
       // Template simples: usar gradiente de cor
       await desenharFundoSimplesFutebol(ctx, w, h);
-    }
-    
-    // Marca d'água da logo (apenas rodapé)
-    await desenharMarcaDagua(ctx, w, h);
-    
-    // Título "DESTAQUES"
-    ctx.fillStyle = coresFutebol.destaque; // Laranja
-    ctx.font = `900 ${w * 0.08}px Inter, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.shadowColor = 'rgba(0,0,0,0.5)';
-    ctx.shadowBlur = 10;
-    ctx.fillText('DESTAQUES', w/2, h * 0.10); // Movido de 0.12 para 0.10
-    ctx.shadowBlur = 0;
-    
-    
-    // Data
-    const hoje = new Date();
-    const dataFormatada = hoje.toLocaleDateString('pt-BR', { 
-      weekday: 'short', 
-      day: '2-digit', 
-      month: '2-digit' 
-    });
-    ctx.font = `700 ${w * 0.025}px Inter, sans-serif`;
-    ctx.fillStyle = '#ffffff'; // Branco
-    ctx.fillText(`DA RODADA - ${dataFormatada.toUpperCase()}`, w/2, h * 0.14); // Movido de 0.16 para 0.14
-    
-    
-    // Desenhar jogos
-    let yPos = h * 0.18; // Movido de 0.22 para 0.18
-    const jogoHeight = h * 0.11; // Voltou para o tamanho original
-    const jogoSpacing = h * 0.015; // Voltou para o espaçamento original
-    
-    // Carregar todas as imagens primeiro
-    const imagensCarregadas = await carregarImagensDosTimes(jogos);
-    
-    for (let i = 0; i < jogos.length && i < 5; i++) {
-      const jogo = jogos[i];
-      
-      
-      // Fundo do jogo com bordas arredondadas
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      roundRect(ctx, w * 0.05, yPos, w * 0.9, jogoHeight, 12);
-      ctx.fill();
-      
-      // Campeonato/Liga (topo)
-      ctx.fillStyle = coresFutebol.liga;
-      ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText(jogo.liga, w/2, yPos + jogoHeight * 0.2);
-      
-      // Horário (esquerda)
-      ctx.fillStyle = coresFutebol.hora; // Laranja (igual ao canal)
-      ctx.font = `900 ${w * 0.032}px Inter, sans-serif`;
-      ctx.textAlign = 'left';
-      ctx.fillText(jogo.horario, w * 0.08, yPos + jogoHeight * 0.6);
-      
-      // Desenhar brasões dos times
-      const logoSize = w * 0.06; // Aumentado de 0.05 para 0.06
-      const logoY = yPos + jogoHeight * 0.22; // Centralizado verticalmente
-      
-      // Logo time casa (esquerda)
-      if (imagensCarregadas[i] && imagensCarregadas[i].logoCasa) {
-        ctx.drawImage(imagensCarregadas[i].logoCasa, w * 0.28, logoY, logoSize, logoSize);
-      } else {
-        // Fallback: círculo com emoji
-        ctx.fillStyle = '#f0f0f0';
-        ctx.beginPath();
-        ctx.arc(w * 0.28 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#666';
-        ctx.font = `${logoSize * 0.6}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.fillText('⚽', w * 0.28 + logoSize/2, logoY + logoSize * 0.7);
-      }
-      
-      // Logo time visitante (direita)
-      if (imagensCarregadas[i] && imagensCarregadas[i].logoVisitante) {
-        ctx.drawImage(imagensCarregadas[i].logoVisitante, w * 0.66, logoY, logoSize, logoSize);
-      } else {
-        // Fallback: círculo com emoji
-        ctx.fillStyle = '#f0f0f0';
-        ctx.beginPath();
-        ctx.arc(w * 0.66 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#666';
-        ctx.font = `${logoSize * 0.6}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.fillText('⚽', w * 0.66 + logoSize/2, logoY + logoSize * 0.7);
-      }
-      
-      // Times (centro) - ajustado para ficar abaixo dos logos
-      ctx.fillStyle = '#000000';
-      ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText(`${abreviarTime(jogo.timeCasa)} x ${abreviarTime(jogo.timeVisitante)}`, w/2, yPos + jogoHeight * 0.8);
-      
-      // Canal de transmissão (direita, mais centralizado)
-      ctx.fillStyle = '#F77F30'; // Laranja para destacar
-      ctx.font = `600 ${w * 0.020}px Inter, sans-serif`; // Aumentado de 0.016 para 0.020
-      ctx.textAlign = 'right';
-      const canalTransmissao = jogo.canal || 'A definir';
-      await desenharIconeCanal(ctx, canalTransmissao, w * 0.92, yPos + jogoHeight * 0.5, jogoHeight * 0.55);
-      
-      yPos += jogoHeight + jogoSpacing;
-    }
-    
-    
-    // Logo do usuário no canto superior esquerdo
-    await desenharLogoUsuario(ctx, w, h);
-    
-    // Informações do usuário (se houver)
-    const whatsappEl = document.getElementById('inputWhatsapp');
-    const instagramEl = document.getElementById('inputInstagram');
-    const siteEl = document.getElementById('inputSite');
-    const textoEl = document.getElementById('inputTexto');
-    
-    const whatsapp = whatsappEl ? whatsappEl.value : '';
-    const instagram = instagramEl ? instagramEl.value : '';
-    const site = siteEl ? siteEl.value : '';
-    const textoExtra = textoEl ? textoEl.value : '';
-    
-    // Verificar se deve mostrar site no banner
-    const mostrarSiteEl = document.getElementById('checkMostrarSiteBanner');
-    const mostrarSite = mostrarSiteEl ? mostrarSiteEl.checked : true;
-    
-    // Criar array de contatos
-    let contatos = [];
-    if (whatsapp) contatos.push(`📱 ${whatsapp}`);
-    if (instagram) contatos.push(`📷 ${instagram}`);
-    if (site && mostrarSite) contatos.push(`🌐 ${site}`);
-    if (textoExtra) contatos.push(`✨ ${textoExtra}`);
-    
-    if (contatos.length > 0) {
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.shadowColor = 'rgba(0,0,0,0.8)';
-      ctx.shadowBlur = 5;
-      
-      ctx.fillText(contatos.join('  •  '), w/2, h * 0.92);
-      ctx.shadowBlur = 0;
+      await desenharJogosNoBanner(ctx, w, h, jogos);
     }
     
     // Mostrar canvas
@@ -3601,8 +3805,443 @@ async function gerarBannerFutebolCanvas(jogos) {
     gerarResumoFutebol();
     
   } catch (error) {
+    console.error('❌ Erro ao gerar banner:', error); // Debug
     alert('Erro ao gerar banner: ' + error.message);
   }
+}
+
+// ===== DESENHAR JOGOS NO BANNER (TEMPLATES SIMPLES E PROMOCIONAL) =====
+async function desenharJogosNoBanner(ctx, w, h, jogos) {
+  // Marca d'água da logo (apenas rodapé)
+  await desenharMarcaDagua(ctx, w, h);
+  
+  // Título "DESTAQUES"
+  ctx.fillStyle = coresFutebol.destaque;
+  ctx.font = `900 ${w * 0.08}px Inter, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 10;
+  ctx.fillText('DESTAQUES', w/2, h * 0.10);
+  ctx.shadowBlur = 0;
+  
+  // Data
+  const hoje = new Date();
+  const dataFormatada = hoje.toLocaleDateString('pt-BR', { 
+    weekday: 'short', 
+    day: '2-digit', 
+    month: '2-digit' 
+  });
+  ctx.font = `700 ${w * 0.025}px Inter, sans-serif`;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(`DA RODADA - ${dataFormatada.toUpperCase()}`, w/2, h * 0.14);
+  
+  // Desenhar jogos
+  let yPos = h * 0.18;
+  const jogoHeight = h * 0.11;
+  const jogoSpacing = h * 0.015;
+  
+  // Carregar todas as imagens primeiro
+  const imagensCarregadas = await carregarImagensDosTimes(jogos);
+  
+  for (let i = 0; i < jogos.length && i < 5; i++) {
+    const jogo = jogos[i];
+    
+    // Fundo do jogo com bordas arredondadas
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+    roundRect(ctx, w * 0.05, yPos, w * 0.9, jogoHeight, 12);
+    ctx.fill();
+    
+    // Campeonato/Liga (topo)
+    ctx.fillStyle = coresFutebol.liga;
+    ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(jogo.liga, w/2, yPos + jogoHeight * 0.2);
+    
+    // Horário (esquerda)
+    ctx.fillStyle = coresFutebol.hora;
+    ctx.font = `900 ${w * 0.032}px Inter, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText(jogo.horario, w * 0.08, yPos + jogoHeight * 0.6);
+    
+    // Desenhar brasões dos times
+    const logoSize = w * 0.06;
+    const logoY = yPos + jogoHeight * 0.22;
+    
+    // Logo time casa (esquerda)
+    if (imagensCarregadas[i] && imagensCarregadas[i].logoCasa) {
+      ctx.drawImage(imagensCarregadas[i].logoCasa, w * 0.28, logoY, logoSize, logoSize);
+    } else {
+      ctx.fillStyle = '#f0f0f0';
+      ctx.beginPath();
+      ctx.arc(w * 0.28 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#666';
+      ctx.font = `${logoSize * 0.6}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.fillText('⚽', w * 0.28 + logoSize/2, logoY + logoSize * 0.7);
+    }
+    
+    // Logo time visitante (direita)
+    if (imagensCarregadas[i] && imagensCarregadas[i].logoVisitante) {
+      ctx.drawImage(imagensCarregadas[i].logoVisitante, w * 0.66, logoY, logoSize, logoSize);
+    } else {
+      ctx.fillStyle = '#f0f0f0';
+      ctx.beginPath();
+      ctx.arc(w * 0.66 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#666';
+      ctx.font = `${logoSize * 0.6}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.fillText('⚽', w * 0.66 + logoSize/2, logoY + logoSize * 0.7);
+    }
+    
+    // Times (centro)
+    ctx.fillStyle = '#000000';
+    ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(`${abreviarTime(jogo.timeCasa)} x ${abreviarTime(jogo.timeVisitante)}`, w/2, yPos + jogoHeight * 0.8);
+    
+    // Canal de transmissão (direita)
+    ctx.fillStyle = '#F77F30';
+    ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
+    ctx.textAlign = 'right';
+    const canalTransmissao = jogo.canal || 'A definir';
+    await desenharIconeCanal(ctx, canalTransmissao, w * 0.92, yPos + jogoHeight * 0.5, jogoHeight * 0.55);
+    
+    yPos += jogoHeight + jogoSpacing;
+  }
+  
+  // Logo do usuário no canto superior esquerdo
+  await desenharLogoUsuario(ctx, w, h);
+  
+  // Informações do usuário (rodapé)
+  const whatsappEl = document.getElementById('inputWhatsapp');
+  const instagramEl = document.getElementById('inputInstagram');
+  const siteEl = document.getElementById('inputSite');
+  const textoEl = document.getElementById('inputTexto');
+  
+  const whatsapp = whatsappEl ? whatsappEl.value : '';
+  const instagram = instagramEl ? instagramEl.value : '';
+  const site = siteEl ? siteEl.value : '';
+  const textoExtra = textoEl ? textoEl.value : '';
+  
+  const mostrarSiteEl = document.getElementById('checkMostrarSiteBanner');
+  const mostrarSite = mostrarSiteEl ? mostrarSiteEl.checked : true;
+  
+  let contatos = [];
+  if (whatsapp) contatos.push(`📱 ${whatsapp}`);
+  if (instagram) contatos.push(`📷 ${instagram}`);
+  if (site && mostrarSite) contatos.push(`🌐 ${site}`);
+  if (textoExtra) contatos.push(`✨ ${textoExtra}`);
+  
+  if (contatos.length > 0) {
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 5;
+    ctx.fillText(contatos.join('  •  '), w/2, h * 0.92);
+    ctx.shadowBlur = 0;
+  }
+}
+
+// ===== DESENHAR BANNER COM JOGADOR =====
+async function desenharBannerComJogador(ctx, w, h, jogos) {
+  // Obter configurações de fundo e overlay
+  const fundoRadio = document.querySelector('input[name="fundoPromo"]:checked');
+  const fundoVal = fundoRadio?.value || 'roxo';
+  
+  // Paletas de cores para fundos coloridos
+  const paletas = {
+    roxo:     { c1:'#0d0618', c2:'#1a0a2e', c3:'#2d1060' },
+    azul:     { c1:'#020b18', c2:'#0a1628', c3:'#0f2d5e' },
+    vermelho: { c1:'#180202', c2:'#1a0a0a', c3:'#5e0f0f' },
+    verde:    { c1:'#021208', c2:'#0a1a0e', c3:'#0f4d1e' },
+    laranja:  { c1:'#1a0a00', c2:'#2d1400', c3:'#5e2a0f' },
+    rosa:     { c1:'#180214', c2:'#2d0a1e', c3:'#5e0f3d' },
+    ciano:    { c1:'#021418', c2:'#0a1e28', c3:'#0f3d5e' },
+    dourado:  { c1:'#1a1200', c2:'#2d2000', c3:'#5e4a0f' },
+    preto:    { c1:'#000000', c2:'#0a0a0a', c3:'#1a1a1a' },
+  };
+  
+  // Desenhar fundo baseado na seleção
+  if (paletas[fundoVal]) {
+    const p = paletas[fundoVal];
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, p.c1);
+    grad.addColorStop(0.5, p.c2);
+    grad.addColorStop(1, p.c3);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  } else {
+    // Fundo padrão escuro
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#0a0a0f');
+    grad.addColorStop(0.5, '#1a1a24');
+    grad.addColorStop(1, '#0a0a0f');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  }
+  
+  // Desenhar imagem do jogador no lado esquerdo (se houver)
+  if (jogadorImg) {
+    const jogadorWidth = w * 0.40; // 40% da largura
+    const jogadorHeight = h;
+    
+    // Calcular dimensões mantendo proporção
+    const imgRatio = jogadorImg.width / jogadorImg.height;
+    const targetRatio = jogadorWidth / jogadorHeight;
+    
+    let sx, sy, sWidth, sHeight;
+    
+    if (imgRatio > targetRatio) {
+      // Imagem mais larga - cortar laterais
+      sHeight = jogadorImg.height;
+      sWidth = sHeight * targetRatio;
+      sx = (jogadorImg.width - sWidth) / 2;
+      sy = 0;
+    } else {
+      // Imagem mais alta - cortar topo/base
+      sWidth = jogadorImg.width;
+      sHeight = sWidth / targetRatio;
+      sx = 0;
+      sy = (jogadorImg.height - sHeight) / 2;
+    }
+    
+    // Desenhar jogador
+    ctx.drawImage(jogadorImg, sx, sy, sWidth, sHeight, 0, 0, jogadorWidth, jogadorHeight);
+    
+    // Gradiente de transição do jogador para o fundo
+    const fadeGrad = ctx.createLinearGradient(jogadorWidth * 0.75, 0, jogadorWidth * 1.15, 0);
+    fadeGrad.addColorStop(0, 'rgba(10,10,15,0)');
+    fadeGrad.addColorStop(0.5, 'rgba(10,10,15,0.5)');
+    fadeGrad.addColorStop(1, 'rgba(10,10,15,1)');
+    ctx.fillStyle = fadeGrad;
+    ctx.fillRect(0, 0, w, h);
+  }
+  
+  // Aplicar overlay configurável
+  const overlayStyle = getOverlayStylePromo();
+  if (overlayStyle && overlayStyle !== 'none') {
+    const overlayGrad = ctx.createLinearGradient(0, 0, 0, h);
+    overlayGrad.addColorStop(0, overlayStyle.replace(/0\.\d+\)/, '0.3)'));
+    overlayGrad.addColorStop(0.5, overlayStyle.replace(/0\.\d+\)/, '0.25)'));
+    overlayGrad.addColorStop(1, overlayStyle.replace(/0\.\d+\)/, '0.4)'));
+    ctx.fillStyle = overlayGrad;
+    ctx.fillRect(0, 0, w, h);
+  }
+  
+  // Área dos jogos (lado direito)
+  const jogosX = w * 0.42; // Começa em 42%
+  const jogosWidth = w * 0.54; // 54% da largura
+  
+  // Data no topo (caixa BRANCA com borda arredondada)
+  const hoje = new Date();
+  const dia = hoje.getDate().toString().padStart(2, '0');
+  const mes = (hoje.getMonth() + 1).toString().padStart(2, '0');
+  const diaSemana = hoje.toLocaleDateString('pt-BR', { weekday: 'short' }).toUpperCase().replace('.', '');
+  
+  // Caixa da data (BRANCA)
+  const dataBoxW = w * 0.10;
+  const dataBoxH = h * 0.10;
+  const dataBoxX = jogosX + jogosWidth * 0.05;
+  const dataBoxY = h * 0.04;
+  
+  // Fundo branco com borda arredondada
+  ctx.fillStyle = '#ffffff';
+  roundRect(ctx, dataBoxX, dataBoxY, dataBoxW, dataBoxH, 12);
+  ctx.fill();
+  
+  // Dia (grande, PRETO)
+  ctx.fillStyle = '#000000';
+  ctx.font = `900 ${w * 0.050}px Inter, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText(dia, dataBoxX + dataBoxW/2, dataBoxY + dataBoxH * 0.48);
+  
+  // Mês (pequeno, PRETO)
+  ctx.font = `700 ${w * 0.028}px Inter, sans-serif`;
+  ctx.fillText(mes, dataBoxX + dataBoxW/2, dataBoxY + dataBoxH * 0.80);
+  
+  // Dia da semana ao lado (GRANDE e BRANCO)
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `900 ${w * 0.065}px Inter, sans-serif`;
+  ctx.textAlign = 'left';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur = 10;
+  ctx.fillText(diaSemana, dataBoxX + dataBoxW + w * 0.02, dataBoxY + dataBoxH * 0.70);
+  ctx.shadowBlur = 0;
+  
+  // Título "DESTAQUES" (grande, embaixo da data)
+  ctx.fillStyle = coresFutebol.destaque;
+  ctx.font = `900 ${w * 0.055}px Inter, sans-serif`;
+  ctx.textAlign = 'left';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur = 15;
+  ctx.fillText('DESTAQUES', jogosX + jogosWidth * 0.22, h * 0.18); // Movido de 0.15 para 0.22
+  ctx.shadowBlur = 0;
+  
+  // Desenhar jogos (cards compactos e modernos)
+  let yPos = h * 0.23; // Ajustado para dar espaço para data e título maiores
+  const jogoHeight = h * 0.130;
+  const jogoSpacing = h * 0.015;
+  
+  // Carregar imagens dos times
+  const imagensCarregadas = await carregarImagensDosTimes(jogos);
+  
+  for (let i = 0; i < jogos.length && i < 5; i++) {
+    const jogo = jogos[i];
+    
+    // Fundo do jogo (card escuro semi-transparente)
+    ctx.fillStyle = 'rgba(30, 30, 40, 0.85)';
+    roundRect(ctx, jogosX + jogosWidth * 0.05, yPos, jogosWidth * 0.9, jogoHeight, 12);
+    ctx.fill();
+    
+    // Borda sutil
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+    const cardX = jogosX + jogosWidth * 0.05;
+    const cardW = jogosWidth * 0.9;
+    
+    // Campeonato/Liga (topo, cor destaque)
+    ctx.fillStyle = coresFutebol.liga;
+    ctx.font = `700 ${w * 0.014}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(jogo.liga.toUpperCase(), cardX + cardW/2, yPos + jogoHeight * 0.15);
+    
+    // Horário (esquerda, grande e destacado)
+    ctx.fillStyle = coresFutebol.hora;
+    ctx.font = `900 ${w * 0.028}px Inter, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText(jogo.horario, cardX + cardW * 0.08, yPos + jogoHeight * 0.5);
+    
+    // Brasões dos times (centralizados)
+    const logoSize = w * 0.055;
+    const logoY = yPos + jogoHeight * 0.3;
+    const centerX = cardX + cardW/2;
+    
+    // Logo time casa (esquerda do centro)
+    if (imagensCarregadas[i] && imagensCarregadas[i].logoCasa) {
+      ctx.drawImage(imagensCarregadas[i].logoCasa, centerX - logoSize * 2.2, logoY, logoSize, logoSize);
+    } else {
+      // Fallback
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath();
+      ctx.arc(centerX - logoSize * 1.7, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // VS no centro
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.font = `700 ${w * 0.018}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('VS', centerX, logoY + logoSize * 0.6);
+    
+    // Logo time visitante (direita do centro)
+    if (imagensCarregadas[i] && imagensCarregadas[i].logoVisitante) {
+      ctx.drawImage(imagensCarregadas[i].logoVisitante, centerX + logoSize * 1.2, logoY, logoSize, logoSize);
+    } else {
+      // Fallback
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath();
+      ctx.arc(centerX + logoSize * 1.7, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Nomes dos times (abaixo dos logos)
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `600 ${w * 0.016}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    const nomeJogo = `${abreviarTime(jogo.timeCasa)} x ${abreviarTime(jogo.timeVisitante)}`;
+    ctx.fillText(nomeJogo, centerX, yPos + jogoHeight * 0.85);
+    
+    // Canal de transmissão (direita, com logo)
+    const canalTexto = jogo.canal || 'ESPN';
+    const canalX = cardX + cardW * 0.92;
+    const canalY = yPos + jogoHeight * 0.5;
+    const canalSize = jogoHeight * 0.35; // Tamanho da logo do canal
+    
+    // Desenhar logo do canal
+    await desenharIconeCanal(ctx, canalTexto, canalX, canalY, canalSize);
+    
+    yPos += jogoHeight + jogoSpacing;
+  }
+  
+  // Logo do usuário (canto superior esquerdo, sobre o jogador)
+  if (logoImg) {
+    const logoMaxW = w * 0.15;
+    const logoMaxH = h * 0.08;
+    const logoRatio = logoImg.width / logoImg.height;
+    let logoW, logoH;
+    
+    if (logoRatio > logoMaxW / logoMaxH) {
+      logoW = logoMaxW;
+      logoH = logoW / logoRatio;
+    } else {
+      logoH = logoMaxH;
+      logoW = logoH * logoRatio;
+    }
+    
+    ctx.shadowColor = 'rgba(0,0,0,0.9)';
+    ctx.shadowBlur = 15;
+    ctx.drawImage(logoImg, w * 0.03, h * 0.02, logoW, logoH);
+    ctx.shadowBlur = 0;
+    
+    // Marca d'água da logo (abaixo do jogador, na área dos jogos)
+    const marcaDaguaW = w * 0.25; // Maior que a logo do topo
+    const marcaDaguaH = marcaDaguaW / logoRatio;
+    const marcaDaguaX = jogosX + (jogosWidth - marcaDaguaW) / 2; // Centralizado na área dos jogos
+    const marcaDaguaY = h * 0.50; // No meio vertical da área dos jogos
+    
+    // Desenhar marca d'água com opacidade baixa
+    ctx.save();
+    ctx.globalAlpha = 0.15; // Bem transparente para não atrapalhar
+    ctx.drawImage(logoImg, marcaDaguaX, marcaDaguaY, marcaDaguaW, marcaDaguaH);
+    ctx.restore();
+  }
+  
+  // Rodapé com texto "TODOS OS JOGOS AO VIVO" ou contatos
+  const whatsappEl = document.getElementById('inputWhatsapp');
+  const instagramEl = document.getElementById('inputInstagram');
+  const siteEl = document.getElementById('inputSite');
+  const textoEl = document.getElementById('inputTexto');
+  
+  const whatsapp = whatsappEl ? whatsappEl.value : '';
+  const instagram = instagramEl ? instagramEl.value : '';
+  const site = siteEl ? siteEl.value : '';
+  const textoExtra = textoEl ? textoEl.value : '';
+  
+  const mostrarSiteEl = document.getElementById('checkMostrarSiteBanner');
+  const mostrarSite = mostrarSiteEl ? mostrarSiteEl.checked : true;
+  
+  let contatos = [];
+  if (whatsapp) contatos.push(`📱 ${whatsapp}`);
+  if (instagram) contatos.push(`📷 ${instagram}`);
+  if (site && mostrarSite) contatos.push(`🌐 ${site}`);
+  if (textoExtra) contatos.push(textoExtra);
+  
+  // Faixa no rodapé
+  const rodapeY = h * 0.94;
+  const rodapeH = h * 0.06;
+  
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+  ctx.fillRect(0, rodapeY, w, rodapeH);
+  
+  // Texto do rodapé
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `700 ${w * 0.020}px Inter, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.9)';
+  ctx.shadowBlur = 5;
+  
+  if (contatos.length > 0) {
+    ctx.fillText(contatos.join('  •  '), w/2, rodapeY + rodapeH * 0.6);
+  } else {
+    ctx.fillText('TODOS OS JOGOS AO VIVO', w/2, rodapeY + rodapeH * 0.6);
+  }
+  
+  ctx.shadowBlur = 0;
 }
 
 // Inicializar com um jogo exemplo

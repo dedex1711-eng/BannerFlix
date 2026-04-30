@@ -315,7 +315,7 @@
       <div class="feature-card">
         <div class="feature-icon">📱</div>
         <h3>Formatos Sociais</h3>
-        <p>Stories 9:16, Feed 4:5 e Paisagem 16:9. Otimizados para cada plataforma.</p>
+        <p>Feed 4:5 e Quadrado 1:1. Otimizados para cada plataforma.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">⚡</div>
@@ -506,7 +506,7 @@
           <h3>Estilo do Banner</h3>
           <div class="template-options">
             <label class="template-option">
-              <input type="radio" name="template" value="simples" checked onchange="alternarPainelTemplate(); atualizarFormato()" />
+              <input type="radio" name="template" value="simples" checked onchange="salvarPreferencias(); alternarPainelTemplate(); atualizarFormato()" />
               <div class="template-box">
                 <span class="template-icon">🎬</span>
                 <strong>Simples</strong>
@@ -514,11 +514,19 @@
               </div>
             </label>
             <label class="template-option">
-              <input type="radio" name="template" value="promocional" onchange="alternarPainelTemplate(); atualizarFormato()" />
+              <input type="radio" name="template" value="promocional" onchange="salvarPreferencias(); alternarPainelTemplate(); atualizarFormato()" />
               <div class="template-box">
                 <span class="template-icon">🍿</span>
                 <strong>Promocional</strong>
                 <small>Estilo profissional</small>
+              </div>
+            </label>
+            <label class="template-option template-jogador-option">
+              <input type="radio" name="template" value="jogador" onchange="salvarPreferencias(); alternarPainelTemplate(); atualizarFormato()" />
+              <div class="template-box">
+                <span class="template-icon">⚽</span>
+                <strong>Jogador Destaque</strong>
+                <small>Com foto do jogador</small>
               </div>
             </label>
           </div>
@@ -530,27 +538,19 @@
           <h3>Formato do Banner</h3>
           <div class="format-options">
             <label class="format-option">
-              <input type="radio" name="formato" value="whatsapp" checked onchange="atualizarFormato()" />
-              <div class="format-box">
-                <div class="format-icon whatsapp-icon"></div>
-                <span>WhatsApp</span>
-                <small>1:1</small>
-              </div>
-            </label>
-            <label class="format-option">
-              <input type="radio" name="formato" value="stories" onchange="atualizarFormato()" />
-              <div class="format-box">
-                <div class="format-icon stories-icon"></div>
-                <span>Stories</span>
-                <small>9:16</small>
-              </div>
-            </label>
-            <label class="format-option">
-              <input type="radio" name="formato" value="feed" onchange="atualizarFormato()" />
+              <input type="radio" name="formato" value="feed" checked onchange="salvarPreferencias(); atualizarFormato()" />
               <div class="format-box">
                 <div class="format-icon feed-icon"></div>
                 <span>Feed</span>
                 <small>4:5</small>
+              </div>
+            </label>
+            <label class="format-option">
+              <input type="radio" name="formato" value="whatsapp" onchange="salvarPreferencias(); atualizarFormato()" />
+              <div class="format-box">
+                <div class="format-icon whatsapp-icon"></div>
+                <span>Quadrado</span>
+                <small>1:1</small>
               </div>
             </label>
           </div>
@@ -583,31 +583,31 @@
             <h3 style="margin-top:14px;">Estilo do Overlay</h3>
             <div class="overlay-options">
               <label class="overlay-opt" title="Escuro">
-                <input type="radio" name="overlayFutebol" value="dark" checked onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayFutebol" value="dark" checked onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch dark-swatch"></div>
               </label>
               <label class="overlay-opt" title="Roxo">
-                <input type="radio" name="overlayFutebol" value="purple" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayFutebol" value="purple" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch purple-swatch"></div>
               </label>
               <label class="overlay-opt" title="Azul">
-                <input type="radio" name="overlayFutebol" value="blue" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayFutebol" value="blue" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch blue-swatch"></div>
               </label>
               <label class="overlay-opt" title="Vermelho">
-                <input type="radio" name="overlayFutebol" value="red" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayFutebol" value="red" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch red-swatch"></div>
               </label>
               <label class="overlay-opt" title="Verde">
-                <input type="radio" name="overlayFutebol" value="green" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayFutebol" value="green" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background:rgba(20,83,45,0.6);"></div>
               </label>
               <label class="overlay-opt" title="Laranja">
-                <input type="radio" name="overlayFutebol" value="orange" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayFutebol" value="orange" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background:rgba(124,45,18,0.6);"></div>
               </label>
               <label class="overlay-opt" title="Rosa">
-                <input type="radio" name="overlayFutebol" value="pink" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayFutebol" value="pink" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background:rgba(131,24,67,0.6);"></div>
               </label>
               <label class="overlay-opt" title="Cinza">
@@ -626,23 +626,23 @@
             <h3>Estilo do Overlay</h3>
             <div class="overlay-options">
               <label class="overlay-opt" title="Escuro">
-                <input type="radio" name="overlay" value="dark" checked onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlay" value="dark" checked onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch dark-swatch"></div>
               </label>
               <label class="overlay-opt" title="Roxo">
-                <input type="radio" name="overlay" value="purple" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlay" value="purple" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch purple-swatch"></div>
               </label>
               <label class="overlay-opt" title="Azul">
-                <input type="radio" name="overlay" value="blue" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlay" value="blue" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch blue-swatch"></div>
               </label>
               <label class="overlay-opt" title="Vermelho">
-                <input type="radio" name="overlay" value="red" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlay" value="red" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch red-swatch"></div>
               </label>
               <label class="overlay-opt" title="Sem overlay">
-                <input type="radio" name="overlay" value="none" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlay" value="none" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch none-swatch">✕</div>
               </label>
             </div>
@@ -671,43 +671,43 @@
             <div class="overlay-options">
               <!-- Opção de imagem do filme: só aparece na aba filmes -->
               <label class="overlay-opt overlay-opt-filme-only" title="Imagem do Filme">
-                <input type="radio" name="fundoPromo" value="imagem" checked onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="imagem" checked onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a1a2e,#4a4a5e);font-size:1.2rem;">🎬</div>
               </label>
               <label class="overlay-opt" title="Roxo">
-                <input type="radio" name="fundoPromo" value="roxo" onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="roxo" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a2e,#6b21a8);"></div>
               </label>
               <label class="overlay-opt" title="Azul">
-                <input type="radio" name="fundoPromo" value="azul" onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="azul" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#0a1628,#1e3a8a);"></div>
               </label>
               <label class="overlay-opt" title="Vermelho">
-                <input type="radio" name="fundoPromo" value="vermelho" onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="vermelho" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a0a,#991b1b);"></div>
               </label>
               <label class="overlay-opt" title="Verde">
-                <input type="radio" name="fundoPromo" value="verde" onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="verde" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#0a1a0a,#14532d);"></div>
               </label>
               <label class="overlay-opt" title="Laranja">
-                <input type="radio" name="fundoPromo" value="laranja" onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="laranja" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a00,#c2410c);"></div>
               </label>
               <label class="overlay-opt" title="Rosa">
-                <input type="radio" name="fundoPromo" value="rosa" onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="rosa" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a0a14,#be185d);"></div>
               </label>
               <label class="overlay-opt" title="Ciano">
-                <input type="radio" name="fundoPromo" value="ciano" onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="ciano" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#0a1a1a,#0891b2);"></div>
               </label>
               <label class="overlay-opt" title="Dourado">
-                <input type="radio" name="fundoPromo" value="dourado" onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="dourado" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#1a1200,#ca8a04);"></div>
               </label>
               <label class="overlay-opt" title="Preto">
-                <input type="radio" name="fundoPromo" value="preto" onchange="gerarBannerAtual()" />
+                <input type="radio" name="fundoPromo" value="preto" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background: linear-gradient(135deg,#000,#1a1a1a);"></div>
               </label>
             </div>
@@ -722,35 +722,35 @@
                 <div class="overlay-swatch dark-swatch"></div>
               </label>
               <label class="overlay-opt" title="Roxo">
-                <input type="radio" name="overlayPromo" value="purple" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayPromo" value="purple" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch purple-swatch"></div>
               </label>
               <label class="overlay-opt" title="Azul">
-                <input type="radio" name="overlayPromo" value="blue" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayPromo" value="blue" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch blue-swatch"></div>
               </label>
               <label class="overlay-opt" title="Vermelho">
-                <input type="radio" name="overlayPromo" value="red" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayPromo" value="red" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch red-swatch"></div>
               </label>
               <label class="overlay-opt" title="Verde">
-                <input type="radio" name="overlayPromo" value="green" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayPromo" value="green" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background:rgba(20,83,45,0.6);"></div>
               </label>
               <label class="overlay-opt" title="Laranja">
-                <input type="radio" name="overlayPromo" value="orange" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayPromo" value="orange" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background:rgba(124,45,18,0.6);"></div>
               </label>
               <label class="overlay-opt" title="Rosa">
-                <input type="radio" name="overlayPromo" value="pink" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayPromo" value="pink" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background:rgba(131,24,67,0.6);"></div>
               </label>
               <label class="overlay-opt" title="Cinza">
-                <input type="radio" name="overlayPromo" value="gray" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayPromo" value="gray" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch" style="background:rgba(55,65,81,0.6);"></div>
               </label>
               <label class="overlay-opt" title="Sem overlay">
-                <input type="radio" name="overlayPromo" value="none" onchange="gerarBannerAtual()" />
+                <input type="radio" name="overlayPromo" value="none" onchange="salvarPreferencias(); gerarBannerAtual()" />
                 <div class="overlay-swatch none-swatch">✕</div>
               </label>
             </div>
@@ -915,7 +915,7 @@
       <div class="step-item">
         <div class="step-circle">3</div>
         <h4>Escolha o Formato</h4>
-        <p>Stories, Feed ou Paisagem — otimizado para cada rede social</p>
+        <p>Feed ou Quadrado — otimizado para cada rede social</p>
       </div>
       <div class="step-arrow">→</div>
       <div class="step-item">
@@ -998,7 +998,7 @@
   <script src="auth-licenseauth-js.js"></script>
   
   <!-- 3. App principal (criador de banners) -->
-  <script src="app.js"></script>
+  <script src="app.js?v=20260429030"></script>
   
   <script>
     // Scripts carregados
