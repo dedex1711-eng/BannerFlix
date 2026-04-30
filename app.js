@@ -294,16 +294,24 @@ function salvarPreferencias() {
     localStorage.setItem('overlayFutebol', overlayFutebol.value);
   }
   
-  // Salvar fundo promocional
+  // Salvar fundo promocional (separado por tipo)
   const fundoPromo = document.querySelector('input[name="fundoPromo"]:checked');
   if (fundoPromo) {
-    localStorage.setItem('fundoPromo', fundoPromo.value);
+    if (tipoAtual === 'futebol') {
+      localStorage.setItem('fundoPromoFutebol', fundoPromo.value);
+    } else {
+      localStorage.setItem('fundoPromoFilme', fundoPromo.value);
+    }
   }
   
-  // Salvar overlay promocional
+  // Salvar overlay promocional (separado por tipo)
   const overlayPromo = document.querySelector('input[name="overlayPromo"]:checked');
   if (overlayPromo) {
-    localStorage.setItem('overlayPromo', overlayPromo.value);
+    if (tipoAtual === 'futebol') {
+      localStorage.setItem('overlayPromoFutebol', overlayPromo.value);
+    } else {
+      localStorage.setItem('overlayPromoFilme', overlayPromo.value);
+    }
   }
   
   // Salvar overlay filmes (template simples)
@@ -382,15 +390,19 @@ function carregarPreferencias() {
     if (radio) radio.checked = true;
   }
   
-  // Carregar fundo promocional
-  const fundoPromoSalvo = localStorage.getItem('fundoPromo');
+  // Carregar fundo promocional (separado por tipo)
+  const fundoPromoSalvo = tipoAtual === 'futebol'
+    ? localStorage.getItem('fundoPromoFutebol')
+    : localStorage.getItem('fundoPromoFilme');
   if (fundoPromoSalvo) {
     const radio = document.querySelector(`input[name="fundoPromo"][value="${fundoPromoSalvo}"]`);
     if (radio) radio.checked = true;
   }
   
-  // Carregar overlay promocional
-  const overlayPromoSalvo = localStorage.getItem('overlayPromo');
+  // Carregar overlay promocional (separado por tipo)
+  const overlayPromoSalvo = tipoAtual === 'futebol'
+    ? localStorage.getItem('overlayPromoFutebol')
+    : localStorage.getItem('overlayPromoFilme');
   if (overlayPromoSalvo) {
     const radio = document.querySelector(`input[name="overlayPromo"][value="${overlayPromoSalvo}"]`);
     if (radio) radio.checked = true;
@@ -1166,6 +1178,7 @@ async function gerarBannerPromocional() {
     laranja:  { c1:'#1a0a00', c2:'#2d1400', c3:'#5e2a0f', accent:'#ea580c', glow:'rgba(234,88,12,0.6)'   },
     rosa:     { c1:'#180214', c2:'#2d0a1e', c3:'#5e0f3d', accent:'#ec4899', glow:'rgba(236,72,153,0.6)'  },
     ciano:    { c1:'#021418', c2:'#0a1e28', c3:'#0f3d5e', accent:'#06b6d4', glow:'rgba(6,182,212,0.6)'   },
+    turquesa: { c1:'#021814', c2:'#0a2820', c3:'#0f5e4d', accent:'#14b8a6', glow:'rgba(20,184,166,0.6)'  },
     dourado:  { c1:'#1a1200', c2:'#2d2000', c3:'#5e4a0f', accent:'#eab308', glow:'rgba(234,179,8,0.6)'   },
     preto:    { c1:'#000000', c2:'#0a0a0a', c3:'#1a1a1a', accent:'#6b7280', glow:'rgba(107,114,128,0.4)' },
   };
@@ -2652,29 +2665,10 @@ function selecionarTipo(tipo) {
   document.getElementById('painelFilmes').style.display = tipo === 'filme' ? 'block' : 'none';
   document.getElementById('painelFutebol').style.display = tipo === 'futebol' ? 'block' : 'none';
   
-  // Carregar template salvo para o tipo selecionado
-  const templateSalvo = tipo === 'futebol' 
-    ? localStorage.getItem('templateFutebol')
-    : localStorage.getItem('templateFilme');
-    
-  if (templateSalvo) {
-    const radio = document.querySelector(`input[name="template"][value="${templateSalvo}"]`);
-    if (radio) {
-      radio.checked = true;
-      setTimeout(() => {
-        alternarPainelTemplate();
-      }, 50);
-    }
-  } else {
-    // Se não tem template salvo, usar o padrão (simples)
-    const radioSimples = document.querySelector(`input[name="template"][value="simples"]`);
-    if (radioSimples) {
-      radioSimples.checked = true;
-      setTimeout(() => {
-        alternarPainelTemplate();
-      }, 50);
-    }
-  }
+  // Carregar TODAS as preferências para o tipo selecionado
+  setTimeout(() => {
+    carregarPreferencias();
+  }, 50);
   
   // Atualizar placeholder do preview
   const placeholder = document.getElementById('canvasPlaceholder');
@@ -3005,6 +2999,9 @@ async function buscarTodosJogosDoDia() {
     // Selecionar todos automaticamente
     setTimeout(() => {
       selecionarTodosJogos();
+      
+      // Verificar se todas as configurações estão prontas e gerar banner automaticamente
+      verificarEGerarBannerAutomatico();
     }, 100);
   }
   
@@ -3202,6 +3199,13 @@ function toggleJogoSelecionado(index, element) {
   }
   
   atualizarJogosSelecionados();
+  
+  // Verificar se pode gerar banner automaticamente
+  if (jogosSelecionados.length > 0) {
+    setTimeout(() => {
+      verificarEGerarBannerAutomatico();
+    }, 300);
+  }
 }
 
 function atualizarJogosSelecionados() {
@@ -3324,6 +3328,10 @@ function selecionarTodosJogos() {
     // Mostrar toast com quantidade selecionada
     showToast(`✅ ${jogosSelecionados.length} jogos selecionados!`);
     
+    // Verificar se pode gerar banner automaticamente
+    setTimeout(() => {
+      verificarEGerarBannerAutomatico();
+    }, 300);
   }
   
   // Atualizar texto do botão
@@ -3343,6 +3351,53 @@ function atualizarBotaoSelecionarTodos() {
       botao.innerHTML = '✅ Selecionar Todos';
     }
   }
+}
+
+// ===== FUNÇÃO PARA VERIFICAR E GERAR BANNER AUTOMATICAMENTE =====
+function verificarEGerarBannerAutomatico() {
+  // Verificar se estamos na aba de futebol
+  if (tipoAtual !== 'futebol') return;
+  
+  // Verificar se há jogos selecionados
+  if (!jogosSelecionados || jogosSelecionados.length === 0) return;
+  
+  // Verificar se o template está selecionado
+  const templateSelecionado = document.querySelector('input[name="templateFutebol"]:checked');
+  if (!templateSelecionado) return;
+  
+  // Verificar se o formato está selecionado
+  const formatoSelecionado = document.querySelector('input[name="formato"]:checked');
+  if (!formatoSelecionado) return;
+  
+  // Verificar se a cor de destaque está selecionada (para futebol)
+  const corDestaqueSelecionada = document.querySelector('input[name="corDestaqueFutebol"]:checked');
+  if (!corDestaqueSelecionada) return;
+  
+  // Se o template for "Jogador Destaque", verificar configurações adicionais
+  if (templateSelecionado.value === 'jogador') {
+    // Verificar se o fundo está selecionado
+    const fundoSelecionado = document.querySelector('input[name="fundoJogador"]:checked');
+    if (!fundoSelecionado) return;
+    
+    // Verificar se o overlay está selecionado
+    const overlaySelecionado = document.querySelector('input[name="overlayJogador"]:checked');
+    if (!overlaySelecionado) return;
+  }
+  
+  // Se o template for "Promocional", verificar se a cor de fundo está selecionada
+  if (templateSelecionado.value === 'promocional') {
+    const fundoSelecionado = document.querySelector('input[name="fundoPromocional"]:checked');
+    if (!fundoSelecionado) return;
+  }
+  
+  // Todas as configurações estão prontas! Gerar banner automaticamente
+  console.log('✅ Todas as configurações prontas! Gerando banner automaticamente...');
+  
+  // Aguardar um pouco para garantir que tudo está carregado
+  setTimeout(() => {
+    gerarBannerFutebol();
+    showToast('🎨 Banner gerado automaticamente!');
+  }, 500);
 }
 
 // ===== RESUMO DE FUTEBOL PARA REDES SOCIAIS =====
@@ -3960,6 +4015,7 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     laranja:  { c1:'#1a0a00', c2:'#2d1400', c3:'#5e2a0f' },
     rosa:     { c1:'#180214', c2:'#2d0a1e', c3:'#5e0f3d' },
     ciano:    { c1:'#021418', c2:'#0a1e28', c3:'#0f3d5e' },
+    turquesa: { c1:'#021814', c2:'#0a2820', c3:'#0f5e4d' },
     dourado:  { c1:'#1a1200', c2:'#2d2000', c3:'#5e4a0f' },
     preto:    { c1:'#000000', c2:'#0a0a0a', c3:'#1a1a1a' },
   };
@@ -4085,6 +4141,21 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
   const jogoHeight = h * 0.130;
   const jogoSpacing = h * 0.015;
   
+  // Marca d'água da logo (ANTES de desenhar os jogos, para ficar abaixo)
+  if (logoImg) {
+    const logoRatio = logoImg.width / logoImg.height;
+    const marcaDaguaW = w * 0.40; // Aumentado de 0.25 para 0.40 (40% da largura)
+    const marcaDaguaH = marcaDaguaW / logoRatio;
+    const marcaDaguaX = jogosX + (jogosWidth - marcaDaguaW) / 2; // Centralizado na área dos jogos
+    const marcaDaguaY = h * 0.50; // No meio vertical da área dos jogos
+    
+    // Desenhar marca d'água com opacidade baixa
+    ctx.save();
+    ctx.globalAlpha = 0.15; // Bem transparente para não atrapalhar
+    ctx.drawImage(logoImg, marcaDaguaX, marcaDaguaY, marcaDaguaW, marcaDaguaH);
+    ctx.restore();
+  }
+  
   // Carregar imagens dos times
   const imagensCarregadas = await carregarImagensDosTimes(jogos);
   
@@ -4187,18 +4258,6 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     ctx.shadowBlur = 15;
     ctx.drawImage(logoImg, w * 0.03, h * 0.02, logoW, logoH);
     ctx.shadowBlur = 0;
-    
-    // Marca d'água da logo (abaixo do jogador, na área dos jogos)
-    const marcaDaguaW = w * 0.25; // Maior que a logo do topo
-    const marcaDaguaH = marcaDaguaW / logoRatio;
-    const marcaDaguaX = jogosX + (jogosWidth - marcaDaguaW) / 2; // Centralizado na área dos jogos
-    const marcaDaguaY = h * 0.50; // No meio vertical da área dos jogos
-    
-    // Desenhar marca d'água com opacidade baixa
-    ctx.save();
-    ctx.globalAlpha = 0.15; // Bem transparente para não atrapalhar
-    ctx.drawImage(logoImg, marcaDaguaX, marcaDaguaY, marcaDaguaW, marcaDaguaH);
-    ctx.restore();
   }
   
   // Rodapé com texto "TODOS OS JOGOS AO VIVO" ou contatos
@@ -4619,6 +4678,7 @@ async function desenharFundoFutebol(ctx, w, h) {
     laranja:  { c1:'#1a0a00', c2:'#2d1400', c3:'#5e2a0f' },
     rosa:     { c1:'#180214', c2:'#2d0a1e', c3:'#5e0f3d' },
     ciano:    { c1:'#021418', c2:'#0a1e28', c3:'#0f3d5e' },
+    turquesa: { c1:'#021814', c2:'#0a2820', c3:'#0f5e4d' },
     dourado:  { c1:'#1a1200', c2:'#2d2000', c3:'#5e4a0f' },
     preto:    { c1:'#000000', c2:'#0a0a0a', c3:'#1a1a1a' },
   };
