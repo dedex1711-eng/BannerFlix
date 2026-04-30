@@ -353,6 +353,11 @@ function fazerLogout() {
   }
 
   showToast('👋 Você saiu da conta.');
+  
+  // Redireciona para a página de login após 2 segundos
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 2000);
 }
 
 // ===== INICIALIZAÇÃO =====
