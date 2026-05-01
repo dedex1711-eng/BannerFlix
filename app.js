@@ -85,12 +85,12 @@ const jogadoresFamosos = {
   'Boca Juniors': { nome: 'Leandro Paredes', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/leandro-paredes.png' },
   'Alianza Lima': { nome: 'Hernán Barcos', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Hernán%20Barcos.png' },
   'Club Alianza Lima': { nome: 'Hernán Barcos', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Hernán%20Barcos.png' },
-  'Universidad Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
-  'CD Universidad Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
-  'Universidad C.': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
-  'Universidad Catolica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
-  'U. Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
-  'Universidad Católica (Quito)': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
+  'Universidad Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello2.png' },
+  'CD Universidad Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello2.png' },
+  'Universidad C.': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello2.png' },
+  'Universidad Catolica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello2.png' },
+  'U. Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello2.png' },
+  'Universidad Católica (Quito)': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello2.png' },
   'FC Cajamarca': { nome: 'Pablo Lavandeira', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Pablo%20Lavandeira.png' },
   'Cajamarca': { nome: 'Pablo Lavandeira', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Pablo%20Lavandeira.png' },
   'Comerciantes Unidos': { nome: 'Pablo Lavandeira', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Pablo%20Lavandeira.png' },
@@ -119,6 +119,9 @@ const jogadoresFamosos = {
   'Internacional': { nome: 'Yuri Alberto', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
   'Cruzeiro': { nome: 'Matheus Pereira', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Matheus%20Pereira.png' },
   'Cruzeiro EC': { nome: 'Matheus Pereira', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Matheus%20Pereira.png' },
+  'Vasco': { nome: 'Johan Rojas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Johan%20Rojas.png' },
+  'Vasco da Gama': { nome: 'Johan Rojas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Johan%20Rojas.png' },
+  'CR Vasco da Gama': { nome: 'Johan Rojas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Johan%20Rojas.png' },
   'Brighton': { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
   
   // Outros times populares
@@ -131,14 +134,14 @@ const jogadoresFamosos = {
   'Juventus': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'AC Milan': { nome: 'Kylian Mbappé', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
   'Inter Milan': { nome: 'Harry Kane', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Harry%20Kane%20Bayern%20Munich.png' },
-  'Avellino': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic.png' },
-  'US Avellino 1912': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic.png' },
-  'US Avellino': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic.png' },
-  'Avellino 1912': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic.png' },
+  'Avellino': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic2.png' },
+  'US Avellino 1912': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic2.png' },
+  'US Avellino': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic2.png' },
+  'Avellino 1912': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic2.png' },
   'Modena': { nome: 'Fabio Gerli', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gerli%20Fabio.png' },
   'Modena FC': { nome: 'Fabio Gerli', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gerli%20Fabio.png' },
-  'Pisa': { nome: 'Stefano Moreo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Stefano%20Moreo.png' },
-  'Pisa SC': { nome: 'Stefano Moreo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Stefano%20Moreo.png' },
+  'Pisa': { nome: 'Stefano Moreo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Stefano%20Moreo2.png' },
+  'Pisa SC': { nome: 'Stefano Moreo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Stefano%20Moreo2.png' },
   'Wolfsburg': { nome: 'Salih Özcan', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/salih_ozcan.png' },
   'RB Leipzig': { nome: 'David Raum', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/david-raum-rb-leipzig.png' },
   'Leipzig': { nome: 'David Raum', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/david-raum-rb-leipzig.png' },
@@ -1111,7 +1114,11 @@ async function gerarBanner(verificarCredito = false) {
     }
     
   } catch (error) {
+    // Esconder loading em caso de erro
+    const loading = document.getElementById('canvasLoading');
+    if (loading) loading.style.display = 'none';
     showToast('❌ Erro ao gerar banner: ' + error.message);
+    console.error('Erro:', error);
   }
 }
 
@@ -1145,9 +1152,11 @@ async function gerarBannerSimples() {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  // Esconde placeholder e mostra canvas
+  // Esconde placeholder e loading, mostra canvas
   const placeholder = document.getElementById('canvasPlaceholder');
+  const loading = document.getElementById('canvasLoading');
   if (placeholder) placeholder.style.display = 'none';
+  if (loading) loading.style.display = 'none';
   canvas.style.display = 'block';
 
   // Escolhe imagem de fundo
@@ -1261,7 +1270,10 @@ async function gerarBannerPromocional() {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  document.getElementById('canvasPlaceholder').style.display = 'none';
+  const placeholder = document.getElementById('canvasPlaceholder');
+  const loading = document.getElementById('canvasLoading');
+  if (placeholder) placeholder.style.display = 'none';
+  if (loading) loading.style.display = 'none';
   canvas.style.display = 'block';
 
   // Paleta de cores
@@ -3701,41 +3713,23 @@ function verificarEGerarBannerAutomatico() {
   // Verificar se há jogos selecionados
   if (!jogosSelecionados || jogosSelecionados.length === 0) return;
   
-  // Verificar se o template está selecionado
-  const templateSelecionado = document.querySelector('input[name="templateFutebol"]:checked');
-  if (!templateSelecionado) return;
+  // Verificar se a logo foi carregada (obrigatório para templates simples e promocional)
+  const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
+  if (template !== 'jogador' && !logoImg) {
+    console.log('⏸️ Aguardando logo para gerar banner automaticamente...');
+    return;
+  }
   
   // Verificar se o formato está selecionado
   const formatoSelecionado = document.querySelector('input[name="formato"]:checked');
   if (!formatoSelecionado) return;
-  
-  // Verificar se a cor de destaque está selecionada (para futebol)
-  const corDestaqueSelecionada = document.querySelector('input[name="corDestaqueFutebol"]:checked');
-  if (!corDestaqueSelecionada) return;
-  
-  // Se o template for "Jogador Destaque", verificar configurações adicionais
-  if (templateSelecionado.value === 'jogador') {
-    // Verificar se o fundo está selecionado
-    const fundoSelecionado = document.querySelector('input[name="fundoJogador"]:checked');
-    if (!fundoSelecionado) return;
-    
-    // Verificar se o overlay está selecionado
-    const overlaySelecionado = document.querySelector('input[name="overlayJogador"]:checked');
-    if (!overlaySelecionado) return;
-  }
-  
-  // Se o template for "Promocional", verificar se a cor de fundo está selecionada
-  if (templateSelecionado.value === 'promocional') {
-    const fundoSelecionado = document.querySelector('input[name="fundoPromocional"]:checked');
-    if (!fundoSelecionado) return;
-  }
   
   // Todas as configurações estão prontas! Gerar banner automaticamente
   console.log('✅ Todas as configurações prontas! Gerando banner automaticamente...');
   
   // Aguardar um pouco para garantir que tudo está carregado
   setTimeout(() => {
-    gerarBannerFutebol();
+    gerarBannerAtual();
     showToast('🎨 Banner gerado automaticamente!');
   }, 500);
 }
@@ -3895,7 +3889,10 @@ async function gerarMultiplosBannersFutebol() {
     ctx.drawImage(bannersGerados[0].canvas, 0, 0);
     
     // Mostrar canvas e ações
-    document.getElementById('canvasPlaceholder').style.display = 'none';
+    const placeholder = document.getElementById('canvasPlaceholder');
+    const loading = document.getElementById('canvasLoading');
+    if (placeholder) placeholder.style.display = 'none';
+    if (loading) loading.style.display = 'none';
     canvasPreview.style.display = 'block';
     document.getElementById('previewActions').style.display = 'flex';
     bannerGerado = true;
@@ -3919,7 +3916,11 @@ async function gerarMultiplosBannersFutebol() {
     showToast(`✅ ${gruposDeJogos.length} banners gerados com sucesso!`, 4000);
     
   } catch (error) {
+    // Esconder loading em caso de erro
+    const loading = document.getElementById('canvasLoading');
+    if (loading) loading.style.display = 'none';
     showToast('❌ Erro ao gerar banners múltiplos');
+    console.error('Erro:', error);
   }
 }
 
@@ -4219,7 +4220,10 @@ async function gerarBannerFutebolCanvas(jogos) {
     }
     
     // Mostrar canvas
-    document.getElementById('canvasPlaceholder').style.display = 'none';
+    const placeholder = document.getElementById('canvasPlaceholder');
+    const loading = document.getElementById('canvasLoading');
+    if (placeholder) placeholder.style.display = 'none';
+    if (loading) loading.style.display = 'none';
     canvas.style.display = 'block';
     document.getElementById('previewActions').style.display = 'flex';
     
@@ -4231,7 +4235,10 @@ async function gerarBannerFutebolCanvas(jogos) {
     gerarResumoFutebol();
     
   } catch (error) {
-    console.error('❌ Erro ao gerar banner:', error); // Debug
+    // Esconder loading em caso de erro
+    const loading = document.getElementById('canvasLoading');
+    if (loading) loading.style.display = 'none';
+    console.error('❌ Erro ao gerar banner:', error);
     alert('Erro ao gerar banner: ' + error.message);
   }
 }
@@ -4681,12 +4688,38 @@ document.addEventListener('DOMContentLoaded', function() {
   // Painel de futebol inicializado
 });
 function gerarBannerAtual() {
-  
+  // Validações ANTES de mostrar o loading
   if (tipoAtual === 'futebol') {
-    gerarBannerFutebol();
+    // Validar se há jogos selecionados
+    if (jogosSelecionados.length === 0) {
+      alert('Selecione pelo menos um jogo!');
+      return;
+    }
   } else {
-    gerarBanner(); // Função original para filmes
+    // Validar se há filme selecionado
+    if (!filmeAtual) {
+      alert('Busque um filme primeiro!');
+      return;
+    }
   }
+  
+  // Mostrar loading
+  const loading = document.getElementById('canvasLoading');
+  const canvas = document.getElementById('bannerCanvas');
+  const placeholder = document.getElementById('canvasPlaceholder');
+  
+  if (loading) loading.style.display = 'flex';
+  if (canvas) canvas.style.display = 'none';
+  if (placeholder) placeholder.style.display = 'none';
+  
+  // Pequeno delay para garantir que o loading apareça
+  setTimeout(() => {
+    if (tipoAtual === 'futebol') {
+      gerarBannerFutebol();
+    } else {
+      gerarBanner(); // Função original para filmes
+    }
+  }, 100);
 }
 // ===== FUNÇÃO PARA CARREGAR IMAGENS DOS TIMES =====
 async function carregarImagensDosTimes(jogos) {
