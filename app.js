@@ -69,9 +69,17 @@ const jogadoresFamosos = {
   'Valencia': { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine-Yamal.png' },
   'Mallorca': { nome: 'Abdón Prats', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Abdón%20Prats.png' },
   'Deportivo Alavés': { nome: 'Luis Rioja', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luis_Rioja.png' },
+  'Albacete': { nome: 'Antonio Puertas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Antonio%20Puertas.png' },
+  'Albacete BP': { nome: 'Antonio Puertas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Antonio%20Puertas.png' },
   
   // América do Sul
   'Boca Juniors': { nome: 'Leandro Paredes', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/leandro-paredes.png' },
+  'Universidad Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
+  'CD Universidad Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
+  'Universidad C.': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
+  'Universidad Catolica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
+  'U. Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
+  'Universidad Católica (Quito)': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello.png' },
   
   // Brasileirão
   'Flamengo': { nome: 'Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/pedro-flamengo.png' },
@@ -100,6 +108,14 @@ const jogadoresFamosos = {
   'Juventus': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'AC Milan': { nome: 'Kylian Mbappé', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
   'Inter Milan': { nome: 'Harry Kane', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Harry%20Kane%20Bayern%20Munich.png' },
+  'Avellino': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic.png' },
+  'US Avellino 1912': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic.png' },
+  'US Avellino': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic.png' },
+  'Avellino 1912': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic.png' },
+  'Modena': { nome: 'Fabio Gerli', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gerli%20Fabio.png' },
+  'Modena FC': { nome: 'Fabio Gerli', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gerli%20Fabio.png' },
+  'Pisa': { nome: 'Stefano Moreo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Stefano%20Moreo.png' },
+  'Pisa SC': { nome: 'Stefano Moreo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Stefano%20Moreo.png' },
   'Wolfsburg': { nome: 'Salih Özcan', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/salih_ozcan.png' },
   'Braga': { nome: 'Henrik Meister', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/henrik%20meister.png' },
 };
@@ -127,7 +143,9 @@ async function buscarJogadorAutomatico() {
   for (let i = 0; i < jogosSelecionados.length; i++) {
     const jogo = jogosSelecionados[i];
     
-    console.log(`🔍 Jogo ${i+1}: ${jogo.timeCasa} vs ${jogo.timeVisitante}`);
+    console.log(`🔍 Jogo ${i+1}: "${jogo.timeCasa}" vs "${jogo.timeVisitante}"`);
+    console.log(`🔍 Verificando se "${jogo.timeCasa}" existe no banco:`, !!jogadoresFamosos[jogo.timeCasa]);
+    console.log(`🔍 Verificando se "${jogo.timeVisitante}" existe no banco:`, !!jogadoresFamosos[jogo.timeVisitante]);
     
     if (jogadoresFamosos[jogo.timeCasa]) {
       jogadorEncontrado = jogadoresFamosos[jogo.timeCasa];
@@ -2622,6 +2640,7 @@ function abrirWhatsApp() {
 // ===== FUTEBOL FUNCTIONS =====
 let tipoAtual = 'filme';
 let jogosSelecionados = [];
+let dataJogos = 0; // 0 = hoje, 1 = amanhã
 
 // Cores do banner de futebol
 let coresFutebol = {
@@ -2783,6 +2802,9 @@ function getDataFormatadaBR(offset = 0) {
 async function buscarTodosJogosDoDia() {
   const container = document.getElementById('jogosDisponiveis');
   const btn = document.getElementById('btnBuscarTodos');
+  
+  // Definir que estamos buscando jogos de HOJE
+  dataJogos = 0;
   
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Buscando...';
@@ -3041,10 +3063,233 @@ async function buscarTodosJogosDoDia() {
   btn.innerHTML = '🌍 Todos do Dia';
 }
 
+// ===== FUNÇÃO PARA BUSCAR JOGOS DE AMANHÃ =====
+async function buscarJogosAmanha() {
+  const container = document.getElementById('jogosDisponiveis');
+  const btn = document.getElementById('btnBuscarAmanha');
+  
+  // Definir que estamos buscando jogos de AMANHÃ
+  dataJogos = 1;
+  
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Buscando...';
+  container.innerHTML = '<div class="loading-state">🔄 Buscando jogos de amanhã...</div>';
+  
+  const todasLigas = [
+    // Brasil
+    { id: 'BRA.1',  nome: 'Brasileirão Série A' },
+    { id: 'BRA.2',  nome: 'Brasileirão Série B' },
+    { id: 'BRA.3',  nome: 'Brasileirão Série C' },
+    { id: 'BRA.4',  nome: 'Brasileirão Série D' },
+    { id: 'BRA.CB', nome: 'Copa do Brasil' },
+    { id: 'BRA.RJ', nome: 'Campeonato Carioca' },
+    { id: 'BRA.SP', nome: 'Campeonato Paulista' },
+    { id: 'BRA.MG', nome: 'Campeonato Mineiro' },
+    { id: 'BRA.RS', nome: 'Campeonato Gaúcho' },
+    { id: 'BRA.BA', nome: 'Campeonato Baiano' },
+    { id: 'BRA.PE', nome: 'Campeonato Pernambucano' },
+    { id: 'BRA.CE', nome: 'Campeonato Cearense' },
+    { id: 'BRA.GO', nome: 'Campeonato Goiano' },
+    { id: 'BRA.PR', nome: 'Campeonato Paranaense' },
+    { id: 'BRA.SC', nome: 'Campeonato Catarinense' },
+    { id: 'BRA.ES', nome: 'Campeonato Capixaba' },
+    { id: 'BRA.PA', nome: 'Campeonato Paraense' },
+    { id: 'BRA.AM', nome: 'Campeonato Amazonense' },
+    // América do Sul
+    { id: 'CONMEBOL.LIBERTADORES',  nome: 'Copa Libertadores' },
+    { id: 'CONMEBOL.SUDAMERICANA',  nome: 'Copa Sul-Americana' },
+    { id: 'CONMEBOL.RECOPA',        nome: 'Recopa Sul-Americana' },
+    { id: 'ARG.1', nome: 'Liga Argentina' },
+    { id: 'COL.1', nome: 'Liga Colombiana' },
+    { id: 'CHI.1', nome: 'Liga Chilena' },
+    { id: 'URU.1', nome: 'Liga Uruguaia' },
+    { id: 'PER.1', nome: 'Liga Peruana' },
+    { id: 'ECU.1', nome: 'Liga Equatoriana' },
+    { id: 'VEN.1', nome: 'Liga Venezuelana' },
+    { id: 'PAR.1', nome: 'Liga Paraguaia' },
+    { id: 'BOL.1', nome: 'Liga Boliviana' },
+    // Europa
+    { id: 'UEFA.CHAMPIONS',  nome: 'Champions League' },
+    { id: 'UEFA.EUROPA',     nome: 'Europa League' },
+    { id: 'UEFA.CONFERENCE', nome: 'Conference League' },
+    { id: 'UEFA.NATIONS',    nome: 'Nations League' },
+    { id: 'ENG.1', nome: 'Premier League' },
+    { id: 'ENG.2', nome: 'Championship' },
+    { id: 'ESP.1', nome: 'La Liga' },
+    { id: 'ESP.2', nome: 'La Liga 2' },
+    { id: 'GER.1', nome: 'Bundesliga' },
+    { id: 'GER.2', nome: '2. Bundesliga' },
+    { id: 'ITA.1', nome: 'Serie A' },
+    { id: 'ITA.2', nome: 'Serie B' },
+    { id: 'FRA.1', nome: 'Ligue 1' },
+    { id: 'FRA.2', nome: 'Ligue 2' },
+    { id: 'POR.1', nome: 'Primeira Liga' },
+    { id: 'NED.1', nome: 'Eredivisie' },
+    { id: 'SCO.1', nome: 'Scottish Premiership' },
+    { id: 'TUR.1', nome: 'Süper Lig' },
+    { id: 'RUS.1', nome: 'Premier League Russa' },
+    { id: 'BEL.1', nome: 'Pro League Belga' },
+    { id: 'GRE.1', nome: 'Super League Grega' },
+    { id: 'KSA.1', nome: 'Campeonato Saudita' },
+    // Mundial
+    { id: 'FIFA.WORLDQ.CONMEBOL', nome: 'Eliminatórias Sul-Americanas' },
+    { id: 'CONCACAF.CHAMPIONS',   nome: 'CONCACAF Champions Cup' },
+    { id: 'CAF.CHAMPIONS',        nome: 'CAF Champions League' },
+  ];
+  
+  // FORÇAR DATA DE AMANHÃ
+  const dataFormatada = getDataFormatadaBR(1);
+  
+  const canaisPorLiga = {
+    'BRA.BA': ['SporTV'], 'BRA.PE': ['SporTV'],
+    'BRA.CE': ['SporTV'], 'BRA.GO': ['SporTV'],
+    'BRA.PR': ['SporTV'], 'BRA.SC': ['SporTV'],
+    'BRA.ES': ['SporTV'], 'BRA.PA': ['SporTV'],
+    'BRA.AM': ['SporTV'],
+    'CONMEBOL.LIBERTADORES': ['ESPN', 'SporTV'],
+    'CONMEBOL.SUDAMERICANA': ['ESPN', 'SporTV'],
+    'CONMEBOL.RECOPA':       ['SporTV'],
+    'ARG.1': ['ESPN'], 'COL.1': ['ESPN'],
+    'CHI.1': ['ESPN'], 'URU.1': ['ESPN'],
+    'PER.1': ['ESPN'], 'ECU.1': ['ESPN'],
+    'VEN.1': ['ESPN'], 'PAR.1': ['ESPN'],
+    'BOL.1': ['ESPN'],
+    'UEFA.CHAMPIONS':  ['TNT Sports', 'HBO Max'],
+    'UEFA.EUROPA':     ['ESPN'],
+    'UEFA.CONFERENCE': ['ESPN'],
+    'UEFA.NATIONS':    ['SporTV'],
+    'ENG.1': ['ESPN'], 'ENG.2': ['ESPN'],
+    'ESP.1': ['ESPN'], 'ESP.2': ['ESPN'],
+    'GER.1': ['Fox Sports'], 'GER.2': ['Fox Sports'],
+    'ITA.1': ['ESPN'], 'ITA.2': ['ESPN'],
+    'FRA.1': ['CazéTV'], 'FRA.2': ['CazéTV'],
+    'POR.1': ['ESPN'], 'NED.1': ['ESPN'],
+    'SCO.1': ['ESPN'], 'TUR.1': ['ESPN'],
+    'RUS.1': ['ESPN'], 'BEL.1': ['ESPN'],
+    'GRE.1': ['ESPN'], 'KSA.1': ['ESPN'],
+    'FIFA.WORLDQ.CONMEBOL': ['Globo', 'SporTV'],
+    'CONCACAF.CHAMPIONS':   ['DAZN'],
+    'CAF.CHAMPIONS':        ['DAZN'],
+  };
+
+  const traducaoStatus = {
+    'Scheduled': 'Agendado', 'In Progress': 'Ao Vivo',
+    'Final': 'Encerrado', 'Postponed': 'Adiado',
+    'Halftime': 'Intervalo', 'Full Time': 'Encerrado',
+  };
+  
+  // Coletar todos os jogos em um array plano
+  let todosJogos = [];
+  
+  const chunks = [];
+  for (let i = 0; i < todasLigas.length; i += 5) {
+    chunks.push(todasLigas.slice(i, i + 5));
+  }
+  
+  for (const chunk of chunks) {
+    const resultados = await Promise.allSettled(
+      chunk.map(liga => 
+        fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga.id}/scoreboard?dates=${dataFormatada}`)
+          .then(r => r.json())
+          .then(data => ({ liga, jogos: data.events || [] }))
+          .catch(() => ({ liga, jogos: [] }))
+      )
+    );
+    
+    for (const resultado of resultados) {
+      if (resultado.status !== 'fulfilled') continue;
+      const { liga, jogos } = resultado.value;
+      
+      jogos.forEach(jogo => {
+        try {
+          const timeCasa = jogo.competitions[0].competitors.find(c => c.homeAway === 'home');
+          const timeVisitante = jogo.competitions[0].competitors.find(c => c.homeAway === 'away');
+          const dataJogo = new Date(jogo.date);
+          const horario = dataJogo.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          const status = traducaoStatus[jogo.status.type.description] || jogo.status.type.description;
+          const canaisDisponiveis = canaisPorLiga[liga.id] || ['ESPN'];
+          const canal = canaisDisponiveis[Math.floor(Math.random() * canaisDisponiveis.length)];
+          
+          todosJogos.push({
+            timestamp: dataJogo.getTime(),
+            horario, status, liga: liga.nome, canal,
+            timeCasa: timeCasa.team.displayName,
+            timeVisitante: timeVisitante.team.displayName,
+            logoCasa: timeCasa.team.logo || '',
+            logoVisitante: timeVisitante.team.logo || '',
+            id: `${liga.id}_${jogo.id}`,
+          });
+        } catch(e) { /* jogo inválido */ }
+      });
+    }
+  }
+  
+  // Ordenar por horário
+  todosJogos.sort((a, b) => a.timestamp - b.timestamp);
+
+  if (todosJogos.length === 0) {
+    container.innerHTML = '<div class="empty-state">Nenhum jogo encontrado para amanhã</div>';
+  } else {
+    // Renderizar ordenado por horário
+    let html = '';
+    todosJogos.forEach((jogo, index) => {
+      const jogoData = JSON.stringify({
+        id: jogo.id,
+        timeCasa: jogo.timeCasa,
+        timeVisitante: jogo.timeVisitante,
+        horario: jogo.horario,
+        status: jogo.status,
+        liga: jogo.liga,
+        logoCasa: jogo.logoCasa,
+        logoVisitante: jogo.logoVisitante,
+        canal: jogo.canal,
+      });
+      
+      html += `
+        <div class="jogo-api-item" onclick="toggleJogoSelecionado(${index}, this)" data-jogo='${jogoData}'>
+          <div class="jogo-api-header">
+            <div class="jogo-api-data">${jogo.horario}</div>
+            <div class="jogo-api-status">${jogo.status}</div>
+          </div>
+          <div class="jogo-api-times">
+            <div class="jogo-api-time">
+              <div class="jogo-api-logo">${jogo.logoCasa ? `<img src="${jogo.logoCasa}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}</div>
+              <div class="jogo-api-nome">${jogo.timeCasa}</div>
+            </div>
+            <div class="jogo-api-vs">VS</div>
+            <div class="jogo-api-time">
+              <div class="jogo-api-logo">${jogo.logoVisitante ? `<img src="${jogo.logoVisitante}" style="width:100%;height:100%;border-radius:50%;" />` : '⚽'}</div>
+              <div class="jogo-api-nome">${jogo.timeVisitante}</div>
+            </div>
+          </div>
+          <div class="jogo-api-transmissao">📺 ${jogo.canal} • ${jogo.liga}</div>
+        </div>`;
+    });
+    
+    container.innerHTML = html;
+    showToast(`📅 ${todosJogos.length} jogos encontrados para amanhã!`);
+    atualizarBotaoSelecionarTodos();
+    
+    // Selecionar todos automaticamente
+    setTimeout(() => {
+      selecionarTodosJogos();
+      
+      // Verificar se todas as configurações estão prontas e gerar banner automaticamente
+      verificarEGerarBannerAutomatico();
+    }, 100);
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = '📅 Amanhã';
+}
+
 async function buscarJogosFutebol() {
   const ligaSelect = document.getElementById('ligaSelect');
   const liga = ligaSelect.value;
   const container = document.getElementById('jogosDisponiveis');
+  
+  // Definir que estamos buscando jogos de HOJE
+  dataJogos = 0;
   
   if (!liga) {
     container.innerHTML = '<div class="empty-state">Selecione uma liga para ver os jogos</div>';
@@ -3951,8 +4196,9 @@ async function desenharJogosNoBanner(ctx, w, h, jogos) {
   ctx.fillText('DESTAQUES', w/2, h * 0.10);
   ctx.shadowBlur = 0;
   
-  // Data
+  // Data (usar dataJogos para calcular: 0=hoje, 1=amanhã)
   const hoje = new Date();
+  hoje.setDate(hoje.getDate() + dataJogos);
   const dataFormatada = hoje.toLocaleDateString('pt-BR', { 
     weekday: 'short', 
     day: '2-digit', 
@@ -4163,8 +4409,9 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
   const jogosX = w * 0.42; // Começa em 42%
   const jogosWidth = w * 0.54; // 54% da largura
   
-  // Data no topo (caixa BRANCA com borda arredondada)
+  // Data no topo (caixa BRANCA com borda arredondada) - usar dataJogos para calcular
   const hoje = new Date();
+  hoje.setDate(hoje.getDate() + dataJogos);
   const dia = hoje.getDate().toString().padStart(2, '0');
   const mes = (hoje.getMonth() + 1).toString().padStart(2, '0');
   const diaSemana = hoje.toLocaleDateString('pt-BR', { weekday: 'long' }).toUpperCase().replace('-FEIRA', '');

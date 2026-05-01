@@ -431,8 +431,8 @@
                   <option value="CAF.CHAMPIONS">CAF Champions League</option>
                 </optgroup>
               </select>
-              <button onclick="buscarJogosFutebol()" id="btnBuscarJogos">🔍 Buscar Jogos</button>
               <button onclick="buscarTodosJogosDoDia()" id="btnBuscarTodos" style="background:var(--accent3);color:#fff;border:none;padding:10px 14px;border-radius:var(--radius);cursor:pointer;font-weight:600;white-space:nowrap;font-size:0.82rem;">🌍 Todos do Dia</button>
+              <button onclick="buscarJogosAmanha()" id="btnBuscarAmanha" style="background:var(--accent2);color:#fff;border:none;padding:10px 14px;border-radius:var(--radius);cursor:pointer;font-weight:600;white-space:nowrap;font-size:0.82rem;">📅 Amanhã</button>
             </div>
             <div id="jogosDisponiveis" class="jogos-disponiveis">
               <!-- Jogos da API serão mostrados aqui -->
@@ -447,7 +447,6 @@
               <p class="empty-state">Nenhum jogo selecionado</p>
             </div>
             <div class="jogos-acoes">
-              <button onclick="selecionarTodosJogos()" class="btn-secondary">✅ Selecionar Todos</button>
               <button onclick="limparJogosSelecionados()" class="btn-secondary">🗑️ Limpar Seleção</button>
             </div>
           </div>
@@ -1002,7 +1001,7 @@
   <script src="auth-licenseauth-js.js"></script>
   
   <!-- 3. App principal (criador de banners) -->
-  <script src="app.js?v=20260430006"></script>
+  <script src="app.js?v=20260430020"></script>
   
   <script>
     // Scripts carregados
