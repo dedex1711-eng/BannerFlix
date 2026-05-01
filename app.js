@@ -3615,9 +3615,10 @@ async function gerarMultiplosBannersFutebol() {
     // Criar visualizador de múltiplas imagens
     criarVisualizadorMultiplo(bannersGerados);
     
-    // Mostrar visualizador
+    // Mostrar visualizador (remover display:none e adicionar classe show)
     const visualizador = document.getElementById('visualizadorMultiplo');
     if (visualizador) {
+      visualizador.style.display = ''; // Remover display:none inline
       visualizador.classList.add('show');
     }
     
@@ -4238,9 +4239,9 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     roundRect(ctx, jogosX + jogosWidth * 0.05, yPos, jogosWidth * 0.9, jogoHeight, 12);
     ctx.fill();
     
-    // Borda sutil
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.lineWidth = 1;
+    // Borda branca fina
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 2;
     ctx.stroke();
     
     const cardX = jogosX + jogosWidth * 0.05;
