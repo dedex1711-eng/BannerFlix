@@ -101,9 +101,9 @@ const jogadoresFamosos = {
   // Brasileirão
   'Flamengo': { nome: 'Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/pedro-flamengo2.png' },
   'Palmeiras': { nome: 'Gustavo Gómez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gustavo%20Gómez.png' },
-  'São Paulo': { nome: 'Lucas Beraldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lucas%20Beraldo.png' },
-  'São Paulo FC': { nome: 'Lucas Beraldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lucas%20Beraldo.png' },
-  'Sao Paulo': { nome: 'Lucas Beraldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lucas%20Beraldo.png' },
+  'São Paulo': { nome: 'Lucas Beraldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lucas%20Beraldo2.png' },
+  'São Paulo FC': { nome: 'Lucas Beraldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lucas%20Beraldo2.png' },
+  'Sao Paulo': { nome: 'Lucas Beraldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lucas%20Beraldo2.png' },
   'Corinthians': { nome: 'Memphis Depay', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Memphis%20Depay.png' },
   'Fluminense': { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
   'Fluminense FC': { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
