@@ -165,7 +165,8 @@ async function fazerLoginComChave() {
           dias: dias,
           creditos: -1,
           token: response.token || licenseKey,
-          userData: userData
+          userData: userData,
+          loginTimestamp: Date.now() // Adiciona timestamp do login
         };
 
         // Salva no localStorage
@@ -373,13 +374,26 @@ window.addEventListener('load', () => {
     try {
       usuarioAtual = JSON.parse(savedUser);
 
-      // Verifica se o token não expirou (opcional)
-      if (usuarioAtual.token) {
+      // Verifica se o login expirou (12 horas = 43200000 ms)
+      const DOZE_HORAS = 12 * 60 * 60 * 1000;
+      const agora = Date.now();
+      const loginTimestamp = usuarioAtual.loginTimestamp || 0;
+      
+      if (agora - loginTimestamp > DOZE_HORAS) {
+        // Login expirou após 12 horas
+        console.log('⏰ Login expirou após 12 horas');
+        fazerLogout();
+        showToast('⏰ Sua sessão expirou. Faça login novamente.');
+        setTimeout(() => {
+          abrirModal('login');
+        }, 1500);
+      } else if (usuarioAtual.token) {
+        // Login ainda válido
         atualizarNavbar();
         atualizarDisplayCreditos();
         carregarPerfilDoUsuario(usuarioAtual.userData || {});
       } else {
-        // Token expirado
+        // Token inválido
         fazerLogout();
       }
     } catch (err) {
