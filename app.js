@@ -636,7 +636,19 @@ async function selecionarFilme(item, el) {
     
     // Só gera preview se tiver logo carregada
     if (logoImg) {
-      gerarBanner(false); // false = apenas preview, sem verificar crédito
+      // Mostrar loading
+      const loading = document.getElementById('canvasLoading');
+      const canvas = document.getElementById('bannerCanvas');
+      const placeholder = document.getElementById('canvasPlaceholder');
+      
+      if (loading) loading.style.display = 'flex';
+      if (canvas) canvas.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'none';
+      
+      // Pequeno delay para garantir que o loading apareça
+      setTimeout(() => {
+        gerarBanner(false); // false = apenas preview, sem verificar crédito
+      }, 100);
     } else {
       showToast('⚠️ Carregue uma logo para ver o preview');
     }
