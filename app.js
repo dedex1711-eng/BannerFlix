@@ -122,6 +122,9 @@ const jogadoresFamosos = {
   'Vasco': { nome: 'Johan Rojas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Johan%20Rojas.png' },
   'Vasco da Gama': { nome: 'Johan Rojas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Johan%20Rojas.png' },
   'CR Vasco da Gama': { nome: 'Johan Rojas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Johan%20Rojas.png' },
+  'Bahia': { nome: 'Erick Pulga', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Erick%20Pulga.png' },
+  'EC Bahia': { nome: 'Erick Pulga', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Erick%20Pulga.png' },
+  'Esporte Clube Bahia': { nome: 'Erick Pulga', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Erick%20Pulga.png' },
   'Brighton': { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
   
   // Outros times populares
