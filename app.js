@@ -1141,6 +1141,10 @@ async function gerarBannerSimples() {
   canvas.width   = w;
   canvas.height  = h;
 
+  // Configurações de qualidade para melhor renderização
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
   // Esconde placeholder e mostra canvas
   const placeholder = document.getElementById('canvasPlaceholder');
   if (placeholder) placeholder.style.display = 'none';
@@ -1252,6 +1256,10 @@ async function gerarBannerPromocional() {
   const ctx      = canvas.getContext('2d');
   canvas.width   = w;
   canvas.height  = h;
+
+  // Configurações de qualidade para melhor renderização
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
 
   document.getElementById('canvasPlaceholder').style.display = 'none';
   canvas.style.display = 'block';
@@ -3926,6 +3934,10 @@ async function gerarBannerFutebolCanvasMultiplo(jogos, numeroBanner, totalBanner
   canvas.width = w;
   canvas.height = h;
   
+  // Configurações de qualidade para melhor renderização
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  
   // Fundo baseado no template selecionado
   const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
   console.log('🎯 Template múltiplo:', template, 'Banner', numeroBanner); // Debug
@@ -4163,6 +4175,10 @@ async function gerarBannerFutebolCanvas(jogos) {
     const { w, h } = getDimensoes();
     canvas.width = w;
     canvas.height = h;
+    
+    // Configurações de qualidade para melhor renderização
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     
     
     // Fundo baseado no template selecionado
