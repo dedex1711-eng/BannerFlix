@@ -18,7 +18,7 @@ const imagensJogadoresDisponiveis = [
   { nome: 'Giorgian De Arrascaeta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
   { nome: 'Harry Kane', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Harry%20Kane%20Bayern%20Munich.png' },
   { nome: 'Kylian Mbappé', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
-  { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine-Yamal.png' },
   { nome: 'Lionel Messi', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lionel%20Messi%20Inter%20Miami.png' },
   { nome: 'Luka Modrić', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luka%20Modrić%20Real%20Madrid.png' },
   { nome: 'Erling Haaland', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Manchester%20City%20Erling%20Haaland.png' },
@@ -27,44 +27,66 @@ const imagensJogadoresDisponiveis = [
   { nome: 'Vinícius Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Vinicius%20Junior%20Real%20Madrid.png' },
   { nome: 'Memphis Depay', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Memphis%20Depay.png' },
   { nome: 'Mohamed Salah', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mohamed%20Salah.png' },
-  { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' }
+  { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
+  { nome: 'Cole Palmer', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Cole%20Palmer.png' },
+  { nome: 'Bukayo Saka', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Bukayo%20Saka.png' },
+  { nome: 'Luis Rioja', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luis_Rioja.png' },
+  { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
+  { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur%20Cabral.jpg' },
+  { nome: 'Isidro Pitta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Isidro%20Pitta.png' },
+  { nome: 'Roberto Firmino', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/roberto-firmino-al-ahli-saudi-professional-league-brazil-brazilian-footballers-uniqrenders.com.png' }
 ];
 
 const jogadoresFamosos = {
   // Campeonato Saudita
   'Al Nassr': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
-  'Al Ahli': { nome: 'Roberto Firmino', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Ahli': { nome: 'Roberto Firmino', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/roberto-firmino-al-ahli-saudi-professional-league-brazil-brazilian-footballers-uniqrenders.com.png' },
   'Al Hilal': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'Al Ittihad': { nome: 'Karim Benzema', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
   'Al Riyadh': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'Al Qadsiah': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
-  'Al Ettifaq': { nome: 'Roberto Firmino', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Ettifaq': { nome: 'Roberto Firmino', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/roberto-firmino-al-ahli-saudi-professional-league-brazil-brazilian-footballers-uniqrenders.com.png' },
   'Al Fateh': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'Al Taawoun': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'Al Shabab': { nome: 'Karim Benzema', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
   
   // Premier League
   'Manchester City': { nome: 'Erling Haaland', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Manchester%20City%20Erling%20Haaland.png' },
-  'Arsenal': { nome: 'Bukayo Saka', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  'Arsenal': { nome: 'Bukayo Saka', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Bukayo%20Saka.png' },
   'Liverpool': { nome: 'Mohamed Salah', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mohamed%20Salah.png' },
   'Manchester United': { nome: 'Bruno Fernandes', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luka%20Modrić%20Real%20Madrid.png' },
-  'Chelsea': { nome: 'Cole Palmer', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  'Chelsea': { nome: 'Cole Palmer', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Cole%20Palmer.png' },
   'Tottenham': { nome: 'Son Heung-min', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
   'Newcastle': { nome: 'Bruno Fernandes', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luka%20Modrić%20Real%20Madrid.png' },
   'Aston Villa': { nome: 'Erling Haaland', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Manchester%20City%20Erling%20Haaland.png' },
+  'Leeds United': { nome: 'Daniel James', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Daniel%20James.png' },
   
   // La Liga
   'Real Madrid': { nome: 'Vinícius Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Vinicius%20Junior%20Real%20Madrid.png' },
-  'Barcelona': { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  'Barcelona': { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine-Yamal.png' },
   'Atlético Madrid': { nome: 'Antoine Griezmann', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
   'Sevilla': { nome: 'Vinícius Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Vinicius%20Junior%20Real%20Madrid.png' },
-  'Valencia': { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine%20Yamal.png' },
+  'Valencia': { nome: 'Lamine Yamal', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lamine-Yamal.png' },
+  'Mallorca': { nome: 'Abdón Prats', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Abdón%20Prats.png' },
+  'Deportivo Alavés': { nome: 'Luis Rioja', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luis_Rioja.png' },
+  
+  // América do Sul
+  'Boca Juniors': { nome: 'Leandro Paredes', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/leandro-paredes.png' },
   
   // Brasileirão
-  'Flamengo': { nome: 'Giorgian De Arrascaeta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
+  'Flamengo': { nome: 'Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/pedro-flamengo.png' },
   'Palmeiras': { nome: 'Gustavo Gómez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gustavo%20Gómez.png' },
   'São Paulo': { nome: 'Lucas Moura', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
   'Corinthians': { nome: 'Memphis Depay', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Memphis%20Depay.png' },
+  'Fluminense': { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
+  'Fluminense FC': { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
+  'Fluminense RJ': { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
+  'Santos': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Santos FC': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Botafogo': { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur%20Cabral.jpg' },
+  'Botafogo FR': { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur%20Cabral.jpg' },
+  'Bragantino': { nome: 'Isidro Pitta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Isidro%20Pitta.png' },
+  'Red Bull Bragantino': { nome: 'Isidro Pitta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Isidro%20Pitta.png' },
   'Estudiantes de La Plata': { nome: 'Lionel Messi', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lionel%20Messi%20Inter%20Miami.png' },
   'Atlético Mineiro': { nome: 'Gabigol', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
   'Grêmio': { nome: 'Lucas Moura', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
@@ -78,6 +100,8 @@ const jogadoresFamosos = {
   'Juventus': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'AC Milan': { nome: 'Kylian Mbappé', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
   'Inter Milan': { nome: 'Harry Kane', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Harry%20Kane%20Bayern%20Munich.png' },
+  'Wolfsburg': { nome: 'Salih Özcan', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/salih_ozcan.png' },
+  'Braga': { nome: 'Henrik Meister', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/henrik%20meister.png' },
 };
 
 async function obterLogo() {
@@ -103,6 +127,8 @@ async function buscarJogadorAutomatico() {
   for (let i = 0; i < jogosSelecionados.length; i++) {
     const jogo = jogosSelecionados[i];
     
+    console.log(`🔍 Jogo ${i+1}: ${jogo.timeCasa} vs ${jogo.timeVisitante}`);
+    
     if (jogadoresFamosos[jogo.timeCasa]) {
       jogadorEncontrado = jogadoresFamosos[jogo.timeCasa];
       timeEncontrado = jogo.timeCasa;
@@ -113,6 +139,8 @@ async function buscarJogadorAutomatico() {
       timeEncontrado = jogo.timeVisitante;
       console.log(`✅ Encontrado jogador do time visitante no jogo ${i+1}:`, timeEncontrado);
       break;
+    } else {
+      console.log(`❌ Nenhum jogador cadastrado para: ${jogo.timeCasa} ou ${jogo.timeVisitante}`);
     }
   }
   
@@ -179,6 +207,8 @@ async function buscarJogadorParaBanner(jogos, indiceBanner) {
   for (let i = 0; i < jogos.length; i++) {
     const jogo = jogos[i];
     
+    console.log(`🔍 Banner ${indiceBanner + 1}, Jogo ${i + 1}: ${jogo.timeCasa} vs ${jogo.timeVisitante}`);
+    
     // Alternar entre time casa e visitante baseado no índice do banner
     const usarTimeCasa = indiceBanner % 2 === 0;
     const timePrincipal = usarTimeCasa ? jogo.timeCasa : jogo.timeVisitante;
@@ -192,6 +222,8 @@ async function buscarJogadorParaBanner(jogos, indiceBanner) {
       jogadorEncontrado = jogadoresFamosos[timeAlternativo];
       console.log(`✅ Banner ${indiceBanner + 1}: Encontrado ${jogadorEncontrado.nome} (${timeAlternativo})`);
       break;
+    } else {
+      console.log(`❌ Banner ${indiceBanner + 1}, Jogo ${i + 1}: Nenhum jogador para ${timePrincipal} ou ${timeAlternativo}`);
     }
   }
   
@@ -3192,10 +3224,22 @@ function toggleJogoSelecionado(index, element) {
     // Remover seleção
     jogosSelecionados.splice(jaExiste, 1);
     element.classList.remove('selected');
+    
+    // Limpar banners múltiplos e jogador quando remover jogos
+    window.bannersMultiplos = null;
+    jogadorImg = null;
+    jogadorAutomatico = false;
+    console.log('🗑️ Banners e jogador limpos ao remover jogo');
   } else {
     // Adicionar seleção
     jogosSelecionados.push(jogoData);
     element.classList.add('selected');
+    
+    // Limpar banners múltiplos e jogador quando adicionar jogos
+    window.bannersMultiplos = null;
+    jogadorImg = null;
+    jogadorAutomatico = false;
+    console.log('🗑️ Banners e jogador limpos ao adicionar jogo');
   }
   
   atualizarJogosSelecionados();
@@ -3269,6 +3313,11 @@ function limparJogosSelecionados() {
   
   // Limpar banners múltiplos
   window.bannersMultiplos = null;
+  
+  // Limpar jogador carregado para forçar nova busca
+  jogadorImg = null;
+  jogadorAutomatico = false;
+  console.log('🗑️ Jogador limpo - será buscado novamente na próxima geração');
   
   // Resetar botão de download
   const btnDownload = document.querySelector('.btn-download');
@@ -3477,6 +3526,14 @@ function gerarBannerFutebol() {
   }
 
   const template = document.querySelector('input[name="template"]:checked')?.value || 'simples';
+  
+  // Se tiver 5 jogos ou menos, limpar banners múltiplos e jogador para forçar nova busca
+  if (jogosSelecionados.length <= 5) {
+    window.bannersMultiplos = null;
+    jogadorImg = null;
+    jogadorAutomatico = false;
+    console.log('🗑️ Limpo banners múltiplos e jogador (≤5 jogos selecionados)');
+  }
   
   // Valida se a logo foi carregada (exceto para template jogador que é opcional)
   if (!logoImg && template !== 'jogador') {
@@ -3847,6 +3904,20 @@ async function gerarBannerFutebolCanvas(jogos) {
       await desenharJogosNoBanner(ctx, w, h, jogos);
     }
     
+    // Esconder visualizador de múltiplos banners (se existir)
+    const visualizador = document.getElementById('visualizadorMultiplo');
+    if (visualizador) {
+      visualizador.classList.remove('show');
+      visualizador.style.display = 'none';
+    }
+    
+    // Resetar botão de download para modo single
+    const btnDownload = document.querySelector('.btn-download');
+    if (btnDownload) {
+      btnDownload.innerHTML = '⬇️ Baixar Banner';
+      btnDownload.onclick = downloadBanner;
+    }
+    
     // Mostrar canvas
     document.getElementById('canvasPlaceholder').style.display = 'none';
     canvas.style.display = 'block';
@@ -3872,7 +3943,7 @@ async function desenharJogosNoBanner(ctx, w, h, jogos) {
   
   // Título "DESTAQUES"
   ctx.fillStyle = coresFutebol.destaque;
-  ctx.font = `900 ${w * 0.08}px Inter, sans-serif`;
+  ctx.font = `900 ${w * 0.08}px Impact, Anton, 'Arial Black', sans-serif`;
   ctx.textAlign = 'center';
   ctx.shadowColor = 'rgba(0,0,0,0.5)';
   ctx.shadowBlur = 10;
@@ -3914,7 +3985,7 @@ async function desenharJogosNoBanner(ctx, w, h, jogos) {
     
     // Horário (esquerda)
     ctx.fillStyle = coresFutebol.hora;
-    ctx.font = `900 ${w * 0.032}px Inter, sans-serif`;
+    ctx.font = `900 ${w * 0.032}px Impact, Anton, 'Arial Black', sans-serif`;
     ctx.textAlign = 'left';
     ctx.fillText(jogo.horario, w * 0.08, yPos + jogoHeight * 0.6);
     
@@ -4120,7 +4191,7 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
   
   // Dia da semana ao lado (GRANDE e BRANCO)
   ctx.fillStyle = '#ffffff';
-  ctx.font = `900 ${w * 0.065}px Inter, sans-serif`;
+  ctx.font = `900 ${w * 0.065}px Impact, Anton, 'Arial Black', sans-serif`;
   ctx.textAlign = 'left';
   ctx.shadowColor = 'rgba(0,0,0,0.8)';
   ctx.shadowBlur = 10;
@@ -4129,7 +4200,7 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
   
   // Título "DESTAQUES" (grande, embaixo da data)
   ctx.fillStyle = coresFutebol.destaque;
-  ctx.font = `900 ${w * 0.055}px Inter, sans-serif`;
+  ctx.font = `900 ${w * 0.055}px Impact, Anton, 'Arial Black', sans-serif`;
   ctx.textAlign = 'left';
   ctx.shadowColor = 'rgba(0,0,0,0.8)';
   ctx.shadowBlur = 15;
@@ -4183,7 +4254,7 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     
     // Horário (esquerda, grande e destacado)
     ctx.fillStyle = coresFutebol.hora;
-    ctx.font = `900 ${w * 0.028}px Inter, sans-serif`;
+    ctx.font = `900 ${w * 0.028}px Impact, Anton, 'Arial Black', sans-serif`;
     ctx.textAlign = 'left';
     ctx.fillText(jogo.horario, cardX + cardW * 0.08, yPos + jogoHeight * 0.5);
     
