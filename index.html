@@ -305,7 +305,7 @@
       <div class="feature-card">
         <div class="feature-icon">🔍</div>
         <h3>Catálogo Infinito</h3>
-        <p>Banco de dados com milhões de filmes e séries atualizados diariamente via TMDB.</p>
+        <p>Banco de dados com milhões de filmes e séries atualizados diariamente.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🎨</div>
@@ -334,7 +334,7 @@
       <h2>Faça login para criar banners</h2>
       <p>Acesse com sua chave de licença para começar a criar banners profissionais.</p>
       <button class="btn-primary" onclick="abrirWhatsApp()">Quero Testar</button>
-      <p class="auth-link">Já tem conta? <a href="#" onclick="abrirWhatsApp()">Entrar</a></p>
+      <p class="auth-link">Já tem conta? <a href="#" onclick="event.preventDefault(); abrirModal('login')">Entrar</a></p>
     </div>
 
     <!-- CRIADOR (só aparece logado) -->
@@ -1005,7 +1005,7 @@
   <script src="auth-licenseauth-js.js"></script>
   
   <!-- 3. App principal (criador de banners) -->
-  <script src="app.js?v=20260430057"></script>
+  <script src="app.js?v=20260430060"></script>
   
   <script>
     // Scripts carregados
