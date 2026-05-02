@@ -139,6 +139,9 @@ const jogadoresFamosos = {
   'Mirasol': { nome: 'Reinaldo Manoel da Silva', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Reinaldo%20Manoel%20da%20Silva2.png' },
   'Mirassol': { nome: 'Reinaldo Manoel da Silva', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Reinaldo%20Manoel%20da%20Silva2.png' },
   'Mirassol FC': { nome: 'Reinaldo Manoel da Silva', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Reinaldo%20Manoel%20da%20Silva2.png' },
+  'Goiás': { nome: 'Matheus Gonçalves', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Matheus-Goncalves-Goias.png' },
+  'Goiás EC': { nome: 'Matheus Gonçalves', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Matheus-Goncalves-Goias.png' },
+  'Goias': { nome: 'Matheus Gonçalves', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Matheus-Goncalves-Goias.png' },
   'Brighton': { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
   
   // Outros times populares
