@@ -41,7 +41,7 @@ const imagensJogadoresDisponiveis = [
   { nome: 'Bukayo Saka', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Bukayo%20Saka2.png' },
   { nome: 'Luis Rioja', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luis_Rioja.png' },
   { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
-  { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur_Cabral-removebg-preview.png' },
+  { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur%20Cabral2.png' },
   { nome: 'Isidro Pitta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Isidro%20Pitta.png' },
   { nome: 'Roberto Firmino', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/roberto-firmino-al-ahli-saudi-professional-league-brazil-brazilian-footballers-uniqrenders.com.png' }
 ];
@@ -119,8 +119,8 @@ const jogadoresFamosos = {
   'Fluminense RJ': { nome: 'Kevin Serna', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kevin-Serna20.png' },
   'Santos': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'Santos FC': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
-  'Botafogo': { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur_Cabral-removebg-preview.png' },
-  'Botafogo FR': { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur_Cabral-removebg-preview.png' },
+  'Botafogo': { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur%20Cabral2.png' },
+  'Botafogo FR': { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur%20Cabral2.png' },
   'Bragantino': { nome: 'Isidro Pitta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Isidro%20Pitta.png' },
   'Red Bull Bragantino': { nome: 'Isidro Pitta', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Isidro%20Pitta.png' },
   'Estudiantes de La Plata': { nome: 'Lionel Messi', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lionel%20Messi%20Inter%20Miami.png' },
