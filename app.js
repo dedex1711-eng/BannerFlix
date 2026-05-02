@@ -74,7 +74,6 @@ const jogadoresFamosos = {
   'Chelsea': { nome: 'Cole Palmer', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Cole%20Palmer.png' },
   'Tottenham': { nome: 'Son Heung-min', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Giorgian%20De%20Arrascaeta%20-%20FootyRenders.png' },
   'Newcastle': { nome: 'Bruno Fernandes', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luka%20Modrić%20Real%20Madrid.png' },
-  'Aston Villa': { nome: 'Erling Haaland', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Manchester%20City%20Erling%20Haaland.png' },
   'Leeds United': { nome: 'Daniel James', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Daniel%20James.png' },
   'Norwich City': { nome: 'Josh Sargent', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Josh%20Sargent2.png' },
   'Norwich': { nome: 'Josh Sargent', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Josh%20Sargent2.png' },
