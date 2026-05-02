@@ -4308,9 +4308,9 @@ async function desenharJogosNoBanner(ctx, w, h, jogos) {
     roundRect(ctx, w * 0.05, yPos, w * 0.9, jogoHeight, 12);
     ctx.fill();
     
-    // Campeonato/Liga (topo)
+    // Campeonato/Liga (topo) - fonte Impact igual ao DESTAQUES
     ctx.fillStyle = coresFutebol.liga;
-    ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
+    ctx.font = `900 ${w * 0.018}px Impact, Anton, 'Arial Black', sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillText(jogo.liga, w/2, yPos + jogoHeight * 0.2);
     
@@ -4500,64 +4500,79 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
   const mes = (hoje.getMonth() + 1).toString().padStart(2, '0');
   const diaSemana = hoje.toLocaleDateString('pt-BR', { weekday: 'long' }).toUpperCase().replace('-FEIRA', '');
   
-  // Caixa da data (BRANCA)
+  // Calcular largura total do conjunto (data + dia da semana)
   const dataBoxW = w * 0.10;
   const dataBoxH = h * 0.10;
-  const dataBoxX = jogosX + jogosWidth * 0.05;
+  const padding = w * 0.015;
+  const espacoEntre = 0; // ENCOSTADO - sem espaço entre os quadrados
+  
+  // Medir largura do dia da semana
+  ctx.font = `900 ${w * 0.065}px Impact, Anton, 'Arial Black', sans-serif`;
+  const diaSemanaWidth = ctx.measureText(diaSemana).width;
+  const diaSemanaBoxW = diaSemanaWidth + padding * 2;
+  
+  // Largura total do conjunto
+  const conjuntoWidth = dataBoxW + espacoEntre + diaSemanaBoxW;
+  
+  // Centralizar o conjunto na área dos jogos (alinhado com as ligas)
+  const cardX = jogosX + jogosWidth * 0.05;
+  const cardW = jogosWidth * 0.9;
+  const centroCard = cardX + cardW/2;
+  
+  // Posição inicial do conjunto (centralizado)
+  const conjuntoX = centroCard - conjuntoWidth/2;
   const dataBoxY = h * 0.04;
+  
+  // Caixa da data (BRANCA)
+  const dataBoxX = conjuntoX;
   
   // Fundo branco com borda arredondada
   ctx.fillStyle = '#ffffff';
   roundRect(ctx, dataBoxX, dataBoxY, dataBoxW, dataBoxH, 12);
   ctx.fill();
   
-  // Dia (grande, PRETO)
+  // Dia (grande, PRETO) - fonte Impact igual ao dia da semana
   ctx.fillStyle = '#000000';
-  ctx.font = `900 ${w * 0.050}px Inter, sans-serif`;
+  ctx.font = `900 ${w * 0.050}px Impact, Anton, 'Arial Black', sans-serif`;
   ctx.textAlign = 'center';
   ctx.fillText(dia, dataBoxX + dataBoxW/2, dataBoxY + dataBoxH * 0.48);
   
-  // Mês (pequeno, PRETO)
-  ctx.font = `700 ${w * 0.028}px Inter, sans-serif`;
+  // Mês (pequeno, PRETO) - fonte Impact igual ao dia da semana
+  ctx.font = `900 ${w * 0.028}px Impact, Anton, 'Arial Black', sans-serif`;
   ctx.fillText(mes, dataBoxX + dataBoxW/2, dataBoxY + dataBoxH * 0.80);
   
   // Dia da semana ao lado (GRANDE e BRANCO)
+  const diaSemanaBoxX = dataBoxX + dataBoxW + espacoEntre;
+  const diaSemanaX = diaSemanaBoxX + padding;
+  const diaSemanaY = dataBoxY + dataBoxH * 0.70;
+  
+  // Desenhar retângulo preto com a MESMA ALTURA do quadrado branco (dataBoxH) e bordas arredondadas
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+  roundRect(ctx, diaSemanaBoxX, dataBoxY, diaSemanaBoxW, dataBoxH, 12);
+  ctx.fill();
+  
+  // Agora desenhar o texto branco por cima
   ctx.fillStyle = '#ffffff';
   ctx.font = `900 ${w * 0.065}px Impact, Anton, 'Arial Black', sans-serif`;
   ctx.textAlign = 'left';
   ctx.shadowColor = 'rgba(0,0,0,0.8)';
   ctx.shadowBlur = 10;
-  ctx.fillText(diaSemana, dataBoxX + dataBoxW + w * 0.02, dataBoxY + dataBoxH * 0.70);
+  ctx.fillText(diaSemana, diaSemanaX, diaSemanaY);
   ctx.shadowBlur = 0;
   
-  // Título "DESTAQUES" (grande, embaixo da data)
+  // Título "DESTAQUES" (grande, embaixo da data) - CENTRALIZADO
   ctx.fillStyle = coresFutebol.destaque;
   ctx.font = `900 ${w * 0.055}px Impact, Anton, 'Arial Black', sans-serif`;
-  ctx.textAlign = 'left';
+  ctx.textAlign = 'center';
   ctx.shadowColor = 'rgba(0,0,0,0.8)';
   ctx.shadowBlur = 15;
-  ctx.fillText('DESTAQUES', jogosX + jogosWidth * 0.22, h * 0.18); // Movido de 0.15 para 0.22
+  ctx.fillText('DESTAQUES', centroCard, h * 0.18);
   ctx.shadowBlur = 0;
   
   // Desenhar jogos (cards compactos e modernos)
   let yPos = h * 0.23; // Ajustado para dar espaço para data e título maiores
   const jogoHeight = h * 0.130;
   const jogoSpacing = h * 0.015;
-  
-  // Marca d'água da logo (ANTES de desenhar os jogos, para ficar abaixo)
-  if (logoImg) {
-    const logoRatio = logoImg.width / logoImg.height;
-    const marcaDaguaW = w * 0.40; // Aumentado de 0.25 para 0.40 (40% da largura)
-    const marcaDaguaH = marcaDaguaW / logoRatio;
-    const marcaDaguaX = jogosX + (jogosWidth - marcaDaguaW) / 2; // Centralizado na área dos jogos
-    const marcaDaguaY = h * 0.50; // No meio vertical da área dos jogos
-    
-    // Desenhar marca d'água com opacidade baixa
-    ctx.save();
-    ctx.globalAlpha = 0.15; // Bem transparente para não atrapalhar
-    ctx.drawImage(logoImg, marcaDaguaX, marcaDaguaY, marcaDaguaW, marcaDaguaH);
-    ctx.restore();
-  }
   
   // Carregar imagens dos times
   const imagensCarregadas = await carregarImagensDosTimes(jogos);
@@ -4578,9 +4593,23 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     const cardX = jogosX + jogosWidth * 0.05;
     const cardW = jogosWidth * 0.9;
     
-    // Campeonato/Liga (topo, cor destaque)
+    // MARCA D'ÁGUA dentro do card (pequena e discreta)
+    if (logoImg) {
+      const logoRatio = logoImg.width / logoImg.height;
+      const marcaW = cardW * 0.25; // 25% da largura do card
+      const marcaH = marcaW / logoRatio;
+      const marcaX = cardX + (cardW - marcaW) / 2; // Centralizada no card
+      const marcaY = yPos + (jogoHeight - marcaH) / 2; // Centralizada verticalmente
+      
+      ctx.save();
+      ctx.globalAlpha = 0.06; // Bem transparente para não atrapalhar
+      ctx.drawImage(logoImg, marcaX, marcaY, marcaW, marcaH);
+      ctx.restore();
+    }
+    
+    // Campeonato/Liga (topo, cor destaque) - fonte Impact igual ao DESTAQUES
     ctx.fillStyle = coresFutebol.liga;
-    ctx.font = `700 ${w * 0.014}px Inter, sans-serif`;
+    ctx.font = `900 ${w * 0.014}px Impact, Anton, 'Arial Black', sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillText(jogo.liga.toUpperCase(), cardX + cardW/2, yPos + jogoHeight * 0.15);
     
