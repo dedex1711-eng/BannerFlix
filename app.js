@@ -142,6 +142,9 @@ const jogadoresFamosos = {
   'Goiás': { nome: 'Matheus Gonçalves', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Matheus-Goncalves-Goias.png' },
   'Goiás EC': { nome: 'Matheus Gonçalves', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Matheus-Goncalves-Goias.png' },
   'Goias': { nome: 'Matheus Gonçalves', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Matheus-Goncalves-Goias.png' },
+  'Náutico': { nome: 'Paulo Sérgio', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/paulo%20sérgio.png' },
+  'Nautico': { nome: 'Paulo Sérgio', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/paulo%20sérgio.png' },
+  'Clube Náutico Capibaribe': { nome: 'Paulo Sérgio', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/paulo%20sérgio.png' },
   'Brighton': { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
   
   // Outros times populares
@@ -165,8 +168,15 @@ const jogadoresFamosos = {
   'Wolfsburg': { nome: 'Salih Özcan', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/salih_ozcan.png' },
   'RB Leipzig': { nome: 'David Raum', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/david-raum-rb-leipzig.png' },
   'Leipzig': { nome: 'David Raum', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/david-raum-rb-leipzig.png' },
+  'FC Cologne': { nome: 'Eric Martel', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eric%20Martel.png' },
+  'Cologne': { nome: 'Eric Martel', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eric%20Martel.png' },
+  '1. FC Köln': { nome: 'Eric Martel', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eric%20Martel.png' },
+  'FC Köln': { nome: 'Eric Martel', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eric%20Martel.png' },
   'Montpellier': { nome: 'Alexandre Mendy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Alexandre%20Mendy.png' },
   'Montpellier HSC': { nome: 'Alexandre Mendy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Alexandre%20Mendy.png' },
+  'Marseille': { nome: 'Mason Greenwood', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mason%20Greenwood.png' },
+  'Olympique Marseille': { nome: 'Mason Greenwood', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mason%20Greenwood.png' },
+  'OM': { nome: 'Mason Greenwood', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mason%20Greenwood.png' },
   'Ajax': { nome: 'Mika Godts', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mika%20Godts2.png' },
   'Ajax Amsterdam': { nome: 'Mika Godts', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mika%20Godts2.png' },
   'AFC Ajax': { nome: 'Mika Godts', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mika%20Godts2.png' },
@@ -4216,7 +4226,6 @@ async function gerarBannerFutebolCanvas(jogos) {
     
     if (template === 'jogador') {
       console.log('✅ Gerando banner com jogador...'); // Debug
-      alert('Template JOGADOR detectado! Gerando banner especial...'); // TESTE
       // Template com jogador: desenhar layout especial
       await desenharBannerComJogador(ctx, w, h, jogos);
     } else if (template === 'promocional') {
