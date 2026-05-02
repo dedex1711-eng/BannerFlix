@@ -1,3 +1,12 @@
+// ===== DESABILITAR CONSOLE EM PRODUÇÃO =====
+if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+  console.log = function() {};
+  console.warn = function() {};
+  console.error = function() {};
+  console.info = function() {};
+  console.debug = function() {};
+}
+
 // ===== CONFIGURAÇÃO =====
 // Chave pública gratuita do TMDB — substitua pela sua em https://www.themoviedb.org/settings/api
 const TMDB_API_KEY = '8265bd1679663a7ea12ac168da84d2e8';
@@ -105,9 +114,9 @@ const jogadoresFamosos = {
   'São Paulo FC': { nome: 'Lucas Beraldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lucas%20Beraldo2.png' },
   'Sao Paulo': { nome: 'Lucas Beraldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lucas%20Beraldo2.png' },
   'Corinthians': { nome: 'Memphis Depay', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Memphis%20Depay.png' },
-  'Fluminense': { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
-  'Fluminense FC': { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
-  'Fluminense RJ': { nome: 'John Kennedy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/john-kennedy-fluminense-brazilian-serie-a-brazil-brazilian-footballers-uniqrenders.com.png' },
+  'Fluminense': { nome: 'Kevin Serna', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kevin-Serna20.png' },
+  'Fluminense FC': { nome: 'Kevin Serna', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kevin-Serna20.png' },
+  'Fluminense RJ': { nome: 'Kevin Serna', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kevin-Serna20.png' },
   'Santos': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'Santos FC': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'Botafogo': { nome: 'Arthur Cabral', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Arthur_Cabral-removebg-preview.png' },
@@ -127,6 +136,9 @@ const jogadoresFamosos = {
   'Bahia': { nome: 'Erick Pulga', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Erick%20Pulga.png' },
   'EC Bahia': { nome: 'Erick Pulga', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Erick%20Pulga.png' },
   'Esporte Clube Bahia': { nome: 'Erick Pulga', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Erick%20Pulga.png' },
+  'Mirasol': { nome: 'Reinaldo Manoel da Silva', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Reinaldo%20Manoel%20da%20Silva2.png' },
+  'Mirassol': { nome: 'Reinaldo Manoel da Silva', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Reinaldo%20Manoel%20da%20Silva2.png' },
+  'Mirassol FC': { nome: 'Reinaldo Manoel da Silva', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Reinaldo%20Manoel%20da%20Silva2.png' },
   'Brighton': { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
   
   // Outros times populares
@@ -533,7 +545,7 @@ async function buscarFilme() {
   resultsDiv.innerHTML = '';
 
   try {
-    const url = `${TMDB_BASE}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=pt-BR&page=1`;
+    const url = `${TMDB_BASE}/search/multi?api_key=${TMDB_API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`;
     const res  = await fetch(url);
     const data = await res.json();
 
@@ -679,9 +691,7 @@ async function buscarResumo(item) {
   `;
 
   try {
-    const endpoint = item.media_type === 'movie'
-      ? `${TMDB_BASE}/movie/${item.id}?api_key=${TMDB_API_KEY}&language=pt-BR`
-      : `${TMDB_BASE}/tv/${item.id}?api_key=${TMDB_API_KEY}&language=pt-BR`;
+    const endpoint = `${TMDB_BASE}/${item.media_type}/${item.id}?api_key=${TMDB_API_KEY}&language=pt-BR`;
 
     const res  = await fetch(endpoint);
     const data = await res.json();
@@ -698,9 +708,7 @@ async function buscarResumo(item) {
     // Buscar trailer
     let trailerUrl = '';
     try {
-      const videosEndpoint = item.media_type === 'movie'
-        ? `${TMDB_BASE}/movie/${item.id}/videos?api_key=${TMDB_API_KEY}&language=pt-BR`
-        : `${TMDB_BASE}/tv/${item.id}/videos?api_key=${TMDB_API_KEY}&language=pt-BR`;
+      const videosEndpoint = `${TMDB_BASE}/${item.media_type}/${item.id}/videos?api_key=${TMDB_API_KEY}&language=pt-BR`;
       
       const videosRes = await fetch(videosEndpoint);
       const videosData = await videosRes.json();
@@ -713,9 +721,7 @@ async function buscarResumo(item) {
       
       // Se não encontrar em português, tenta em inglês
       if (!trailer) {
-        const videosEnEndpoint = item.media_type === 'movie'
-          ? `${TMDB_BASE}/movie/${item.id}/videos?api_key=${TMDB_API_KEY}&language=en-US`
-          : `${TMDB_BASE}/tv/${item.id}/videos?api_key=${TMDB_API_KEY}&language=en-US`;
+        const videosEnEndpoint = `${TMDB_BASE}/${item.media_type}/${item.id}/videos?api_key=${TMDB_API_KEY}&language=en-US`;
         
         const videosEnRes = await fetch(videosEnEndpoint);
         const videosEnData = await videosEnRes.json();
@@ -2342,7 +2348,8 @@ async function abrirCriadorVideo() {
 async function buscarTrailer() {
   try {
     const query = encodeURIComponent(filmeAtual.title);
-    const searchUrl = `${TMDB_BASE}/search/${filmeAtual.type === 'Filme' ? 'movie' : 'tv'}?api_key=${TMDB_API_KEY}&query=${query}&language=pt-BR&page=1`;
+    const mediaType = filmeAtual.type === 'Filme' ? 'movie' : 'tv';
+    const searchUrl = `${TMDB_BASE}/search/${mediaType}?api_key=${TMDB_API_KEY}&language=pt-BR&query=${query}`;
     
     const searchRes = await fetch(searchUrl);
     const searchData = await searchRes.json();
@@ -2353,7 +2360,6 @@ async function buscarTrailer() {
     }
     
     const itemId = searchData.results[0].id;
-    const mediaType = filmeAtual.type === 'Filme' ? 'movie' : 'tv';
     
     const videosUrl = `${TMDB_BASE}/${mediaType}/${itemId}/videos?api_key=${TMDB_API_KEY}&language=pt-BR`;
     const videosRes = await fetch(videosUrl);

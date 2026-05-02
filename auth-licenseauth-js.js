@@ -2,6 +2,15 @@
 // SISTEMA DE AUTENTICAÇÃO COM LICENSEAUTH (JavaScript)
 // =====================================================
 
+// ===== DESABILITAR CONSOLE EM PRODUÇÃO =====
+if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+  console.log = function() {};
+  console.warn = function() {};
+  console.error = function() {};
+  console.info = function() {};
+  console.debug = function() {};
+}
+
 let usuarioAtual = null;
 
 // ===== DEVICE ID (HWID para Web) =====
