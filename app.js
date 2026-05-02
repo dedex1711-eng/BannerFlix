@@ -48,7 +48,13 @@ const imagensJogadoresDisponiveis = [
 
 const jogadoresFamosos = {
   // Campeonato Saudita
-  'Al Nassr': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
+  'Al Nassr': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/cristiano_ronaldo.png' },
+  'Al-Nassr': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/cristiano_ronaldo.png' },
+  'Al Nassr FC': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/cristiano_ronaldo.png' },
+  'Al-Nassr FC': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/cristiano_ronaldo.png' },
+  'Al Nassr (KSA)': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/cristiano_ronaldo.png' },
+  'Al-Nassr (KSA)': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/cristiano_ronaldo.png' },
+  'AlNassr': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/cristiano_ronaldo.png' },
   'Al Ahli': { nome: 'Roberto Firmino', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/roberto-firmino-al-ahli-saudi-professional-league-brazil-brazilian-footballers-uniqrenders.com.png' },
   'Al Hilal': { nome: 'Neymar Jr', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
   'Al Ittihad': { nome: 'Karim Benzema', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
@@ -92,6 +98,9 @@ const jogadoresFamosos = {
   
   // América do Sul
   'Boca Juniors': { nome: 'Leandro Paredes', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/leandro-paredes.png' },
+  'River Plate': { nome: 'Gonzalo Montiel', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Gonzalo%20Montiel.png' },
+  'CA River Plate': { nome: 'Gonzalo Montiel', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Gonzalo%20Montiel.png' },
+  'River Plate (ARG)': { nome: 'Gonzalo Montiel', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Gonzalo%20Montiel.png' },
   'Alianza Lima': { nome: 'Hernán Barcos', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Hernán%20Barcos.png' },
   'Club Alianza Lima': { nome: 'Hernán Barcos', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Hernán%20Barcos.png' },
   'Universidad Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello2.png' },
@@ -106,6 +115,15 @@ const jogadoresFamosos = {
   'Liverpool Montevideo': { nome: 'Jean Rosso', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Jean%20Rosso2.png' },
   'Liverpool (URU)': { nome: 'Jean Rosso', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Jean%20Rosso2.png' },
   'Liverpool FC (URU)': { nome: 'Jean Rosso', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Jean%20Rosso2.png' },
+  'Boston River': { nome: 'Marco Mancebo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Marco%20Mancebo.png' },
+  'Boston River FC': { nome: 'Marco Mancebo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Marco%20Mancebo.png' },
+  'Club Atlético Boston River': { nome: 'Marco Mancebo', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Marco%20Mancebo.png' },
+  'Carabobo': { nome: 'Edson Tortolero', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Edson-Tortolero.png' },
+  'Carabobo FC': { nome: 'Edson Tortolero', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Edson-Tortolero.png' },
+  'Carabobo Fútbol Club': { nome: 'Edson Tortolero', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Edson-Tortolero.png' },
+  'Bucaramanga': { nome: 'Emerson Batalla', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Emerson%20Batalla.png' },
+  'Bucaramanga FC': { nome: 'Emerson Batalla', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Emerson%20Batalla.png' },
+  'Atlético Bucaramanga': { nome: 'Emerson Batalla', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Emerson%20Batalla.png' },
   
   // Brasileirão
   'Flamengo': { nome: 'Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/pedro-flamengo2.png' },
@@ -145,6 +163,13 @@ const jogadoresFamosos = {
   'Náutico': { nome: 'Paulo Sérgio', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/paulo%20sérgio.png' },
   'Nautico': { nome: 'Paulo Sérgio', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/paulo%20sérgio.png' },
   'Clube Náutico Capibaribe': { nome: 'Paulo Sérgio', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/paulo%20sérgio.png' },
+  'Ponte Preta': { nome: 'William Pottker', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/William%20Pottker.png' },
+  'AA Ponte Preta': { nome: 'William Pottker', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/William%20Pottker.png' },
+  'Associação Atlética Ponte Preta': { nome: 'William Pottker', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/William%20Pottker.png' },
+  'Caxias': { nome: 'Andrew', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Andrew.png' },
+  'Caxias do Sul': { nome: 'Andrew', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Andrew.png' },
+  'SER Caxias': { nome: 'Andrew', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Andrew.png' },
+  'Caxias do Sul FC': { nome: 'Andrew', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Andrew.png' },
   'Brighton': { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
   
   // Outros times populares
@@ -154,8 +179,8 @@ const jogadoresFamosos = {
   'PSG': { nome: 'Marquinhos', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/marquinhosss.png' },
   'Bayern Munich': { nome: 'Harry Kane', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Harry%20Kane%20Bayern%20Munich.png' },
   'Inter Miami': { nome: 'Lionel Messi', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lionel%20Messi%20Inter%20Miami.png' },
-  'Juventus': { nome: 'Cristiano Ronaldo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Neymar.png' },
-  'AC Milan': { nome: 'Kylian Mbappé', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Kylian%20Mbappe%20Real%20Madrid.png' },
+  'Juventus': { nome: 'Bremer', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/bremer.png' },
+  'AC Milan': { nome: 'Rafael Leão', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Rafael%20Leão.png' },
   'Inter Milan': { nome: 'Harry Kane', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Harry%20Kane%20Bayern%20Munich.png' },
   'Avellino': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic2.png' },
   'US Avellino 1912': { nome: 'Lorenzo Simic', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Lorenzo%20Simic2.png' },
@@ -165,13 +190,21 @@ const jogadoresFamosos = {
   'Modena FC': { nome: 'Fabio Gerli', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gerli%20Fabio.png' },
   'Pisa': { nome: 'Stefano Moreo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Stefano%20Moreo2.png' },
   'Pisa SC': { nome: 'Stefano Moreo', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Stefano%20Moreo2.png' },
-  'Wolfsburg': { nome: 'Salih Özcan', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/salih_ozcan.png' },
+  'Wolfsburg': { nome: 'Vinicius Souza', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Vinicius%20Souza.png' },
+  'VfL Wolfsburg': { nome: 'Vinicius Souza', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Vinicius%20Souza.png' },
+  'VFL Wolfsburg': { nome: 'Vinicius Souza', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Vinicius%20Souza.png' },
   'RB Leipzig': { nome: 'David Raum', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/david-raum-rb-leipzig.png' },
   'Leipzig': { nome: 'David Raum', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/david-raum-rb-leipzig.png' },
   'FC Cologne': { nome: 'Eric Martel', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eric%20Martel.png' },
   'Cologne': { nome: 'Eric Martel', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eric%20Martel.png' },
   '1. FC Köln': { nome: 'Eric Martel', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eric%20Martel.png' },
   'FC Köln': { nome: 'Eric Martel', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eric%20Martel.png' },
+  'Karlsruher': { nome: 'David Herold', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/David%20Herold.png' },
+  'Karlsruher SC': { nome: 'David Herold', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/David%20Herold.png' },
+  'Karlsruhe': { nome: 'David Herold', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/David%20Herold.png' },
+  'Mainz': { nome: 'Jae-sung Lee', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Jae-sung%20Lee.png' },
+  'Mainz 05': { nome: 'Jae-sung Lee', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Jae-sung%20Lee.png' },
+  'FSV Mainz 05': { nome: 'Jae-sung Lee', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Jae-sung%20Lee.png' },
   'Montpellier': { nome: 'Alexandre Mendy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Alexandre%20Mendy.png' },
   'Montpellier HSC': { nome: 'Alexandre Mendy', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Alexandre%20Mendy.png' },
   'Marseille': { nome: 'Mason Greenwood', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Mason%20Greenwood.png' },
@@ -188,7 +221,16 @@ const jogadoresFamosos = {
   'Santa Clara Açores': { nome: 'Gabriel Silva', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Gabriel_Silva.png' },
   'Benfica': { nome: 'Vangelis Pavlidis', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Vangelis%20Pavlidis.png' },
   'SL Benfica': { nome: 'Vangelis Pavlidis', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Vangelis%20Pavlidis.png' },
-  'Braga': { nome: 'Henrik Meister', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/henrik%20meister.png' },
+  'Braga': { nome: 'Rodrigo Zalazar', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Rodrigo%20Zalazar.png' },
+  'Celtic': { nome: 'Daizen Maeda', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Daizen%20Maeda.png' },
+  'Celtic FC': { nome: 'Daizen Maeda', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Daizen%20Maeda.png' },
+  'Celtic Glasgow': { nome: 'Daizen Maeda', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Daizen%20Maeda.png' },
+  'Celta Vigo': { nome: 'Hugo Álvarez', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Hugo%20Álvarez.png' },
+  'Celta de Vigo': { nome: 'Hugo Álvarez', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Hugo%20Álvarez.png' },
+  'RC Celta': { nome: 'Hugo Álvarez', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Hugo%20Álvarez.png' },
+  'Real Betis': { nome: 'Antony', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Antony.png' },
+  'Betis': { nome: 'Antony', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Antony.png' },
+  'Real Betis Balompié': { nome: 'Antony', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Antony.png' },
 };
 
 async function obterLogo() {
@@ -205,12 +247,17 @@ async function buscarJogadorAutomatico() {
   
   console.log('🔍 Analisando jogos selecionados:', jogosSelecionados.length);
   
-  // Tentar encontrar jogador em TODOS os jogos selecionados
-  let jogadorEncontrado = null;
-  let timeEncontrado = null;
-  let usouAleatorio = false;
+  // Lista de prioridade de jogadores (do mais famoso para o menos)
+  const prioridadeJogadores = [
+    'Cristiano Ronaldo', 'Lionel Messi', 'Neymar Jr', 'Kylian Mbappé',
+    'Erling Haaland', 'Vinícius Jr', 'Mohamed Salah', 'Harry Kane',
+    'Lamine Yamal', 'Memphis Depay', 'Pedro', 'Marquinhos'
+  ];
   
-  // Percorrer todos os jogos para encontrar um time cadastrado
+  // Coletar TODOS os jogadores encontrados
+  let jogadoresEncontrados = [];
+  
+  // Percorrer todos os jogos para encontrar TODOS os times cadastrados
   for (let i = 0; i < jogosSelecionados.length; i++) {
     const jogo = jogosSelecionados[i];
     
@@ -219,33 +266,65 @@ async function buscarJogadorAutomatico() {
     console.log(`🔍 Verificando se "${jogo.timeVisitante}" existe no banco:`, !!jogadoresFamosos[jogo.timeVisitante]);
     
     if (jogadoresFamosos[jogo.timeCasa]) {
-      jogadorEncontrado = jogadoresFamosos[jogo.timeCasa];
-      timeEncontrado = jogo.timeCasa;
-      console.log(`✅ Encontrado jogador do time da casa no jogo ${i+1}:`, timeEncontrado);
-      break;
-    } else if (jogadoresFamosos[jogo.timeVisitante]) {
-      jogadorEncontrado = jogadoresFamosos[jogo.timeVisitante];
-      timeEncontrado = jogo.timeVisitante;
-      console.log(`✅ Encontrado jogador do time visitante no jogo ${i+1}:`, timeEncontrado);
-      break;
-    } else {
+      jogadoresEncontrados.push({
+        jogador: jogadoresFamosos[jogo.timeCasa],
+        time: jogo.timeCasa,
+        jogoIndex: i
+      });
+      console.log(`✅ Encontrado jogador do time da casa no jogo ${i+1}:`, jogo.timeCasa, '-', jogadoresFamosos[jogo.timeCasa].nome);
+    }
+    
+    if (jogadoresFamosos[jogo.timeVisitante]) {
+      jogadoresEncontrados.push({
+        jogador: jogadoresFamosos[jogo.timeVisitante],
+        time: jogo.timeVisitante,
+        jogoIndex: i
+      });
+      console.log(`✅ Encontrado jogador do time visitante no jogo ${i+1}:`, jogo.timeVisitante, '-', jogadoresFamosos[jogo.timeVisitante].nome);
+    }
+    
+    if (!jogadoresFamosos[jogo.timeCasa] && !jogadoresFamosos[jogo.timeVisitante]) {
       console.log(`❌ Nenhum jogador cadastrado para: ${jogo.timeCasa} ou ${jogo.timeVisitante}`);
     }
   }
   
-  // Se não encontrou nenhum time, usar jogador aleatório
-  if (!jogadorEncontrado) {
+  // Escolher jogador
+  let jogadorEscolhido = null;
+  let timeEncontrado = null;
+  let usouAleatorio = false;
+  
+  if (jogadoresEncontrados.length > 0) {
+    // Se encontrou jogadores, escolher por PRIORIDADE
+    console.log(`🎯 ${jogadoresEncontrados.length} jogadores encontrados, escolhendo por prioridade...`);
+    
+    // Tentar encontrar jogador prioritário
+    let jogadorPrioritario = null;
+    for (const nomeJogador of prioridadeJogadores) {
+      jogadorPrioritario = jogadoresEncontrados.find(j => j.jogador.nome === nomeJogador);
+      if (jogadorPrioritario) {
+        console.log(`⭐ Jogador prioritário encontrado: ${nomeJogador}`);
+        break;
+      }
+    }
+    
+    // Se encontrou jogador prioritário, usar ele. Senão, usar o primeiro da lista
+    const escolha = jogadorPrioritario || jogadoresEncontrados[0];
+    jogadorEscolhido = escolha.jogador;
+    timeEncontrado = escolha.time;
+    console.log(`✅ Escolhido: ${jogadorEscolhido.nome} (${timeEncontrado})`);
+  } else {
+    // Se não encontrou nenhum time cadastrado, usar jogador aleatório
     const indiceAleatorio = Math.floor(Math.random() * imagensJogadoresDisponiveis.length);
-    jogadorEncontrado = imagensJogadoresDisponiveis[indiceAleatorio];
+    jogadorEscolhido = imagensJogadoresDisponiveis[indiceAleatorio];
     timeEncontrado = 'Jogador Aleatório';
     usouAleatorio = true;
-    console.log('⚠️ Nenhum time cadastrado encontrado! Usando jogador aleatório:', jogadorEncontrado.nome);
+    console.log('⚠️ Nenhum time cadastrado encontrado! Usando jogador aleatório:', jogadorEscolhido.nome);
   }
   
   // Carregar a imagem do jogador
   const mensagem = usouAleatorio 
-    ? `🎲 Usando ${jogadorEncontrado.nome} (aleatório)`
-    : `🔍 Buscando ${jogadorEncontrado.nome} (${timeEncontrado})`;
+    ? `🎲 Usando ${jogadorEscolhido.nome} (aleatório)`
+    : `🔍 Buscando ${jogadorEscolhido.nome} (${timeEncontrado})`;
   showToast(mensagem, 2000);
   
   try {
@@ -260,7 +339,7 @@ async function buscarJogadorAutomatico() {
         // Atualizar preview
         const preview = document.getElementById('jogadorPreview');
         if (preview) {
-          preview.src = jogadorEncontrado.url;
+          preview.src = jogadorEscolhido.url;
           preview.style.display = 'block';
         }
         const placeholder = document.getElementById('jogadorPlaceholder');
@@ -268,16 +347,16 @@ async function buscarJogadorAutomatico() {
         const btnRemove = document.getElementById('btnRemoveJogador');
         if (btnRemove) btnRemove.style.display = 'block';
         
-        showToast(`✅ ${jogadorEncontrado.nome} carregado!`);
+        showToast(`✅ ${jogadorEscolhido.nome} carregado!`);
         resolve();
       };
       
       img.onerror = () => {
-        showToast(`❌ Erro ao carregar imagem de ${jogadorEncontrado.nome}. Use upload manual ou tente outro jogo.`);
+        showToast(`❌ Erro ao carregar imagem de ${jogadorEscolhido.nome}. Use upload manual ou tente outro jogo.`);
         reject();
       };
       
-      img.src = jogadorEncontrado.url;
+      img.src = jogadorEscolhido.url;
     });
     
   } catch (error) {
@@ -2969,6 +3048,10 @@ async function buscarTodosJogosDoDia() {
   let dataFormatada = getDataFormatadaBR(0);
   let buscandoAmanha = false;
   
+  console.log('🔍 BUSCA INICIADA - Total de ligas:', todasLigas.length);
+  console.log('📅 Data da busca:', dataFormatada);
+  console.log('🇸🇦 Campeonato Saudita está na lista:', todasLigas.some(l => l.id === 'KSA.1'));
+  
   const canaisPorLiga = {
     'BRA.BA': ['SporTV'], 'BRA.PE': ['SporTV'],
     'BRA.CE': ['SporTV'], 'BRA.GO': ['SporTV'],
@@ -3039,6 +3122,11 @@ async function buscarTodosJogosDoDia() {
           const canaisDisponiveis = canaisPorLiga[liga.id] || ['ESPN'];
           const canal = canaisDisponiveis[Math.floor(Math.random() * canaisDisponiveis.length)];
           
+          // Log especial para Campeonato Saudita
+          if (liga.id === 'KSA.1') {
+            console.log('🇸🇦 JOGO SAUDITA ENCONTRADO:', timeCasa.team.displayName, 'vs', timeVisitante.team.displayName);
+          }
+          
           todosJogos.push({
             timestamp: dataJogo.getTime(), // Para ordenação
             horario, status, liga: liga.nome, canal,
@@ -3060,6 +3148,7 @@ async function buscarTodosJogosDoDia() {
   const todosEncerrados = todosJogos.length > 0 && todosJogos.every(j => j.status === 'Encerrado' || j.status === 'Adiado' || j.status === 'Cancelado');
   if ((todosJogos.length === 0 || todosEncerrados) && !buscandoAmanha) {
     buscandoAmanha = true;
+    dataJogos = 1; // ATUALIZAR PARA AMANHÃ
     dataFormatada = getDataFormatadaBR(1);
     container.innerHTML = '<div class="loading-state">🔄 Sem jogos hoje, buscando jogos de amanhã...</div>';
     // Rebusca com a data de amanhã
@@ -3234,6 +3323,10 @@ async function buscarJogosAmanha() {
   // FORÇAR DATA DE AMANHÃ
   const dataFormatada = getDataFormatadaBR(1);
   
+  console.log('🔍 BUSCA AMANHÃ INICIADA - Total de ligas:', todasLigas.length);
+  console.log('📅 Data da busca:', dataFormatada);
+  console.log('🇸🇦 Campeonato Saudita está na lista:', todasLigas.some(l => l.id === 'KSA.1'));
+  
   const canaisPorLiga = {
     'BRA.BA': ['SporTV'], 'BRA.PE': ['SporTV'],
     'BRA.CE': ['SporTV'], 'BRA.GO': ['SporTV'],
@@ -3303,6 +3396,11 @@ async function buscarJogosAmanha() {
           const status = traducaoStatus[jogo.status.type.description] || jogo.status.type.description;
           const canaisDisponiveis = canaisPorLiga[liga.id] || ['ESPN'];
           const canal = canaisDisponiveis[Math.floor(Math.random() * canaisDisponiveis.length)];
+          
+          // Log especial para Campeonato Saudita
+          if (liga.id === 'KSA.1') {
+            console.log('🇸🇦 JOGO SAUDITA AMANHÃ:', timeCasa.team.displayName, 'vs', timeVisitante.team.displayName);
+          }
           
           todosJogos.push({
             timestamp: dataJogo.getTime(),
@@ -3411,6 +3509,7 @@ async function buscarJogosFutebol() {
 
     if (jogos.length === 0 || todosEncerrados) {
       buscandoAmanha = true;
+      dataJogos = 1; // ATUALIZAR PARA AMANHÃ
       dataFormatada = getDataFormatadaBR(1);
       container.innerHTML = '<div class="loading-state">🔄 Sem jogos hoje, buscando amanhã...</div>';
       response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=${dataFormatada}`);
