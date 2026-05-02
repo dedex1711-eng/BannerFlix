@@ -1011,14 +1011,28 @@ function carregarLogo(event) {
           imgSemFundo.src = imagemSemFundo;
         } catch (error) {
           console.error('Erro ao remover fundo:', error);
-          // Se falhar, usar a imagem original
-          logoImg = img;
-          const preview = document.getElementById('logoPreview');
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-          document.getElementById('logoPlaceholder').style.display = 'none';
-          document.getElementById('btnRemoveLogo').style.display = 'block';
-          showToast('⚠️ Logo carregada (não foi possível remover fundo)');
+          
+          // Se for erro de créditos esgotados
+          if (error.message === 'CREDITS_EXHAUSTED') {
+            showToast('💡 Faça upload da logo com fundo transparente após remover no Remove.bg', 6000);
+            // Usar a imagem original temporariamente
+            logoImg = img;
+            const preview = document.getElementById('logoPreview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            document.getElementById('logoPlaceholder').style.display = 'none';
+            document.getElementById('btnRemoveLogo').style.display = 'block';
+          } else {
+            // Outros erros - usar a imagem original
+            logoImg = img;
+            const preview = document.getElementById('logoPreview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            document.getElementById('logoPlaceholder').style.display = 'none';
+            document.getElementById('btnRemoveLogo').style.display = 'block';
+            showToast('⚠️ Logo carregada (não foi possível remover fundo automaticamente)');
+          }
+          
           if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
             gerarBannerAtual();
           } else if (tipoAtual !== 'futebol' && filmeAtual) {
@@ -1071,6 +1085,13 @@ async function removerFundoAPI(file) {
   });
   
   if (!response.ok) {
+    // Verificar se é erro de créditos esgotados
+    if (response.status === 402 || response.status === 403) {
+      // Créditos esgotados - abrir Remove.bg
+      showToast('⚠️ Créditos esgotados! Abrindo Remove.bg para remoção manual...', 5000);
+      window.open('https://www.remove.bg/pt-br/upload', '_blank');
+      throw new Error('CREDITS_EXHAUSTED');
+    }
     throw new Error('Erro ao remover fundo: ' + response.statusText);
   }
   
