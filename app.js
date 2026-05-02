@@ -958,27 +958,124 @@ function carregarLogo(event) {
   const file = event.target.files[0];
   if (!file) return;
 
+  // Validar se é PNG
+  if (file.type !== 'image/png') {
+    showToast('❌ Apenas arquivos PNG são permitidos!');
+    event.target.value = ''; // Limpar o input
+    return;
+  }
+
+  showToast('🔄 Processando logo...', 2000);
+
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     const img = new Image();
-    img.onload = () => {
-      logoImg = img;
-      const preview = document.getElementById('logoPreview');
-      preview.src = e.target.result;
-      preview.style.display = 'block';
-      document.getElementById('logoPlaceholder').style.display = 'none';
-      document.getElementById('btnRemoveLogo').style.display = 'block';
-      showToast('✅ Logo carregada!');
-      // Só regenera se estiver na aba correta com conteúdo selecionado
-      if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
-        gerarBannerAtual();
-      } else if (tipoAtual !== 'futebol' && filmeAtual) {
-        gerarBanner(false);
+    img.onload = async () => {
+      // Verificar se a imagem já tem transparência
+      const temTransparencia = await verificarTransparencia(img);
+      
+      if (temTransparencia) {
+        // Já tem fundo transparente, usar direto
+        logoImg = img;
+        const preview = document.getElementById('logoPreview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        document.getElementById('logoPlaceholder').style.display = 'none';
+        document.getElementById('btnRemoveLogo').style.display = 'block';
+        showToast('✅ Logo carregada!');
+        if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
+          gerarBannerAtual();
+        } else if (tipoAtual !== 'futebol' && filmeAtual) {
+          gerarBanner(false);
+        }
+      } else {
+        // Tem fundo, remover automaticamente
+        showToast('🎨 Removendo fundo da logo...', 3000);
+        try {
+          const imagemSemFundo = await removerFundoAPI(file);
+          const imgSemFundo = new Image();
+          imgSemFundo.onload = () => {
+            logoImg = imgSemFundo;
+            const preview = document.getElementById('logoPreview');
+            preview.src = imagemSemFundo;
+            preview.style.display = 'block';
+            document.getElementById('logoPlaceholder').style.display = 'none';
+            document.getElementById('btnRemoveLogo').style.display = 'block';
+            showToast('✅ Logo carregada com fundo removido!');
+            if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
+              gerarBannerAtual();
+            } else if (tipoAtual !== 'futebol' && filmeAtual) {
+              gerarBanner(false);
+            }
+          };
+          imgSemFundo.src = imagemSemFundo;
+        } catch (error) {
+          console.error('Erro ao remover fundo:', error);
+          // Se falhar, usar a imagem original
+          logoImg = img;
+          const preview = document.getElementById('logoPreview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          document.getElementById('logoPlaceholder').style.display = 'none';
+          document.getElementById('btnRemoveLogo').style.display = 'block';
+          showToast('⚠️ Logo carregada (não foi possível remover fundo)');
+          if (tipoAtual === 'futebol' && jogosSelecionados.length > 0) {
+            gerarBannerAtual();
+          } else if (tipoAtual !== 'futebol' && filmeAtual) {
+            gerarBanner(false);
+          }
+        }
       }
     };
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
+}
+
+// Verificar se a imagem tem transparência
+async function verificarTransparencia(img) {
+  const canvas = document.createElement('canvas');
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  
+  try {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    
+    // Verificar se há pixels com transparência (alpha < 255)
+    for (let i = 3; i < data.length; i += 4) {
+      if (data[i] < 255) {
+        return true; // Tem transparência
+      }
+    }
+    return false; // Não tem transparência
+  } catch (e) {
+    return false; // Em caso de erro, assumir que não tem transparência
+  }
+}
+
+// Remover fundo usando Remove.bg API
+async function removerFundoAPI(file) {
+  const formData = new FormData();
+  formData.append('image_file', file);
+  formData.append('size', 'auto');
+  
+  const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+    method: 'POST',
+    headers: {
+      'X-Api-Key': 'eNjmZZ2eimyX9FfkZJb2pzmw'
+    },
+    body: formData
+  });
+  
+  if (!response.ok) {
+    throw new Error('Erro ao remover fundo: ' + response.statusText);
+  }
+  
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
 }
 
 function removerLogo() {
@@ -994,6 +1091,53 @@ function removerLogo() {
   } else if (tipoAtual !== 'futebol' && filmeAtual) {
     gerarBanner(false);
   }
+}
+
+// ===== LOGO DO PERFIL =====
+function perfilCarregarLogo(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Validar se é PNG
+  if (file.type !== 'image/png') {
+    showToast('❌ Apenas arquivos PNG são permitidos!');
+    event.target.value = ''; // Limpar o input
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const preview = document.getElementById('perfilLogoPreview');
+      if (preview) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      }
+      const placeholder = document.getElementById('perfilLogoPlaceholder');
+      if (placeholder) placeholder.style.display = 'none';
+      const btnRemove = document.getElementById('perfilBtnRemoveLogo');
+      if (btnRemove) btnRemove.style.display = 'block';
+      showToast('✅ Logo do perfil carregada!');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function perfilRemoverLogo() {
+  const preview = document.getElementById('perfilLogoPreview');
+  if (preview) {
+    preview.style.display = 'none';
+    preview.src = '';
+  }
+  const placeholder = document.getElementById('perfilLogoPlaceholder');
+  if (placeholder) placeholder.style.display = 'block';
+  const btnRemove = document.getElementById('perfilBtnRemoveLogo');
+  if (btnRemove) btnRemove.style.display = 'none';
+  const input = document.getElementById('perfilLogoInput');
+  if (input) input.value = '';
+  showToast('Logo do perfil removida');
 }
 
 // ===== IMAGEM DO JOGADOR =====
