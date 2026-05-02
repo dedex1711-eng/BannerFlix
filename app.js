@@ -965,9 +965,10 @@ function carregarLogo(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Validar se é PNG
-  if (file.type !== 'image/png') {
-    showToast('❌ Apenas arquivos PNG são permitidos!');
+  // Validar formatos aceitos pelo Remove.bg
+  const formatosAceitos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+  if (!formatosAceitos.includes(file.type)) {
+    showToast('❌ Apenas PNG, JPG ou WebP são permitidos!');
     event.target.value = ''; // Limpar o input
     return;
   }
@@ -1126,9 +1127,10 @@ function perfilCarregarLogo(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Validar se é PNG
-  if (file.type !== 'image/png') {
-    showToast('❌ Apenas arquivos PNG são permitidos!');
+  // Validar formatos aceitos pelo Remove.bg
+  const formatosAceitos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+  if (!formatosAceitos.includes(file.type)) {
+    showToast('❌ Apenas PNG, JPG ou WebP são permitidos!');
     event.target.value = ''; // Limpar o input
     return;
   }
