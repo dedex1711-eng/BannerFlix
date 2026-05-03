@@ -108,6 +108,10 @@ const jogadoresFamosos = {
   'River Plate': { nome: 'Gonzalo Montiel', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Gonzalo%20Montiel.png' },
   'CA River Plate': { nome: 'Gonzalo Montiel', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Gonzalo%20Montiel.png' },
   'River Plate (ARG)': { nome: 'Gonzalo Montiel', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Gonzalo%20Montiel.png' },
+  'Tigre': { nome: 'José David Romero', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/José%20David%20Romero.png' },
+  'Club Atlético Tigre': { nome: 'José David Romero', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/José%20David%20Romero.png' },
+  'CA Tigre': { nome: 'José David Romero', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/José%20David%20Romero.png' },
+  'Tigre (ARG)': { nome: 'José David Romero', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/José%20David%20Romero.png' },
   'Alianza Lima': { nome: 'Hernán Barcos', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Hernán%20Barcos.png' },
   'Club Alianza Lima': { nome: 'Hernán Barcos', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Hernán%20Barcos.png' },
   'Universidad Católica': { nome: 'Eduard Bello', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Eduard%20Bello2.png' },
@@ -181,6 +185,10 @@ const jogadoresFamosos = {
   'Náutico': { nome: 'Paulo Sérgio', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/paulo%20sérgio.png' },
   'Nautico': { nome: 'Paulo Sérgio', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/paulo%20sérgio.png' },
   'Clube Náutico Capibaribe': { nome: 'Paulo Sérgio', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/paulo%20sérgio.png' },
+  'Sport': { nome: 'Araújo Lima', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Araújo%20Lima.png' },
+  'Sport Recife': { nome: 'Araújo Lima', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Araújo%20Lima.png' },
+  'Sport Club do Recife': { nome: 'Araújo Lima', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Araújo%20Lima.png' },
+  'Sport Club Recife': { nome: 'Araújo Lima', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Araújo%20Lima.png' },
   'Figueirense': { nome: 'Arthur Henrique', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Arthur%20Henrique.png' },
   'Figueirense FC': { nome: 'Arthur Henrique', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Arthur%20Henrique.png' },
   'Figueirense Futebol Clube': { nome: 'Arthur Henrique', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Arthur%20Henrique.png' },
@@ -264,6 +272,10 @@ const brasoesCustomizados = {
   'Maranhao': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Maranhão.png',
   'Maranhão AC': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Maranhão.png',
   'Maranhao AC': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Maranhão.png',
+  'Maringá': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/maringa%20fc.png',
+  'Maringá FC': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/maringa%20fc.png',
+  'Maringa': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/maringa%20fc.png',
+  'Maringa FC': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/maringa%20fc.png',
 };
 
 async function obterLogo() {
@@ -4389,6 +4401,25 @@ async function downloadBannersMultiplos() {
   showToast(`⬇️ ${window.bannersMultiplos.length} banners baixados!`, 3000);
 }
 
+// ===== FUNÇÃO PARA BAIXAR BANNER INDIVIDUAL =====
+function baixarBannerIndividual(index) {
+  if (!window.bannersMultiplos || !window.bannersMultiplos[index]) {
+    showToast('❌ Banner não encontrado');
+    return;
+  }
+  
+  const banner = window.bannersMultiplos[index];
+  const formato = getFormato();
+  const filename = `banner_futebol_parte${banner.numero}_${formato}.png`;
+  
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = banner.canvas.toDataURL('image/png');
+  link.click();
+  
+  showToast(`⬇️ Banner ${banner.numero} baixado!`, 2000);
+}
+
 // ===== FUNÇÃO PARA CRIAR VISUALIZADOR MÚLTIPLO =====
 function criarVisualizadorMultiplo(bannersGerados) {
   // Verificar se já existe o visualizador
@@ -4422,6 +4453,9 @@ function criarVisualizadorMultiplo(bannersGerados) {
           <span>Página ${banner.numero}</span>
           <small>${banner.jogos} jogos</small>
         </div>
+        <button class="btn-download-individual" onclick="event.stopPropagation(); baixarBannerIndividual(${index})" title="Baixar este banner">
+          ⬇️ Baixar
+        </button>
       </div>
     `;
   });

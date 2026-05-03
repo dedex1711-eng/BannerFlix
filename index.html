@@ -1069,6 +1069,39 @@
       width: 24px;
       height: 24px;
     }
+    
+    /* Botão de download individual nos thumbnails */
+    .btn-download-individual {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .banner-thumb {
+      position: relative;
+    }
+    .banner-thumb:hover .btn-download-individual {
+      opacity: 1;
+    }
+    .btn-download-individual:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .btn-download-individual:active {
+      transform: translateX(-50%) scale(0.95);
+    }
   </style>
 
   <script>
@@ -1200,7 +1233,7 @@
   <script src="auth-licenseauth-js.js"></script>
   
   <!-- 3. App principal (criador de banners) -->
-  <script src="app.js?v=20260502023"></script>
+  <script src="app.js?v=20260502027"></script>
   
   <script>
     // Scripts carregados
