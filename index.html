@@ -35,7 +35,12 @@
       <button class="btn-nav-outline" id="btnAbrirAuth">Entrar</button>
       <!-- Estado: logado -->
       <div class="nav-user" id="navUser" style="display:none;">
-        <div class="nav-avatar" id="navAvatar">👤</div>
+        <div class="nav-avatar" id="navAvatar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20.5899 22C20.5899 18.13 16.7399 15 11.9999 15C7.25991 15 3.40991 18.13 3.40991 22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <div class="nav-user-menu" id="navUserMenu">
           <div class="nav-user-email" id="navUserEmail"></div>
           <hr style="border-color:var(--border);margin:6px 0"/>
@@ -292,7 +297,14 @@
     <div class="hero-preview">
       <div class="preview-card">
         <div class="preview-badge">NOVO</div>
-        <img src="https://i.imgur.com/V47xsLc.png" alt="Preview" id="heroImg" />
+        <div class="hero-slider">
+          <img src="https://i.imgur.com/aKhFsEO.jpeg" alt="Exemplo Banner 1" class="hero-slide active" data-theme="filmes" />
+          <img src="https://i.imgur.com/rWLZCp2.png" alt="Exemplo Banner 2" class="hero-slide" data-theme="futebol" />
+        </div>
+        <div class="slider-dots">
+          <span class="dot active" onclick="mudarSlide(0)"></span>
+          <span class="dot" onclick="mudarSlide(1)"></span>
+        </div>
       </div>
     </div>
   </section>
@@ -996,6 +1008,189 @@
 
   <!-- TOAST -->
   <div id="toast" class="toast"></div>
+
+  <!-- CSS e JS do Hero Slider -->
+  <style>
+    :root {
+      transition: --accent 0.8s ease, --accent-glow 0.8s ease;
+    }
+    .gradient-text {
+      transition: background 0.8s ease !important;
+    }
+    .hero-slider {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .hero-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+    .hero-slide.active {
+      opacity: 1;
+      position: relative;
+    }
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .dot.active {
+      background: var(--accent);
+      width: 24px;
+      border-radius: 5px;
+    }
+    .dot:hover {
+      background: rgba(255, 255, 255, 0.6);
+    }
+    /* Ícone de perfil SVG */
+    .nav-avatar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-avatar svg {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+
+  <script>
+    // Hero Slider
+    let slideAtual = 0;
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.dot');
+    let sliderInterval = null;
+    
+    // Cores originais do CSS (antes do slider modificar)
+    const coresOriginais = {
+      accent: '#F77F30',
+      accentGlow: 'rgba(247, 127, 48, 0.3)',
+      gradient: 'linear-gradient(135deg, #F77F30 0%, #E14760 50%, #9D2BBD 100%)'
+    };
+    
+    // Cores dos temas (mesmas das abas Filmes e Futebol)
+    const temas = {
+      filmes: {
+        accent: '#F77F30',
+        accentGlow: 'rgba(247, 127, 48, 0.3)',
+        gradient: 'linear-gradient(135deg, #F77F30 0%, #E14760 50%, #9D2BBD 100%)'
+      },
+      futebol: {
+        accent: '#2E7D32',
+        accentGlow: 'rgba(46, 125, 50, 0.3)',
+        gradient: 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 50%, #4CAF50 100%)'
+      }
+    };
+    
+    // Verificar se o usuário está logado
+    function usuarioEstaLogado() {
+      const navUser = document.getElementById('navUser');
+      return navUser && navUser.style.display !== 'none';
+    }
+    
+    function mudarSlide(index) {
+      slides[slideAtual].classList.remove('active');
+      dots[slideAtual].classList.remove('active');
+      
+      slideAtual = index;
+      
+      slides[slideAtual].classList.add('active');
+      dots[slideAtual].classList.add('active');
+      
+      // Só mudar tema se o usuário NÃO estiver logado
+      if (!usuarioEstaLogado()) {
+        const tema = slides[slideAtual].getAttribute('data-theme') || 'filmes';
+        aplicarTema(tema);
+      }
+    }
+    
+    function aplicarTema(tema) {
+      const cores = temas[tema];
+      if (!cores) return;
+      
+      document.documentElement.style.setProperty('--accent', cores.accent);
+      document.documentElement.style.setProperty('--accent-glow', cores.accentGlow);
+      
+      // Atualizar gradiente do texto
+      const gradientText = document.querySelector('.gradient-text');
+      if (gradientText) {
+        gradientText.style.background = cores.gradient;
+        gradientText.style.webkitBackgroundClip = 'text';
+        gradientText.style.backgroundClip = 'text';
+      }
+    }
+    
+    function restaurarCoresOriginais() {
+      document.documentElement.style.setProperty('--accent', coresOriginais.accent);
+      document.documentElement.style.setProperty('--accent-glow', coresOriginais.accentGlow);
+      
+      const gradientText = document.querySelector('.gradient-text');
+      if (gradientText) {
+        gradientText.style.background = coresOriginais.gradient;
+        gradientText.style.webkitBackgroundClip = 'text';
+        gradientText.style.backgroundClip = 'text';
+      }
+    }
+    
+    function iniciarSlider() {
+      // Se o usuário já estiver logado, usar cores originais
+      if (usuarioEstaLogado()) {
+        restaurarCoresOriginais();
+      } else {
+        // Aplicar tema inicial ao carregar a página (só se não estiver logado)
+        const temaInicial = slides[0].getAttribute('data-theme') || 'filmes';
+        aplicarTema(temaInicial);
+      }
+      
+      // Auto-play do slider (troca a cada 4 segundos)
+      sliderInterval = setInterval(() => {
+        const proximoSlide = (slideAtual + 1) % slides.length;
+        mudarSlide(proximoSlide);
+      }, 4000);
+    }
+    
+    // Iniciar quando a página carregar
+    window.addEventListener('DOMContentLoaded', iniciarSlider);
+    
+    // Restaurar cores originais quando o usuário logar
+    window.addEventListener('userLoggedIn', () => {
+      console.log('Usuário logado - restaurando cores originais');
+      restaurarCoresOriginais();
+    });
+    
+    // Observar mudanças no elemento navUser para detectar login
+    const observer = new MutationObserver(() => {
+      if (usuarioEstaLogado()) {
+        restaurarCoresOriginais();
+      }
+    });
+    
+    // Observar o elemento navUser quando ele existir
+    const checkNavUser = setInterval(() => {
+      const navUser = document.getElementById('navUser');
+      if (navUser) {
+        observer.observe(navUser, { attributes: true, attributeFilter: ['style'] });
+        clearInterval(checkNavUser);
+      }
+    }, 100);
+  </script>
 
   <!-- Scripts -->
   <!-- 1. Biblioteca LicenseAuth (deve ser carregada primeiro) -->
