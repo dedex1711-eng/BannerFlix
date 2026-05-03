@@ -263,6 +263,10 @@ const jogadoresFamosos = {
   'Real Betis': { nome: 'Antony', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Antony.png' },
   'Betis': { nome: 'Antony', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Antony.png' },
   'Real Betis Balompié': { nome: 'Antony', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Antony.png' },
+  'Lyon': { nome: 'Endrick', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/endrick.png' },
+  'Olympique Lyon': { nome: 'Endrick', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/endrick.png' },
+  'Olympique de Lyon': { nome: 'Endrick', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/endrick.png' },
+  'OL': { nome: 'Endrick', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/endrick.png' },
 };
 
 // Brasões customizados para times que não têm na ESPN
