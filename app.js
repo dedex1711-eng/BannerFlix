@@ -257,6 +257,15 @@ const jogadoresFamosos = {
   'Real Betis Balompié': { nome: 'Antony', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Antony.png' },
 };
 
+// Brasões customizados para times que não têm na ESPN
+const brasoesCustomizados = {
+  'Barra FC': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/barras%20fc.png',
+  'Maranhão': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Maranhão.png',
+  'Maranhao': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Maranhão.png',
+  'Maranhão AC': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Maranhão.png',
+  'Maranhao AC': 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Maranhão.png',
+};
+
 async function obterLogo() {
   if (logoImg) return logoImg;
   return null;
@@ -3323,8 +3332,8 @@ async function buscarTodosJogosDoDia() {
             horario, status, liga: liga.nome, canal,
             timeCasa: timeCasa.team.displayName,
             timeVisitante: timeVisitante.team.displayName,
-            logoCasa: timeCasa.team.logo || '',
-            logoVisitante: timeVisitante.team.logo || '',
+            logoCasa: timeCasa.team.logo || brasoesCustomizados[timeCasa.team.displayName] || '',
+            logoVisitante: timeVisitante.team.logo || brasoesCustomizados[timeVisitante.team.displayName] || '',
             id: `${liga.id}_${jogo.id}`,
           });
         } catch(e) { /* jogo inválido */ }
@@ -3370,8 +3379,8 @@ async function buscarTodosJogosDoDia() {
               horario, status, liga: liga.nome, canal,
               timeCasa: timeCasa.team.displayName,
               timeVisitante: timeVisitante.team.displayName,
-              logoCasa: timeCasa.team.logo || '',
-              logoVisitante: timeVisitante.team.logo || '',
+              logoCasa: timeCasa.team.logo || brasoesCustomizados[timeCasa.team.displayName] || '',
+              logoVisitante: timeVisitante.team.logo || brasoesCustomizados[timeVisitante.team.displayName] || '',
               id: `${liga.id}_${jogo.id}`,
             });
           } catch(e) { /* jogo inválido */ }
@@ -3598,8 +3607,8 @@ async function buscarJogosAmanha() {
             horario, status, liga: liga.nome, canal,
             timeCasa: timeCasa.team.displayName,
             timeVisitante: timeVisitante.team.displayName,
-            logoCasa: timeCasa.team.logo || '',
-            logoVisitante: timeVisitante.team.logo || '',
+            logoCasa: timeCasa.team.logo || brasoesCustomizados[timeCasa.team.displayName] || '',
+            logoVisitante: timeVisitante.team.logo || brasoesCustomizados[timeVisitante.team.displayName] || '',
             id: `${liga.id}_${jogo.id}`,
           });
         } catch(e) { /* jogo inválido */ }
@@ -3803,8 +3812,8 @@ async function buscarJogosFutebol() {
           horario: horario,
           status: status,
           liga: ligaSelect.options[ligaSelect.selectedIndex].text,
-          logoCasa: timeCasa.team.logo || '',
-          logoVisitante: timeVisitante.team.logo || '',
+          logoCasa: timeCasa.team.logo || brasoesCustomizados[timeCasa.team.displayName] || '',
+          logoVisitante: timeVisitante.team.logo || brasoesCustomizados[timeVisitante.team.displayName] || '',
           local: jogo.competitions[0].venue ? jogo.competitions[0].venue.fullName : 'Local não informado',
           canal: canalTransmissao
         })}'>
