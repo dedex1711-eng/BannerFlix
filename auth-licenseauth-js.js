@@ -13,6 +13,56 @@ if (window.location.hostname !== 'localhost' && window.location.hostname !== '12
 
 let usuarioAtual = null;
 
+// ===== CONTROLE DE TENTATIVAS DE LOGIN =====
+const MAX_TENTATIVAS = 3;
+const TEMPO_BLOQUEIO = 15 * 60 * 1000; // 15 minutos em milissegundos
+
+function obterTentativasLogin() {
+  const dados = localStorage.getItem('bannerflix_login_attempts');
+  if (!dados) return { count: 0, blockedUntil: null };
+  return JSON.parse(dados);
+}
+
+function salvarTentativasLogin(count, blockedUntil = null) {
+  localStorage.setItem('bannerflix_login_attempts', JSON.stringify({ count, blockedUntil }));
+}
+
+function resetarTentativasLogin() {
+  localStorage.removeItem('bannerflix_login_attempts');
+}
+
+function verificarBloqueio() {
+  const tentativas = obterTentativasLogin();
+  
+  if (tentativas.blockedUntil) {
+    const agora = Date.now();
+    if (agora < tentativas.blockedUntil) {
+      const minutosRestantes = Math.ceil((tentativas.blockedUntil - agora) / 60000);
+      return { bloqueado: true, minutosRestantes };
+    } else {
+      // Bloqueio expirou, resetar
+      resetarTentativasLogin();
+      return { bloqueado: false };
+    }
+  }
+  
+  return { bloqueado: false };
+}
+
+function registrarTentativaFalha() {
+  const tentativas = obterTentativasLogin();
+  const novaContagem = tentativas.count + 1;
+  
+  if (novaContagem >= MAX_TENTATIVAS) {
+    const blockedUntil = Date.now() + TEMPO_BLOQUEIO;
+    salvarTentativasLogin(novaContagem, blockedUntil);
+    return { bloqueado: true, tentativasRestantes: 0 };
+  } else {
+    salvarTentativasLogin(novaContagem);
+    return { bloqueado: false, tentativasRestantes: MAX_TENTATIVAS - novaContagem };
+  }
+}
+
 // ===== DEVICE ID (HWID para Web) =====
 async function gerarDeviceId() {
   try {
@@ -119,9 +169,29 @@ async function fazerLoginComChave() {
     return;
   }
 
+  // Verificar se está bloqueado
+  const bloqueio = verificarBloqueio();
+  if (bloqueio.bloqueado) {
+    mostrarErro('loginErro', `🔒 Muitas tentativas falhas. Tente novamente em ${bloqueio.minutosRestantes} minuto(s).`);
+    return;
+  }
+
   setBtnLoading('btnLoginChave', true, 'Verificando...');
 
   try {
+    // Executar reCAPTCHA v3 (opcional - não bloqueia o login se falhar)
+    let recaptchaToken = null;
+    if (typeof grecaptcha !== 'undefined' && grecaptcha.execute) {
+      try {
+        recaptchaToken = await grecaptcha.execute('6LfKm9YsAAAAAPfC2SpxnqaVfBnmHGd-YcYP4Miw', {action: 'login'});
+        console.log('✅ reCAPTCHA v3 token obtido');
+      } catch (recaptchaError) {
+        console.warn('⚠️ reCAPTCHA não disponível:', recaptchaError.message);
+      }
+    } else {
+      console.warn('⚠️ grecaptcha não está definido, continuando sem reCAPTCHA');
+    }
+
     // Inicializa LicenseAuth se não estiver
     if (!LicenseAuthApp) {
       if (!inicializarLicenseAuth()) {
@@ -174,6 +244,7 @@ async function fazerLoginComChave() {
           dias: dias,
           creditos: -1,
           token: response.token || licenseKey,
+          licenseKey: licenseKey, // Salva a chave de licença
           userData: userData,
           loginTimestamp: Date.now() // Adiciona timestamp do login
         };
@@ -181,7 +252,10 @@ async function fazerLoginComChave() {
         // Salva no localStorage
         localStorage.setItem('bannerflix_user', JSON.stringify(usuarioAtual));
         localStorage.setItem('bannerflix_token', usuarioAtual.token);
+        localStorage.setItem('bannerflix_license_key', licenseKey); // Salva a chave separadamente também
 
+        // Resetar tentativas de login em caso de sucesso
+        resetarTentativasLogin();
 
         // Atualiza interface
         atualizarNavbar();
@@ -203,12 +277,25 @@ async function fazerLoginComChave() {
 
         setBtnLoading('btnLoginChave', false, 'Entrar');
       } else {
-        mostrarErro('loginErro', response.message || 'Chave de licença inválida');
+        // Registrar tentativa falha
+        const resultado = registrarTentativaFalha();
+        
+        if (resultado.bloqueado) {
+          mostrarErro('loginErro', '🔒 Muitas tentativas falhas. Aguarde 15 minutos para tentar novamente.');
+        } else {
+          const mensagem = response.message || 'Chave de licença inválida';
+          const tentativasMsg = resultado.tentativasRestantes === 1 
+            ? `${mensagem} (${resultado.tentativasRestantes} tentativa restante)`
+            : `${mensagem} (${resultado.tentativasRestantes} tentativas restantes)`;
+          mostrarErro('loginErro', tentativasMsg);
+        }
+        
         setBtnLoading('btnLoginChave', false, 'Entrar');
       }
     });
 
   } catch (err) {
+    console.error('Erro no login:', err);
     setBtnLoading('btnLoginChave', false, 'Entrar');
     mostrarErro('loginErro', 'Erro de conexão. Verifique sua internet.');
   }
@@ -348,6 +435,7 @@ function fazerLogout() {
   usuarioAtual = null;
   localStorage.removeItem('bannerflix_user');
   localStorage.removeItem('bannerflix_token');
+  localStorage.removeItem('bannerflix_license_key'); // Remove a chave salva
 
   // Limpa interface
   atualizarNavbar();
@@ -357,6 +445,10 @@ function fazerLogout() {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  
+  // Limpa campo de licença
+  const licenseKeyInput = document.getElementById('licenseKeyInput');
+  if (licenseKeyInput) licenseKeyInput.value = '';
 
   if (typeof removerLogo === 'function') {
     removerLogo();
@@ -374,6 +466,15 @@ function fazerLogout() {
 window.addEventListener('load', () => {
   // Inicializa LicenseAuth
   inicializarLicenseAuth();
+
+  // Preenche o campo de licença se houver uma salva
+  const savedLicenseKey = localStorage.getItem('bannerflix_license_key');
+  if (savedLicenseKey) {
+    const licenseKeyInput = document.getElementById('licenseKeyInput');
+    if (licenseKeyInput) {
+      licenseKeyInput.value = savedLicenseKey;
+    }
+  }
 
   // Verifica se há usuário salvo
   const savedUser = localStorage.getItem('bannerflix_user');
