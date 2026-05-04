@@ -98,6 +98,10 @@ const jogadoresFamosos = {
   'Sevilla Fútbol Club': { nome: 'Chidera Ejuke', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Chidera%20Ejuke.png' },
   'Mallorca': { nome: 'Abdón Prats', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Abdón%20Prats.png' },
   'Deportivo Alavés': { nome: 'Luis Rioja', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Luis_Rioja.png' },
+  'Almería': { nome: 'Léo Baptistão', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Léo%20Baptistão.png' },
+  'Almeria': { nome: 'Léo Baptistão', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Léo%20Baptistão.png' },
+  'UD Almería': { nome: 'Léo Baptistão', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Léo%20Baptistão.png' },
+  'Unión Deportiva Almería': { nome: 'Léo Baptistão', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Léo%20Baptistão.png' },
   'Albacete': { nome: 'Antonio Puertas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Antonio%20Puertas.png' },
   'Albacete BP': { nome: 'Antonio Puertas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Antonio%20Puertas.png' },
   'Levante': { nome: 'Carlos Álvarez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Carlos%20Álvarez2.png' },
@@ -270,6 +274,9 @@ const jogadoresFamosos = {
   'Lazio': { nome: 'Diogo Dalot', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/20-Diogo-Dalot1751370735578.png' },
   'SS Lazio': { nome: 'Diogo Dalot', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/20-Diogo-Dalot1751370735578.png' },
   'Società Sportiva Lazio': { nome: 'Diogo Dalot', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/20-Diogo-Dalot1751370735578.png' },
+  'Roma': { nome: 'Paulo Dybala', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Paulo%20Dybala.png' },
+  'AS Roma': { nome: 'Paulo Dybala', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Paulo%20Dybala.png' },
+  'A.S. Roma': { nome: 'Paulo Dybala', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Paulo%20Dybala.png' },
 };
 
 // Brasões customizados para times que não têm na ESPN
