@@ -206,7 +206,7 @@ const jogadoresFamosos = {
   'Avaí': { nome: 'Bruno Baldini', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Bruno%20Baldini.png' },
   'Avaí FC': { nome: 'Bruno Baldini', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Bruno%20Baldini.png' },
   'Avaí Futebol Clube': { nome: 'Bruno Baldini', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Bruno%20Baldini.png' },
-  'Brighton': { nome: 'João Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
+  'Brighton': { nome: 'Kaoru Mitoma', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/João%20Pedro.png' },
   
   // Outros times populares
   'Paris Saint Germain': { nome: 'Marquinhos', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/marquinhosss.png' },
@@ -310,7 +310,7 @@ async function buscarJogadorAutomatico() {
   const prioridadeJogadores = [
     'Cristiano Ronaldo', 'Lionel Messi', 'Neymar Jr', 'Kylian Mbappé',
     'Erling Haaland', 'Vinícius Jr', 'Mohamed Salah', 'Harry Kane',
-    'Lamine Yamal', 'Memphis Depay', 'Pedro', 'Marquinhos'
+    'Lamine Yamal', 'Memphis Depay', 'Pedro', 'Marquinhos', 'João Pedro'
   ];
   
   // Coletar TODOS os jogadores encontrados
