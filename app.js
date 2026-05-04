@@ -20,6 +20,7 @@ let logoImg       = null;   // HTMLImageElement da logo do usuário
 let jogadorImg    = null;   // HTMLImageElement da foto do jogador
 let jogadorAutomatico = false; // Flag para indicar se está usando jogador automático
 let bannerGerado  = false;
+let modoAmanha    = false;  // Flag para indicar se está exibindo jogos de amanhã
 
 // ===== BANCO DE DADOS DE JOGADORES FAMOSOS =====
 // Array de imagens disponíveis (fallback aleatório)
@@ -3204,6 +3205,7 @@ async function buscarTodosJogosDoDia() {
   
   // Definir que estamos buscando jogos de HOJE
   dataJogos = 0;
+  modoAmanha = false; // Desativar modo amanhã
   
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Buscando...';
@@ -3479,6 +3481,7 @@ async function buscarJogosAmanha() {
   
   // Definir que estamos buscando jogos de AMANHÃ
   dataJogos = 1;
+  modoAmanha = true; // Ativar modo amanhã
   
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Buscando...';
@@ -4109,14 +4112,23 @@ function gerarResumoFutebol() {
   if (jogosSelecionados.length === 0) return;
   
   // Montar texto do resumo
-  const hoje = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+  const hoje = new Date();
+  const amanha = new Date();
+  amanha.setDate(amanha.getDate() + 1);
+
+  const dataFormatada = modoAmanha
+    ? amanha.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })
+    : hoje.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+
+  const tituloJogos = modoAmanha ? '⚽ *JOGOS DE AMANHÃ*' : '⚽ *JOGOS DE HOJE*';
+
   const whatsapp = document.getElementById('inputWhatsapp')?.value || '';
   const instagram = document.getElementById('inputInstagram')?.value || '';
   const site = document.getElementById('inputSite')?.value || '';
   const textoExtra = document.getElementById('inputTexto')?.value || '';
   
   let linhas = [];
-  linhas.push(`⚽ *JOGOS DE HOJE* - ${hoje.toUpperCase()}`);
+  linhas.push(`${tituloJogos} - ${dataFormatada.toUpperCase()}`);
   linhas.push('');
   
   jogosSelecionados.forEach((jogo, i) => {
