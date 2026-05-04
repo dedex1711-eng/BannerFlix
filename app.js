@@ -267,6 +267,9 @@ const jogadoresFamosos = {
   'Olympique Lyon': { nome: 'Endrick', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/endrick.png' },
   'Olympique de Lyon': { nome: 'Endrick', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/endrick.png' },
   'OL': { nome: 'Endrick', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/endrick.png' },
+  'Lazio': { nome: 'Diogo Dalot', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/20-Diogo-Dalot1751370735578.png' },
+  'SS Lazio': { nome: 'Diogo Dalot', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/20-Diogo-Dalot1751370735578.png' },
+  'Società Sportiva Lazio': { nome: 'Diogo Dalot', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/20-Diogo-Dalot1751370735578.png' },
 };
 
 // Brasões customizados para times que não têm na ESPN
