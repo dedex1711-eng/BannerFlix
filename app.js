@@ -5359,7 +5359,7 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
       
       // Multiplicador de tamanho por canal (SporTV, TNT Sports e HBO Max diminuídos pois as imagens são maiores)
       const multiplicadores = {
-        'SporTV':    0.55,
+        'SporTV':    0.35,
         'TNT Sports': 0.55,
         'HBO Max':   0.35,
       };
