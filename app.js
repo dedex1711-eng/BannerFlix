@@ -4691,49 +4691,73 @@ async function desenharJogosNoBanner(ctx, w, h, jogos) {
     ctx.textAlign = 'center';
     ctx.fillText(jogo.liga, w/2, yPos + jogoHeight * 0.2);
     
+    // Fundo pequeno atrás da hora
+    await desenharFundoHora(ctx, w * 0.02, yPos + jogoHeight * 0.25, w * 0.25, jogoHeight * 0.6);
+    
     // Horário (esquerda)
     ctx.fillStyle = coresFutebol.hora;
     ctx.font = `900 ${w * 0.032}px Impact, Anton, 'Arial Black', sans-serif`;
     ctx.textAlign = 'left';
-    ctx.fillText(jogo.horario, w * 0.08, yPos + jogoHeight * 0.6);
+    
+    // Adicionar sombra ao texto da hora
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 4;
+    
+    ctx.fillText(jogo.horario, w * 0.08, yPos + jogoHeight * 0.65);
+    
+    // Resetar sombra
+    ctx.shadowColor = 'transparent';
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowBlur = 0;
     
     // Desenhar brasões dos times
     const logoSize = w * 0.06;
     const logoY = yPos + jogoHeight * 0.22;
     
-    // Logo time casa (esquerda)
+    // Logo time casa (mais próximo do centro)
     if (imagensCarregadas[i] && imagensCarregadas[i].logoCasa) {
-      ctx.drawImage(imagensCarregadas[i].logoCasa, w * 0.28, logoY, logoSize, logoSize);
+      ctx.drawImage(imagensCarregadas[i].logoCasa, w * 0.38, logoY, logoSize, logoSize);
     } else {
       ctx.fillStyle = '#f0f0f0';
       ctx.beginPath();
-      ctx.arc(w * 0.28 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.arc(w * 0.38 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#666';
       ctx.font = `${logoSize * 0.6}px Arial`;
       ctx.textAlign = 'center';
-      ctx.fillText('⚽', w * 0.28 + logoSize/2, logoY + logoSize * 0.7);
+      ctx.fillText('⚽', w * 0.38 + logoSize/2, logoY + logoSize * 0.7);
     }
     
-    // Logo time visitante (direita)
+    // Logo time visitante (mais próximo do centro)
     if (imagensCarregadas[i] && imagensCarregadas[i].logoVisitante) {
-      ctx.drawImage(imagensCarregadas[i].logoVisitante, w * 0.66, logoY, logoSize, logoSize);
+      ctx.drawImage(imagensCarregadas[i].logoVisitante, w * 0.56, logoY, logoSize, logoSize);
     } else {
       ctx.fillStyle = '#f0f0f0';
       ctx.beginPath();
-      ctx.arc(w * 0.66 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.arc(w * 0.56 + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#666';
       ctx.font = `${logoSize * 0.6}px Arial`;
       ctx.textAlign = 'center';
-      ctx.fillText('⚽', w * 0.66 + logoSize/2, logoY + logoSize * 0.7);
+      ctx.fillText('⚽', w * 0.56 + logoSize/2, logoY + logoSize * 0.7);
     }
     
-    // Times (centro)
+    // Times (separados, centralizados entre os brasões)
     ctx.fillStyle = '#000000';
-    ctx.font = `600 ${w * 0.020}px Inter, sans-serif`;
+    ctx.font = `600 ${w * 0.018}px Inter, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText(`${abreviarTime(jogo.timeCasa)} x ${abreviarTime(jogo.timeVisitante)}`, w/2, yPos + jogoHeight * 0.8);
+    
+    // Nome do time casa (centralizado abaixo do brasão)
+    ctx.fillText(abreviarTime(jogo.timeCasa), w * 0.38 + logoSize/2, yPos + jogoHeight * 0.8);
+    
+    // Nome do time visitante (centralizado abaixo do brasão)
+    ctx.fillText(abreviarTime(jogo.timeVisitante), w * 0.56 + logoSize/2, yPos + jogoHeight * 0.8);
+    
+    // Fundo pequeno atrás do canal
+    await desenharFundoCanal(ctx, w * 0.73, yPos + jogoHeight * 0.15, w * 0.25, jogoHeight * 0.6);
     
     // Canal de transmissão (direita)
     ctx.fillStyle = '#F77F30';
@@ -4779,6 +4803,21 @@ async function desenharJogosNoBanner(ctx, w, h, jogos) {
   }
 }
 
+// ===== FUNÇÃO PARA DESENHAR EFEITO ATRÁS DO JOGADOR =====
+async function desenharEfeitoAtrasJogador(ctx, x, y, width, height) {
+  try {
+    const efeitoImg = await carregarImagem('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/—Pngtree—thin%20smoke%20rises%20up%20isolated_9023265.png');
+    
+    // Desenhar o efeito atrás do jogador com transparência
+    ctx.save();
+    ctx.globalAlpha = 0.3; // Opacidade reduzida de 50% para 30%
+    ctx.drawImage(efeitoImg, x, y, width, height);
+    ctx.restore();
+  } catch (e) {
+    // Se não conseguir carregar a imagem, não faz nada (fallback silencioso)
+  }
+}
+
 // ===== DESENHAR BANNER COM JOGADOR =====
 async function desenharBannerComJogador(ctx, w, h, jogos) {
   // Obter configurações de fundo e overlay
@@ -4820,8 +4859,11 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
   
   // Desenhar imagem do jogador no lado esquerdo (se houver)
   if (jogadorImg) {
-    const jogadorWidth = w * 0.40; // 40% da largura
+    const jogadorWidth = w * 0.60; // Aumentado de 50% para 60% da largura
     const jogadorHeight = h;
+    
+    // Desenhar efeito atrás do jogador (estendido mais para a direita)
+    await desenharEfeitoAtrasJogador(ctx, 0, 0, jogadorWidth * 1.1, jogadorHeight);
     
     // Calcular dimensões mantendo proporção
     const imgRatio = jogadorImg.width / jogadorImg.height;
@@ -4866,9 +4908,9 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     ctx.fillRect(0, 0, w, h);
   }
   
-  // Área dos jogos (lado direito)
-  const jogosX = w * 0.42; // Começa em 42%
-  const jogosWidth = w * 0.54; // 54% da largura
+  // Área dos jogos (lado direito) - mantendo tamanho original dos cards
+  const jogosX = w * 0.42; // Volta para 42%
+  const jogosWidth = w * 0.54; // Volta para 54% da largura
   
   // Data no topo (caixa BRANCA com borda arredondada) - usar dataJogos para calcular
   const hoje = new Date();
@@ -4970,17 +5012,25 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     const cardX = jogosX + jogosWidth * 0.05;
     const cardW = jogosWidth * 0.9;
     
-    // MARCA D'ÁGUA dentro do card (pequena e discreta)
+    // MARCA D'ÁGUA no canto superior esquerdo do card
     if (logoImg) {
       const logoRatio = logoImg.width / logoImg.height;
-      const marcaW = cardW * 0.25; // 25% da largura do card
+      const marcaW = cardW * 0.10; // Diminuído de 15% para 10% da largura do card
       const marcaH = marcaW / logoRatio;
-      const marcaX = cardX + (cardW - marcaW) / 2; // Centralizada no card
-      const marcaY = yPos + (jogoHeight - marcaH) / 2; // Centralizada verticalmente
+      const marcaX = cardX + cardW * 0.02; // Canto esquerdo com pequena margem
+      const marcaY = yPos + jogoHeight * 0.02; // Canto superior com pequena margem
       
       ctx.save();
-      ctx.globalAlpha = 0.06; // Bem transparente para não atrapalhar
+      ctx.globalAlpha = 0.20; // Aumentado de 12% para 20% de opacidade
       ctx.drawImage(logoImg, marcaX, marcaY, marcaW, marcaH);
+      ctx.restore();
+      
+      // MARCA D'ÁGUA no canto superior direito do card
+      const marcaXDireita = cardX + cardW - marcaW - cardW * 0.02; // Canto direito com pequena margem
+      
+      ctx.save();
+      ctx.globalAlpha = 0.20; // Mesma opacidade
+      ctx.drawImage(logoImg, marcaXDireita, marcaY, marcaW, marcaH);
       ctx.restore();
     }
     
@@ -4990,25 +5040,41 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     ctx.textAlign = 'center';
     ctx.fillText(jogo.liga.toUpperCase(), cardX + cardW/2, yPos + jogoHeight * 0.15);
     
+    // Fundo pequeno atrás da hora
+    await desenharFundoHora(ctx, cardX + cardW * 0.0, yPos + jogoHeight * 0.2, cardW * 0.28, jogoHeight * 0.6);
+    
     // Horário (esquerda, grande e destacado)
     ctx.fillStyle = coresFutebol.hora;
     ctx.font = `900 ${w * 0.028}px Impact, Anton, 'Arial Black', sans-serif`;
     ctx.textAlign = 'left';
-    ctx.fillText(jogo.horario, cardX + cardW * 0.08, yPos + jogoHeight * 0.5);
+    
+    // Adicionar sombra ao texto da hora
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 4;
+    
+    ctx.fillText(jogo.horario, cardX + cardW * 0.08, yPos + jogoHeight * 0.55);
+    
+    // Resetar sombra
+    ctx.shadowColor = 'transparent';
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowBlur = 0;
     
     // Brasões dos times (centralizados)
     const logoSize = w * 0.055;
     const logoY = yPos + jogoHeight * 0.3;
     const centerX = cardX + cardW/2;
     
-    // Logo time casa (esquerda do centro)
+    // Logo time casa (mais próximo do centro)
     if (imagensCarregadas[i] && imagensCarregadas[i].logoCasa) {
-      ctx.drawImage(imagensCarregadas[i].logoCasa, centerX - logoSize * 2.2, logoY, logoSize, logoSize);
+      ctx.drawImage(imagensCarregadas[i].logoCasa, centerX - logoSize * 1.5, logoY, logoSize, logoSize);
     } else {
       // Fallback
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath();
-      ctx.arc(centerX - logoSize * 1.7, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.arc(centerX - logoSize * 1.0, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
       ctx.fill();
     }
     
@@ -5018,23 +5084,30 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     ctx.textAlign = 'center';
     ctx.fillText('VS', centerX, logoY + logoSize * 0.6);
     
-    // Logo time visitante (direita do centro)
+    // Logo time visitante (mais próximo do centro)
     if (imagensCarregadas[i] && imagensCarregadas[i].logoVisitante) {
-      ctx.drawImage(imagensCarregadas[i].logoVisitante, centerX + logoSize * 1.2, logoY, logoSize, logoSize);
+      ctx.drawImage(imagensCarregadas[i].logoVisitante, centerX + logoSize * 0.5, logoY, logoSize, logoSize);
     } else {
       // Fallback
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath();
-      ctx.arc(centerX + logoSize * 1.7, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.arc(centerX + logoSize * 1.0, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
       ctx.fill();
     }
     
-    // Nomes dos times (abaixo dos logos)
+    // Nomes dos times (separados, centralizados abaixo dos brasões)
     ctx.fillStyle = '#ffffff';
-    ctx.font = `600 ${w * 0.016}px Inter, sans-serif`;
+    ctx.font = `600 ${w * 0.014}px Inter, sans-serif`;
     ctx.textAlign = 'center';
-    const nomeJogo = `${abreviarTime(jogo.timeCasa)} x ${abreviarTime(jogo.timeVisitante)}`;
-    ctx.fillText(nomeJogo, centerX, yPos + jogoHeight * 0.85);
+    
+    // Nome do time casa (centralizado abaixo do brasão)
+    ctx.fillText(abreviarTime(jogo.timeCasa), centerX - logoSize * 1.0, yPos + jogoHeight * 0.85);
+    
+    // Nome do time visitante (centralizado abaixo do brasão)
+    ctx.fillText(abreviarTime(jogo.timeVisitante), centerX + logoSize * 1.0, yPos + jogoHeight * 0.85);
+    
+    // Fundo pequeno atrás do canal
+    await desenharFundoCanal(ctx, cardX + cardW * 0.72, yPos + jogoHeight * 0.2, cardW * 0.28, jogoHeight * 0.6);
     
     // Canal de transmissão (direita, com logo)
     const canalTexto = jogo.canal || 'ESPN';
@@ -5362,6 +5435,7 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
         'SporTV':    0.35,
         'TNT Sports': 0.55,
         'HBO Max':   0.35,
+        'DAZN':      1.2,
       };
       const mult = multiplicadores[canal] || 1.0;
       
@@ -5375,10 +5449,27 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
       const lw = lh * aspectRatio;
       
       // Centralizar verticalmente no mesmo ponto Y para todos
-      const drawX = x - lw;
+      let drawX = x - lw;
       const drawY = y - lh / 2; // Sempre centralizado no mesmo Y
       
+      // Ajuste especial para DAZN - centralizar melhor e posicionar mais à esquerda
+      if (canal === 'DAZN') {
+        drawX = x - lw * 1.2; // Ainda mais à esquerda
+      }
+      
+      // Adicionar sombra aos logos dos canais
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
+      ctx.shadowBlur = 6;
+      
       ctx.drawImage(logoImg, drawX, drawY, lw, lh);
+      
+      // Resetar sombra
+      ctx.shadowColor = 'transparent';
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 0;
       return;
     } catch (e) {
     }
@@ -5388,7 +5479,50 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
   ctx.fillStyle = '#F77F30';
   ctx.font = `600 ${size * 0.35}px Inter, sans-serif`;
   ctx.textAlign = 'right';
+  
+  // Adicionar sombra ao texto do canal
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+  ctx.shadowBlur = 4;
+  
   ctx.fillText(`📺 ${canal}`, x, y + size * 0.12);
+  
+  // Resetar sombra
+  ctx.shadowColor = 'transparent';
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.shadowBlur = 0;
+}
+
+// ===== FUNÇÃO PARA DESENHAR FUNDO PEQUENO ATRÁS DA HORA =====
+async function desenharFundoHora(ctx, x, y, width, height) {
+  try {
+    const fundoImg = await carregarImagem('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/473f4622-86ce-4958-8baf-ce18f54a769e-removebg-preview.png');
+    
+    // Desenhar a imagem pequena atrás da hora
+    ctx.save();
+    ctx.globalAlpha = 0.6; // Transparência para não sobrepor muito
+    ctx.drawImage(fundoImg, x, y, width, height);
+    ctx.restore();
+  } catch (e) {
+    // Se não conseguir carregar a imagem, não faz nada (fallback silencioso)
+  }
+}
+
+// ===== FUNÇÃO PARA DESENHAR FUNDO PEQUENO ATRÁS DO CANAL =====
+async function desenharFundoCanal(ctx, x, y, width, height) {
+  try {
+    const fundoImg = await carregarImagem('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/473f4622-86ce-4958-8baf-ce18f54a769e-removebg-preview.png');
+    
+    // Desenhar a imagem pequena atrás do canal
+    ctx.save();
+    ctx.globalAlpha = 0.6; // Transparência para não sobrepor muito
+    ctx.drawImage(fundoImg, x, y, width, height);
+    ctx.restore();
+  } catch (e) {
+    // Se não conseguir carregar a imagem, não faz nada (fallback silencioso)
+  }
 }
 
 // ===== FUNÇÃO PARA ABREVIAR NOME DE TIME =====
