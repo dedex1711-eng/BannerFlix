@@ -320,6 +320,19 @@ async function buscarJogadorAutomatico() {
     'Lamine Yamal', 'Memphis Depay', 'Pedro', 'Marquinhos', 'João Pedro'
   ];
   
+  // Lista de jogadores brasileiros (preferência extra)
+  const jogadoresBrasileiros = [
+    'Neymar Jr', 'Vinícius Jr', 'Pedro', 'Marquinhos', 'João Pedro',
+    'Memphis Depay', 'Rodrygo', 'Endrick', 'Malcom', 'Roberto Firmino',
+    'Arthur Cabral', 'Isidro Pitta', 'Kevin Serna', 'Erick Pulga',
+    'Matheus Pereira', 'Johan Rojas', 'Carlos Vinícius', 'Yuri Alberto',
+    'Gustavo Gómez', 'Lucas Beraldo', 'Gabigol', 'Willian Bigode',
+    'Rafael da Silva', 'Rodrigo Gelado', 'Andrew', 'Bruno Baldini',
+    'Arthur Henrique', 'William Pottker', 'Araújo Lima', 'Paulo Sérgio',
+    'Reinaldo Manoel da Silva', 'Matheus Gonçalves', 'Bremer', 'Rafael Leão',
+    'Vinicius Souza', 'Rodrigo Zalazar'
+  ];
+  
   // Coletar TODOS os jogadores encontrados
   let jogadoresEncontrados = [];
   
@@ -373,8 +386,17 @@ async function buscarJogadorAutomatico() {
       }
     }
     
-    // Se encontrou jogador prioritário, usar ele. Senão, usar o primeiro da lista
-    const escolha = jogadorPrioritario || jogadoresEncontrados[0];
+    // Se não encontrou prioritário, tentar brasileiro
+    let jogadorBrasileiro = null;
+    if (!jogadorPrioritario) {
+      jogadorBrasileiro = jogadoresEncontrados.find(j => jogadoresBrasileiros.includes(j.jogador.nome));
+      if (jogadorBrasileiro) {
+        console.log(`🇧🇷 Jogador brasileiro encontrado: ${jogadorBrasileiro.jogador.nome}`);
+      }
+    }
+    
+    // Prioridade: prioritário > brasileiro > primeiro da lista
+    const escolha = jogadorPrioritario || jogadorBrasileiro || jogadoresEncontrados[0];
     jogadorEscolhido = escolha.jogador;
     timeEncontrado = escolha.time;
     console.log(`✅ Escolhido: ${jogadorEscolhido.nome} (${timeEncontrado})`);
@@ -435,29 +457,43 @@ async function buscarJogadorAutomatico() {
 async function buscarJogadorParaBanner(jogos, indiceBanner) {
   console.log(`🔍 Buscando jogador para banner ${indiceBanner + 1} com ${jogos.length} jogos`);
   
-  // Tentar encontrar jogador em TODOS os jogos deste banner
-  let jogadorEncontrado = null;
+  // Lista de jogadores brasileiros (preferência extra)
+  const jogadoresBrasileiros = [
+    'Neymar Jr', 'Vinícius Jr', 'Pedro', 'Marquinhos', 'João Pedro',
+    'Memphis Depay', 'Rodrygo', 'Endrick', 'Malcom', 'Roberto Firmino',
+    'Arthur Cabral', 'Isidro Pitta', 'Kevin Serna', 'Erick Pulga',
+    'Matheus Pereira', 'Johan Rojas', 'Carlos Vinícius', 'Yuri Alberto',
+    'Gustavo Gómez', 'Lucas Beraldo', 'Gabigol', 'Willian Bigode',
+    'Rafael da Silva', 'Rodrigo Gelado', 'Andrew', 'Bruno Baldini',
+    'Arthur Henrique', 'William Pottker', 'Araújo Lima', 'Paulo Sérgio',
+    'Reinaldo Manoel da Silva', 'Matheus Gonçalves', 'Bremer', 'Rafael Leão',
+    'Vinicius Souza', 'Rodrigo Zalazar'
+  ];
+
+  // Coletar todos os jogadores encontrados nos jogos
+  let todosJogadores = [];
   
   for (let i = 0; i < jogos.length; i++) {
     const jogo = jogos[i];
-    
-    console.log(`🔍 Banner ${indiceBanner + 1}, Jogo ${i + 1}: ${jogo.timeCasa} vs ${jogo.timeVisitante}`);
-    
-    // Alternar entre time casa e visitante baseado no índice do banner
-    const usarTimeCasa = indiceBanner % 2 === 0;
-    const timePrincipal = usarTimeCasa ? jogo.timeCasa : jogo.timeVisitante;
-    const timeAlternativo = usarTimeCasa ? jogo.timeVisitante : jogo.timeCasa;
-    
-    if (jogadoresFamosos[timePrincipal]) {
-      jogadorEncontrado = jogadoresFamosos[timePrincipal];
-      console.log(`✅ Banner ${indiceBanner + 1}: Encontrado ${jogadorEncontrado.nome} (${timePrincipal})`);
-      break;
-    } else if (jogadoresFamosos[timeAlternativo]) {
-      jogadorEncontrado = jogadoresFamosos[timeAlternativo];
-      console.log(`✅ Banner ${indiceBanner + 1}: Encontrado ${jogadorEncontrado.nome} (${timeAlternativo})`);
-      break;
+    if (jogadoresFamosos[jogo.timeCasa]) {
+      todosJogadores.push(jogadoresFamosos[jogo.timeCasa]);
+    }
+    if (jogadoresFamosos[jogo.timeVisitante]) {
+      todosJogadores.push(jogadoresFamosos[jogo.timeVisitante]);
+    }
+  }
+  
+  let jogadorEncontrado = null;
+  
+  if (todosJogadores.length > 0) {
+    // Preferência 1: brasileiro
+    jogadorEncontrado = todosJogadores.find(j => jogadoresBrasileiros.includes(j.nome));
+    if (jogadorEncontrado) {
+      console.log(`🇧🇷 Banner ${indiceBanner + 1}: Brasileiro encontrado: ${jogadorEncontrado.nome}`);
     } else {
-      console.log(`❌ Banner ${indiceBanner + 1}, Jogo ${i + 1}: Nenhum jogador para ${timePrincipal} ou ${timeAlternativo}`);
+      // Preferência 2: primeiro da lista
+      jogadorEncontrado = todosJogadores[0];
+      console.log(`✅ Banner ${indiceBanner + 1}: Encontrado ${jogadorEncontrado.nome}`);
     }
   }
   
@@ -1377,6 +1413,7 @@ function getOverlayStylePromo() {
     orange: 'rgba(124,45,18,0.6)',
     pink:   'rgba(131,24,67,0.6)',
     gray:   'rgba(55,65,81,0.6)',
+    yellow: 'rgba(133,100,0,0.6)',
     none:   null,
   };
   return map[v] || null;
@@ -4692,7 +4729,7 @@ async function desenharJogosNoBanner(ctx, w, h, jogos) {
     ctx.fillText(jogo.liga, w/2, yPos + jogoHeight * 0.2);
     
     // Fundo pequeno atrás da hora
-    await desenharFundoHora(ctx, w * 0.02, yPos + jogoHeight * 0.25, w * 0.25, jogoHeight * 0.6);
+    await desenharFundoHora(ctx, w * 0.02, yPos + jogoHeight * 0.35, w * 0.15, jogoHeight * 0.4);
     
     // Horário (esquerda)
     ctx.fillStyle = coresFutebol.hora;
@@ -4757,7 +4794,7 @@ async function desenharJogosNoBanner(ctx, w, h, jogos) {
     ctx.fillText(abreviarTime(jogo.timeVisitante), w * 0.56 + logoSize/2, yPos + jogoHeight * 0.8);
     
     // Fundo pequeno atrás do canal
-    await desenharFundoCanal(ctx, w * 0.73, yPos + jogoHeight * 0.15, w * 0.25, jogoHeight * 0.6);
+    await desenharFundoCanal(ctx, w * 0.83, yPos + jogoHeight * 0.25, w * 0.15, jogoHeight * 0.4);
     
     // Canal de transmissão (direita)
     ctx.fillStyle = '#F77F30';
@@ -4800,6 +4837,21 @@ async function desenharJogosNoBanner(ctx, w, h, jogos) {
     ctx.shadowBlur = 5;
     ctx.fillText(contatos.join('  •  '), w/2, h * 0.92);
     ctx.shadowBlur = 0;
+  }
+}
+
+// ===== FUNÇÃO PARA DESENHAR FUNDO DIGITAL ATRÁS DO JOGADOR =====
+async function desenharFundoDigitalJogador(ctx, x, y, width, height) {
+  try {
+    const fundoImg = await carregarImagem('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/—Pngtree—abstract%20digital%20circuit%20board%20with_16822900.jpg');
+    
+    // Desenhar o fundo digital atrás do jogador
+    ctx.save();
+    ctx.globalAlpha = 0.4; // Transparência para não sobrepor muito o jogador
+    ctx.drawImage(fundoImg, x, y, width, height);
+    ctx.restore();
+  } catch (e) {
+    // Se não conseguir carregar a imagem, não faz nada (fallback silencioso)
   }
 }
 
@@ -4862,8 +4914,8 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     const jogadorWidth = w * 0.60; // Aumentado de 50% para 60% da largura
     const jogadorHeight = h;
     
-    // Desenhar efeito atrás do jogador (estendido mais para a direita)
-    await desenharEfeitoAtrasJogador(ctx, 0, 0, jogadorWidth * 1.1, jogadorHeight);
+    // Desenhar fundo digital atrás do jogador
+    await desenharFundoDigitalJogador(ctx, 0, 0, jogadorWidth, jogadorHeight);
     
     // Calcular dimensões mantendo proporção
     const imgRatio = jogadorImg.width / jogadorImg.height;
@@ -4897,15 +4949,46 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     ctx.fillRect(0, 0, w, h);
   }
   
-  // Aplicar overlay configurável
+  // Aplicar overlay configurável APENAS na área dos cards (direita), sem afetar o jogador
   const overlayStyle = getOverlayStylePromo();
   if (overlayStyle && overlayStyle !== 'none') {
+    const jogadorWidth = jogadorImg ? w * 0.60 : 0;
     const overlayGrad = ctx.createLinearGradient(0, 0, 0, h);
     overlayGrad.addColorStop(0, overlayStyle.replace(/0\.\d+\)/, '0.3)'));
     overlayGrad.addColorStop(0.5, overlayStyle.replace(/0\.\d+\)/, '0.25)'));
     overlayGrad.addColorStop(1, overlayStyle.replace(/0\.\d+\)/, '0.4)'));
     ctx.fillStyle = overlayGrad;
+    // Aplica overlay em todo o banner (fundo do jogador + cards)
     ctx.fillRect(0, 0, w, h);
+    
+    // Redesenhar o jogador por cima do overlay para preservar suas cores originais
+    if (jogadorImg) {
+      const jogadorWidth2 = w * 0.60;
+      const jogadorHeight2 = h;
+      const imgRatio2 = jogadorImg.width / jogadorImg.height;
+      const targetRatio2 = jogadorWidth2 / jogadorHeight2;
+      let sx2, sy2, sWidth2, sHeight2;
+      if (imgRatio2 > targetRatio2) {
+        sHeight2 = jogadorImg.height;
+        sWidth2 = sHeight2 * targetRatio2;
+        sx2 = (jogadorImg.width - sWidth2) / 2;
+        sy2 = 0;
+      } else {
+        sWidth2 = jogadorImg.width;
+        sHeight2 = sWidth2 / targetRatio2;
+        sx2 = 0;
+        sy2 = (jogadorImg.height - sHeight2) / 2;
+      }
+      ctx.drawImage(jogadorImg, sx2, sy2, sWidth2, sHeight2, 0, 0, jogadorWidth2, jogadorHeight2);
+      
+      // Reaplicar gradiente de transição
+      const fadeGrad2 = ctx.createLinearGradient(jogadorWidth2 * 0.75, 0, jogadorWidth2 * 1.15, 0);
+      fadeGrad2.addColorStop(0, 'rgba(10,10,15,0)');
+      fadeGrad2.addColorStop(0.5, 'rgba(10,10,15,0.5)');
+      fadeGrad2.addColorStop(1, 'rgba(10,10,15,1)');
+      ctx.fillStyle = fadeGrad2;
+      ctx.fillRect(0, 0, w, h);
+    }
   }
   
   // Área dos jogos (lado direito) - mantendo tamanho original dos cards
@@ -5041,7 +5124,7 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     ctx.fillText(jogo.liga.toUpperCase(), cardX + cardW/2, yPos + jogoHeight * 0.15);
     
     // Fundo pequeno atrás da hora
-    await desenharFundoHora(ctx, cardX + cardW * 0.0, yPos + jogoHeight * 0.2, cardW * 0.28, jogoHeight * 0.6);
+    await desenharFundoHora(ctx, cardX + cardW * 0.0, yPos + jogoHeight * 0.3, cardW * 0.18, jogoHeight * 0.4);
     
     // Horário (esquerda, grande e destacado)
     ctx.fillStyle = coresFutebol.hora;
@@ -5107,7 +5190,7 @@ async function desenharBannerComJogador(ctx, w, h, jogos) {
     ctx.fillText(abreviarTime(jogo.timeVisitante), centerX + logoSize * 1.0, yPos + jogoHeight * 0.85);
     
     // Fundo pequeno atrás do canal
-    await desenharFundoCanal(ctx, cardX + cardW * 0.72, yPos + jogoHeight * 0.2, cardW * 0.28, jogoHeight * 0.6);
+    await desenharFundoCanal(ctx, cardX + cardW * 0.82, yPos + jogoHeight * 0.3, cardW * 0.18, jogoHeight * 0.4);
     
     // Canal de transmissão (direita, com logo)
     const canalTexto = jogo.canal || 'ESPN';
@@ -5498,11 +5581,11 @@ async function desenharIconeCanal(ctx, canal, x, y, size) {
 // ===== FUNÇÃO PARA DESENHAR FUNDO PEQUENO ATRÁS DA HORA =====
 async function desenharFundoHora(ctx, x, y, width, height) {
   try {
-    const fundoImg = await carregarImagem('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/473f4622-86ce-4958-8baf-ce18f54a769e-removebg-preview.png');
+    const fundoImg = await carregarImagem('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/pngtree-technology-circuit-line-horizontal-gradient-png-image_6475048-removebg-preview.png');
     
     // Desenhar a imagem pequena atrás da hora
     ctx.save();
-    ctx.globalAlpha = 0.6; // Transparência para não sobrepor muito
+    ctx.globalAlpha = 0.4; // Reduzido de 60% para 40%
     ctx.drawImage(fundoImg, x, y, width, height);
     ctx.restore();
   } catch (e) {
@@ -5513,11 +5596,11 @@ async function desenharFundoHora(ctx, x, y, width, height) {
 // ===== FUNÇÃO PARA DESENHAR FUNDO PEQUENO ATRÁS DO CANAL =====
 async function desenharFundoCanal(ctx, x, y, width, height) {
   try {
-    const fundoImg = await carregarImagem('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/473f4622-86ce-4958-8baf-ce18f54a769e-removebg-preview.png');
+    const fundoImg = await carregarImagem('https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/pngtree-technology-circuit-line-horizontal-gradient-png-image_6475048-removebg-preview.png');
     
     // Desenhar a imagem pequena atrás do canal
     ctx.save();
-    ctx.globalAlpha = 0.6; // Transparência para não sobrepor muito
+    ctx.globalAlpha = 0.4; // Reduzido de 60% para 40%
     ctx.drawImage(fundoImg, x, y, width, height);
     ctx.restore();
   } catch (e) {
