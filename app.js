@@ -146,6 +146,12 @@ const jogadoresFamosos = {
   'Bucaramanga': { nome: 'Emerson Batalla', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Emerson%20Batalla.png' },
   'Bucaramanga FC': { nome: 'Emerson Batalla', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Emerson%20Batalla.png' },
   'Atlético Bucaramanga': { nome: 'Emerson Batalla', url: 'https://raw.githubusercontent.com/dedex1711-eng/jogadores/refs/heads/main/Emerson%20Batalla.png' },
+  'Cerro Porteño': { nome: 'Cecilio Domínguez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Cecilio%20Domínguez.png' },
+  'Club Cerro Porteño': { nome: 'Cecilio Domínguez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Cecilio%20Domínguez.png' },
+  'Cerro Porteño (PAR)': { nome: 'Cecilio Domínguez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Cecilio%20Domínguez.png' },
+  'Cerro Porteno': { nome: 'Cecilio Domínguez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Cecilio%20Domínguez.png' },
+  'Club Cerro Porteno': { nome: 'Cecilio Domínguez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Cecilio%20Domínguez.png' },
+  'Cerro': { nome: 'Cecilio Domínguez', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/Cecilio%20Domínguez.png' },
   
   // Brasileirão
   'Flamengo': { nome: 'Pedro', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/pedro-flamengo2.png' },
