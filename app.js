@@ -22,6 +22,13 @@ let jogadorAutomatico = false; // Flag para indicar se está usando jogador auto
 let bannerGerado  = false;
 let modoAmanha    = false;  // Flag para indicar se está exibindo jogos de amanhã
 
+// ===== BANCO DE DADOS DE VÍDEOS =====
+const bancoVideos = [
+  // Exemplo de como adicionar: { nome: 'Nome do Vídeo', url: 'https://raw.githubusercontent.com/...' }
+  { nome: 'Fundo Abstrato Azul', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/fundo_azul_exemplo.mp4' },
+  { nome: 'Fundo Partículas', url: 'https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/refs/heads/main/fundo_particulas.mp4' }
+];
+
 // ===== BANCO DE DADOS DE JOGADORES FAMOSOS =====
 // Array de imagens disponíveis (fallback aleatório)
 const imagensJogadoresDisponiveis = [
@@ -1090,6 +1097,8 @@ function carregarLogo(event) {
         const preview = document.getElementById('logoPreview');
         preview.src = e.target.result;
         preview.style.display = 'block';
+        const miniPreview = document.getElementById('videoMiniLogoPreview');
+        if (miniPreview) { miniPreview.src = e.target.result; miniPreview.style.display = 'block'; }
         document.getElementById('logoPlaceholder').style.display = 'none';
         document.getElementById('btnRemoveLogo').style.display = 'block';
         showToast('✅ Logo carregada!');
@@ -1109,6 +1118,8 @@ function carregarLogo(event) {
             const preview = document.getElementById('logoPreview');
             preview.src = imagemSemFundo;
             preview.style.display = 'block';
+            const miniPreview = document.getElementById('videoMiniLogoPreview');
+            if (miniPreview) { miniPreview.src = imagemSemFundo; miniPreview.style.display = 'block'; }
             document.getElementById('logoPlaceholder').style.display = 'none';
             document.getElementById('btnRemoveLogo').style.display = 'block';
             showToast('✅ Logo carregada com fundo removido!');
@@ -1130,6 +1141,8 @@ function carregarLogo(event) {
             const preview = document.getElementById('logoPreview');
             preview.src = e.target.result;
             preview.style.display = 'block';
+            const miniPreview = document.getElementById('videoMiniLogoPreview');
+            if (miniPreview) { miniPreview.src = e.target.result; miniPreview.style.display = 'block'; }
             document.getElementById('logoPlaceholder').style.display = 'none';
             document.getElementById('btnRemoveLogo').style.display = 'block';
           } else {
@@ -1138,6 +1151,8 @@ function carregarLogo(event) {
             const preview = document.getElementById('logoPreview');
             preview.src = e.target.result;
             preview.style.display = 'block';
+            const miniPreview = document.getElementById('videoMiniLogoPreview');
+            if (miniPreview) { miniPreview.src = e.target.result; miniPreview.style.display = 'block'; }
             document.getElementById('logoPlaceholder').style.display = 'none';
             document.getElementById('btnRemoveLogo').style.display = 'block';
             showToast('⚠️ Logo carregada (não foi possível remover fundo automaticamente)');
@@ -1213,6 +1228,8 @@ function removerLogo() {
   logoImg = null;
   document.getElementById('logoPreview').style.display = 'none';
   document.getElementById('logoPreview').src = '';
+  const miniPreview = document.getElementById('videoMiniLogoPreview');
+  if (miniPreview) { miniPreview.src = ''; miniPreview.style.display = 'none'; }
   document.getElementById('logoPlaceholder').style.display = 'block';
   document.getElementById('btnRemoveLogo').style.display = 'none';
   document.getElementById('logoInput').value = '';
@@ -2686,6 +2703,7 @@ async function compartilharBanner() {
 let trailerAtual = null;
 let videoAtual = null;
 let videoBlob = null;
+let videoBlobEditado = null; // Armazena o vídeo já processado para prévia
 
 async function abrirCriadorVideo() {
   if (!filmeAtual) {
@@ -2856,6 +2874,24 @@ function irParaEdicao() {
 function voltarParaUpload() {
   document.getElementById('etapaTrailer').style.display = 'block';
   document.getElementById('etapaEdicao').style.display = 'none';
+  document.getElementById('etapaPrevia').style.display = 'none';
+}
+
+function voltarParaEdicao() {
+  document.getElementById('etapaEdicao').style.display = 'block';
+  document.getElementById('etapaPrevia').style.display = 'none';
+  const previaVideo = document.getElementById('videoPreviaFinal');
+  if (previaVideo) previaVideo.pause();
+}
+
+function baixarVideoEditado() {
+  if (!videoBlobEditado) { showToast('❌ Nenhum vídeo processado'); return; }
+  const titulo = (filmeAtual?.title || 'video').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(videoBlobEditado);
+  a.download = `${titulo}_editado.webm`;
+  a.click();
+  showToast('⬇️ Download iniciado!');
 }
 
 function atualizarPreviewVideo() {
@@ -2873,6 +2909,7 @@ async function processarVideo() {
   const btnProcessar = document.getElementById('btnProcessarVideo');
   btnProcessar.disabled = true;
   btnProcessar.textContent = '⏳ Processando...';
+  showToast('⚠️ Mantenha a aba aberta para concluir a geração', 5000);
   
   const progressDiv = document.getElementById('videoProcessando');
   const progressFill = document.getElementById('progressFill');
@@ -2928,8 +2965,8 @@ async function processarVideo() {
     
     const stream = canvas.captureStream(30);
     const mediaRecorder = new MediaRecorder(stream, {
-      mimeType: 'video/webm;codecs=vp9',
-      videoBitsPerSecond: 5000000
+      mimeType: 'video/webm;codecs=vp8',
+      videoBitsPerSecond: 2500000
     });
     
     const chunks = [];
@@ -2937,139 +2974,213 @@ async function processarVideo() {
     
     mediaRecorder.onstop = () => {
       const blob = new Blob(chunks, { type: 'video/webm' });
+      videoBlobEditado = blob;
       const url = URL.createObjectURL(blob);
-      
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${filmeAtual.title.replace(/[^a-z0-9]/gi, '_')}_editado.webm`;
-      a.click();
-      
+
       progressFill.style.width = '100%';
       progressTexto.textContent = 'Concluído! 100%';
-      
+
       setTimeout(() => {
         progressDiv.style.display = 'none';
         btnProcessar.disabled = false;
         btnProcessar.textContent = '🎬 Processar Vídeo';
-        showToast('✅ Vídeo processado e baixado!');
-      }, 2000);
+
+        // Mostra a etapa de prévia
+        document.getElementById('etapaEdicao').style.display = 'none';
+        document.getElementById('etapaPrevia').style.display = 'block';
+
+        // Carrega o vídeo na prévia
+        const previaVideo = document.getElementById('videoPreviaFinal');
+        previaVideo.src = url;
+        previaVideo.load();
+        previaVideo.play().catch(() => {});
+
+        // Preenche os detalhes
+        const formatoSel = document.getElementById('videoFormatoSaida').value;
+        const duracaoSel = document.getElementById('videoDuracaoCorte').value;
+        const formatoLabels = { original: 'Original', stories: 'Stories 9:16', reels: 'Reels 9:16', feed: 'Feed 4:5', paisagem: 'Paisagem 16:9' };
+        const duracaoLabels = { completo: 'Completo', '15': '15 segundos', '30': '30 segundos', '60': '60 segundos' };
+        document.getElementById('previaFormato').textContent = formatoLabels[formatoSel] || formatoSel;
+        document.getElementById('previaDuracao').textContent = duracaoLabels[duracaoSel] || duracaoSel;
+        const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+        document.getElementById('previaTamanho').textContent = `${sizeMB} MB`;
+
+        showToast('✅ Vídeo pronto! Assista antes de baixar.');
+      }, 800);
     };
     
     mediaRecorder.start();
     video.play();
     
-    const maxDuration = duracao === 'completo' ? video.duration : parseInt(duracao);
-    const fps = 30;
-    const frameTime = 1000 / fps;
-    let currentTime = 0;
-    
-    const renderFrame = () => {
-      if (currentTime >= maxDuration || currentTime >= video.duration) {
-        mediaRecorder.stop();
-        video.pause();
-        return;
-      }
-      
-      video.currentTime = currentTime;
-      
-      // Desenha vídeo
-      const scale = Math.max(width / video.videoWidth, height / video.videoHeight);
-      const sw = video.videoWidth * scale;
-      const sh = video.videoHeight * scale;
-      const sx = (width - sw) / 2;
-      const sy = (height - sh) / 2;
-      
-      ctx.drawImage(video, sx, sy, sw, sh);
-      
-      // Overlay
-      if (overlay !== 'none') {
-        const overlayColors = {
-          dark: 'rgba(0,0,0,0.4)',
-          purple: 'rgba(76,29,149,0.5)',
-          blue: 'rgba(30,58,95,0.5)',
-          red: 'rgba(127,29,29,0.5)',
-          green: 'rgba(20,83,45,0.5)',
-          orange: 'rgba(124,45,18,0.5)',
-          pink: 'rgba(131,24,67,0.5)',
-          gray: 'rgba(55,65,81,0.5)'
-        };
-        ctx.fillStyle = overlayColors[overlay];
-        ctx.fillRect(0, 0, width, height);
-      }
-      
-      // Logo
-      if (mostrarLogo && logoImg) {
-        const logoSize = width * 0.15;
-        const logoScale = Math.min(logoSize / logoImg.width, logoSize / logoImg.height);
-        const lw = logoImg.width * logoScale;
-        const lh = logoImg.height * logoScale;
-        const pad = width * 0.05;
-        
-        let lx, ly;
-        if (logoPos === 'top-left') {
-          lx = pad;
-          ly = pad;
-        } else if (logoPos === 'top-right') {
-          lx = width - lw - pad;
-          ly = pad;
-        } else if (logoPos === 'bottom-left') {
-          lx = pad;
-          ly = height - lh - pad;
-        } else {
-          lx = width - lw - pad;
-          ly = height - lh - pad;
-        }
-        
-        ctx.drawImage(logoImg, lx, ly, lw, lh);
-      }
-      
-      // Título
-      if (mostrarTitulo) {
-        const titleSize = width * 0.05;
-        ctx.font = `900 ${titleSize}px Inter, sans-serif`;
-        ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = 'rgba(0,0,0,0.8)';
-        ctx.shadowBlur = 20;
-        ctx.textAlign = 'center';
-        ctx.fillText(filmeAtual.title.toUpperCase(), width / 2, height * 0.15);
-        ctx.shadowBlur = 0;
-      }
-      
-      // Contatos
-      if (mostrarContatos) {
-        const whatsapp = document.getElementById('inputWhatsapp').value.trim();
-        const instagram = document.getElementById('inputInstagram').value.trim();
-        
-        const contactSize = width * 0.035;
-        ctx.font = `700 ${contactSize}px Inter, sans-serif`;
-        ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = 'rgba(0,0,0,0.9)';
-        ctx.shadowBlur = 15;
-        ctx.textAlign = 'center';
-        
-        let contactY = height - width * 0.08;
-        
-        if (instagram) {
-          ctx.fillText(`📸 ${instagram}`, width / 2, contactY);
-          contactY -= contactSize * 1.5;
-        }
-        
-        if (whatsapp) {
-          ctx.fillText(`📱 ${whatsapp}`, width / 2, contactY);
-        }
-        
-        ctx.shadowBlur = 0;
-      }
-      
-      currentTime += frameTime / 1000;
-      const progress = Math.min((currentTime / maxDuration) * 50 + 50, 100);
-      progressFill.style.width = progress + '%';
-      progressTexto.textContent = `Renderizando... ${Math.round(progress)}%`;
-      
-      setTimeout(renderFrame, frameTime);
+    const maxDuration = duracao === 'completo'
+  ? video.duration
+  : parseInt(duracao);
+
+const startTime = performance.now();
+
+function renderFrame() {
+  const elapsed = (performance.now() - startTime) / 1000;
+
+  if (elapsed >= maxDuration || video.ended) {
+    mediaRecorder.stop();
+    video.pause();
+    return;
+  }
+
+  // Limpa canvas
+  ctx.clearRect(0, 0, width, height);
+
+  // Escala vídeo
+  const scale = Math.max(
+    width / video.videoWidth,
+    height / video.videoHeight
+  );
+
+  const sw = video.videoWidth * scale;
+  const sh = video.videoHeight * scale;
+
+  const sx = (width - sw) / 2;
+  const sy = (height - sh) / 2;
+
+  // Desenha vídeo
+  ctx.drawImage(video, sx, sy, sw, sh);
+
+  // Overlay
+  if (overlay !== 'none') {
+    const overlayColors = {
+      dark: 'rgba(0,0,0,0.4)',
+      purple: 'rgba(76,29,149,0.5)',
+      blue: 'rgba(30,58,95,0.5)',
+      red: 'rgba(127,29,29,0.5)',
+      green: 'rgba(20,83,45,0.5)',
+      orange: 'rgba(124,45,18,0.5)',
+      pink: 'rgba(131,24,67,0.5)',
+      gray: 'rgba(55,65,81,0.5)'
     };
-    
-    video.onseeked = renderFrame;
+
+    ctx.fillStyle = overlayColors[overlay];
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  // Logo
+  if (mostrarLogo && logoImg) {
+    const logoSize = width * 0.15;
+
+    const logoScale = Math.min(
+      logoSize / logoImg.width,
+      logoSize / logoImg.height
+    );
+
+    const lw = logoImg.width * logoScale;
+    const lh = logoImg.height * logoScale;
+
+    const pad = width * 0.05;
+
+    let lx, ly;
+
+    if (logoPos === 'top-left') {
+      lx = pad;
+      ly = pad;
+    } else if (logoPos === 'top-right') {
+      lx = width - lw - pad;
+      ly = pad;
+    } else if (logoPos === 'bottom-left') {
+      lx = pad;
+      ly = height - lh - pad;
+    } else {
+      lx = width - lw - pad;
+      ly = height - lh - pad;
+    }
+
+    ctx.drawImage(logoImg, lx, ly, lw, lh);
+  }
+
+  // Título
+  if (mostrarTitulo) {
+    const titleSize = width * 0.05;
+
+    ctx.font = `900 ${titleSize}px Inter`;
+
+    ctx.fillStyle = '#fff';
+
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 20;
+
+    ctx.textAlign = 'center';
+
+    ctx.fillText(
+      filmeAtual.title.toUpperCase(),
+      width / 2,
+      height * 0.15
+    );
+
+    ctx.shadowBlur = 0;
+  }
+
+  // Contatos
+  if (mostrarContatos) {
+    const whatsapp = document
+      .getElementById('inputWhatsapp')
+      .value.trim();
+
+    const instagram = document
+      .getElementById('inputInstagram')
+      .value.trim();
+
+    const contactSize = width * 0.035;
+
+    ctx.font = `700 ${contactSize}px Inter`;
+
+    ctx.fillStyle = '#fff';
+
+    ctx.shadowColor = 'rgba(0,0,0,0.9)';
+    ctx.shadowBlur = 15;
+
+    ctx.textAlign = 'center';
+
+    let contactY = height - width * 0.08;
+
+    if (instagram) {
+      ctx.fillText(
+        `📸 ${instagram}`,
+        width / 2,
+        contactY
+      );
+
+      contactY -= contactSize * 1.5;
+    }
+
+    if (whatsapp) {
+      ctx.fillText(
+        `📱 ${whatsapp}`,
+        width / 2,
+        contactY
+      );
+    }
+
+    ctx.shadowBlur = 0;
+  }
+
+  // Atualiza progresso
+  const progress = Math.min(
+    (elapsed / maxDuration) * 100,
+    100
+  );
+
+  progressFill.style.width = progress + '%';
+
+  progressTexto.textContent =
+    `Renderizando... ${Math.round(progress)}%`;
+
+  requestAnimationFrame(renderFrame);
+}
+
+// Inicia vídeo
+video.currentTime = 0;
+
+await video.play();
+
+renderFrame();
     
   } catch (err) {
     showToast('❌ Erro ao processar vídeo: ' + err.message);
@@ -3164,6 +3275,19 @@ function selecionarTipo(tipo) {
   // Mostrar/esconder painéis
   document.getElementById('painelFilmes').style.display = tipo === 'filme' ? 'block' : 'none';
   document.getElementById('painelFutebol').style.display = tipo === 'futebol' ? 'block' : 'none';
+  document.getElementById('painelVideo').style.display = tipo === 'video' ? 'block' : 'none';
+  
+  // Esconder controles de banner quando for vídeo
+  const controlesBanner = document.getElementById('painelControlesBannerCompartilhado');
+  if (controlesBanner) {
+    controlesBanner.style.display = tipo === 'video' ? 'none' : 'block';
+  }
+  
+  // Se for vídeo, esconder o painel de preview de banner e mostrar preview de vídeo
+  const painelPreview = document.querySelector('.painel-preview');
+  if (painelPreview) {
+    painelPreview.style.display = tipo === 'video' ? 'none' : 'block';
+  }
   
   // Carregar TODAS as preferências para o tipo selecionado
   setTimeout(() => {
@@ -3174,6 +3298,8 @@ function selecionarTipo(tipo) {
   const placeholder = document.getElementById('canvasPlaceholder');
   if (tipo === 'futebol') {
     placeholder.innerHTML = '<span>⚽</span><p>Selecione jogos para começar</p>';
+  } else if (tipo === 'video') {
+    placeholder.innerHTML = '<span>🎥</span><p>Faça upload de um vídeo para começar</p>';
   } else {
     placeholder.innerHTML = '<span>🎬</span><p>Busque um filme para começar</p>';
   }
@@ -3222,6 +3348,9 @@ function selecionarTipo(tipo) {
   // Se for futebol, buscar jogos automaticamente
   if (tipo === 'futebol') {
     buscarJogosFutebol();
+  } else if (tipo === 'video') {
+    // Inicializar painel de vídeo
+    inicializarPainelVideo();
   } else {
     // Ao voltar para filmes, recarregar logoImg sem crossOrigin para evitar problema de CORS no canvas
     const logoPreview = document.getElementById('logoPreview');
@@ -5847,3 +5976,908 @@ function desenharPadraoFutebol(ctx, w, h) {
   ctx.fillRect(0, 0, w, h);
 }
 ''
+
+
+// ===== FUNÇÕES DO PAINEL DE VÍDEO =====
+
+// Inicializar painel de vídeo
+function inicializarPainelVideo() {
+  // Resetar todos os steps
+  document.getElementById('videoInfoStep').style.display = 'none';
+  document.getElementById('videoLogoStep').style.display = 'none';
+  document.getElementById('videoContatoStep').style.display = 'none';
+  document.getElementById('videoFormatoStep').style.display = 'none';
+  document.getElementById('videoOverlayStep').style.display = 'none';
+  document.getElementById('videoProcessarStep').style.display = 'none';
+  
+  // Limpar vídeo se existir
+  const videoPreview = document.getElementById('videoPreviewMain');
+  if (videoPreview) {
+    videoPreview.src = '';
+    videoPreview.style.display = 'none';
+  }
+  
+  document.getElementById('videoUploadPlaceholder').style.display = 'block';
+  document.getElementById('btnRemoverVideoUpload').style.display = 'none';
+  
+  videoAtual = null;
+}
+
+// Carregar vídeo do upload
+function carregarVideoUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  // Verificar tamanho (máx 500MB)
+  const maxSize = 500 * 1024 * 1024; // 500MB em bytes
+  if (file.size > maxSize) {
+    showToast('❌ Vídeo muito grande! Máximo 500MB', 4000);
+    return;
+  }
+  
+  // Verificar se é vídeo
+  if (!file.type.startsWith('video/')) {
+    showToast('❌ Por favor, selecione um arquivo de vídeo', 3000);
+    return;
+  }
+  
+  // Usar createObjectURL — muito mais eficiente que readAsDataURL para vídeos grandes
+  const objectUrl = URL.createObjectURL(file);
+
+  const videoPreview = document.getElementById('videoPreviewMain');
+  videoPreview.src = objectUrl;
+  videoPreview.style.display = 'block';
+  document.getElementById('videoUploadPlaceholder').style.display = 'none';
+  document.getElementById('btnRemoverVideoUpload').style.display = 'block';
+
+  // Liberar URL anterior se existir
+  if (videoAtual && videoAtual.objectUrl) {
+    URL.revokeObjectURL(videoAtual.objectUrl);
+  }
+
+  // Armazenar vídeo
+  videoAtual = {
+    file: file,
+    url: objectUrl,
+    objectUrl: objectUrl
+  };
+
+  // Mostrar próximos steps
+  document.getElementById('videoInfoStep').style.display = 'block';
+  document.getElementById('videoLogoStep').style.display = 'block';
+  document.getElementById('videoContatoStep').style.display = 'block';
+  document.getElementById('videoFormatoStep').style.display = 'block';
+  document.getElementById('videoOverlayStep').style.display = 'block';
+  document.getElementById('videoProcessarStep').style.display = 'block';
+
+  showToast('✅ Vídeo carregado com sucesso!', 2000);
+
+  // Carregar contatos salvos no localStorage (prioridade), depois perfil principal
+  const saved = JSON.parse(localStorage.getItem('bannerflix_video_contatos') || '{}');
+  const wpp   = saved.whatsapp  || document.getElementById('perfilWhatsapp')?.value?.trim()  || '';
+  const insta = saved.instagram || document.getElementById('perfilInstagram')?.value?.trim() || '';
+  const sit   = saved.site      || document.getElementById('perfilSite')?.value?.trim()      || '';
+
+  const elWpp   = document.getElementById('videoWhatsapp');
+  const elInsta = document.getElementById('videoInstagram');
+  const elSite  = document.getElementById('videoSite');
+
+  if (elWpp)   elWpp.value   = wpp;
+  if (elInsta) elInsta.value = insta;
+  if (elSite)  elSite.value  = sit;
+
+  // Salvar automaticamente ao digitar
+  function salvarContatosVideo() {
+    localStorage.setItem('bannerflix_video_contatos', JSON.stringify({
+      whatsapp:  document.getElementById('videoWhatsapp')?.value?.trim()  || '',
+      instagram: document.getElementById('videoInstagram')?.value?.trim() || '',
+      site:      document.getElementById('videoSite')?.value?.trim()      || ''
+    }));
+  }
+  elWpp?.addEventListener('input', salvarContatosVideo);
+  elInsta?.addEventListener('input', salvarContatosVideo);
+  elSite?.addEventListener('input', salvarContatosVideo);
+}
+
+function carregarVideoDoBanco() {
+  const select = document.getElementById('selectBancoVideos');
+  let url = '';
+  
+  if (select && select.value) {
+    url = select.value;
+  } else {
+    const inputLink = document.getElementById('inputLinkVideo');
+    if (inputLink && inputLink.value.trim()) {
+      url = inputLink.value.trim();
+    }
+  }
+
+  if (!url) {
+    showToast('❌ Por favor, selecione um vídeo ou cole um link válido', 3000);
+    return;
+  }
+  
+  // ── Interceptador de Link do YouTube ──
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    showToast('⚠️ Links do YouTube precisam ser baixados! Use a ferramenta de "Buscar Trailer" acima para baixar.', 6000);
+    return;
+  }
+  
+  const videoPreview = document.getElementById('videoPreviewMain');
+  videoPreview.crossOrigin = 'anonymous'; // Essencial para edição no Canvas
+  
+  // Tratamento de erro caso o link direto bloqueie o CORS ou seja inválido
+  videoPreview.onerror = function() {
+    showToast('❌ Erro de segurança (CORS) ou link inválido. Baixe o vídeo para o PC e faça upload!', 6000);
+    videoPreview.style.display = 'none';
+    document.getElementById('videoUploadPlaceholder').style.display = 'block';
+    document.getElementById('btnRemoverVideoUpload').style.display = 'none';
+  };
+
+  videoPreview.src = url;
+  videoPreview.style.display = 'block';
+  document.getElementById('videoUploadPlaceholder').style.display = 'none';
+  document.getElementById('btnRemoverVideoUpload').style.display = 'block';
+
+  // Liberar URL anterior se existir (apenas se for blob)
+  if (videoAtual && videoAtual.objectUrl && videoAtual.objectUrl.startsWith('blob:')) {
+    URL.revokeObjectURL(videoAtual.objectUrl);
+  }
+
+  // Armazenar vídeo
+  videoAtual = {
+    file: null, 
+    url: url,
+    objectUrl: null 
+  };
+
+  // Mostrar próximos steps
+  document.getElementById('videoInfoStep').style.display = 'block';
+  document.getElementById('videoLogoStep').style.display = 'block';
+  document.getElementById('videoContatoStep').style.display = 'block';
+  document.getElementById('videoFormatoStep').style.display = 'block';
+  document.getElementById('videoOverlayStep').style.display = 'block';
+  document.getElementById('videoProcessarStep').style.display = 'block';
+
+  showToast('✅ Vídeo carregado!', 2000);
+
+
+  // Carregar contatos salvos no localStorage (prioridade), depois perfil principal
+  const saved = JSON.parse(localStorage.getItem('bannerflix_video_contatos') || '{}');
+  const wpp   = saved.whatsapp  || document.getElementById('perfilWhatsapp')?.value?.trim()  || '';
+  const insta = saved.instagram || document.getElementById('perfilInstagram')?.value?.trim() || '';
+  const sit   = saved.site      || document.getElementById('perfilSite')?.value?.trim()      || '';
+
+  const elWpp   = document.getElementById('videoWhatsapp');
+  const elInsta = document.getElementById('videoInstagram');
+  const elSite  = document.getElementById('videoSite');
+
+  if (elWpp)   elWpp.value   = wpp;
+  if (elInsta) elInsta.value = insta;
+  if (elSite)  elSite.value  = sit;
+}
+
+
+// Remover vídeo
+function removerVideoUpload() {
+  const videoPreview = document.getElementById('videoPreviewMain');
+  videoPreview.src = '';
+  videoPreview.style.display = 'none';
+  document.getElementById('videoUploadPlaceholder').style.display = 'block';
+  document.getElementById('btnRemoverVideoUpload').style.display = 'none';
+  document.getElementById('videoUploadInput').value = '';
+  
+  // Esconder steps
+  document.getElementById('videoInfoStep').style.display = 'none';
+  document.getElementById('videoLogoStep').style.display = 'none';
+  document.getElementById('videoContatoStep').style.display = 'none';
+  document.getElementById('videoFormatoStep').style.display = 'none';
+  document.getElementById('videoOverlayStep').style.display = 'none';
+  document.getElementById('videoProcessarStep').style.display = 'none';
+  
+  // Liberar memória do object URL
+  if (videoAtual && videoAtual.objectUrl) {
+    URL.revokeObjectURL(videoAtual.objectUrl);
+  }
+  videoAtual = null;
+  showToast('Vídeo removido');
+}
+
+// Processar vídeo completo — renderização real via Canvas + MediaRecorder (100% no browser)
+async function processarVideoCompleto() {
+  if (!videoAtual) {
+    showToast('❌ Nenhum vídeo carregado', 3000);
+    return;
+  }
+
+  // Coletar configurações (agora lendo do painel-video para evitar conflito de IDs)
+  const mostrarLogo    = document.getElementById('painelVideoMostrarLogo').checked;
+  const posicaoLogo    = document.getElementById('videoPosicaoLogo').value;
+  const tamanhoLogoPct = parseInt(document.getElementById('videoTamanhoLogo').value) / 100;
+  const mostrarWpp     = document.getElementById('videoMostrarWhatsApp').checked;
+  const mostrarInsta   = document.getElementById('videoMostrarInstagram').checked;
+  const mostrarSite    = document.getElementById('videoMostrarSite').checked;
+  const posicaoInfo    = document.getElementById('videoPosicaoInfo').value;
+  const titulo         = document.getElementById('videoTitulo').value.trim();
+  const descricao      = document.getElementById('videoDescricao').value.trim();
+  const formato        = document.getElementById('painelVideoFormatoSaida').value;
+  const duracaoOpt     = document.getElementById('painelVideoDuracaoCorte').value;
+  const overlayTipo    = document.querySelector('input[name="videoOverlay"]:checked').value;
+  const overlayInt     = parseInt(document.getElementById('videoIntensidadeOverlay').value) / 100;
+
+  // Dados de contato — lê dos campos da aba de vídeo (com fallback para o perfil principal)
+  const whatsapp  = (document.getElementById('videoWhatsapp')?.value?.trim()  || document.getElementById('perfilWhatsapp')?.value?.trim()  || '');
+  const instagram = (document.getElementById('videoInstagram')?.value?.trim() || document.getElementById('perfilInstagram')?.value?.trim() || '');
+  const site      = (document.getElementById('videoSite')?.value?.trim()      || document.getElementById('perfilSite')?.value?.trim()      || '');
+
+  // Verificar logo se necessário
+  const perfilLogoEl = document.getElementById('perfilLogoPreview');
+  let logoImgEl = null;
+  if (mostrarLogo && perfilLogoEl && perfilLogoEl.src && perfilLogoEl.style.display !== 'none') {
+    logoImgEl = perfilLogoEl;
+  } else if (mostrarLogo && logoImg) {
+    logoImgEl = logoImg;
+  }
+
+  // Mostrar status
+  const statusDiv    = document.getElementById('videoProcessandoStatus');
+  const progressFill = document.getElementById('videoProgressFill');
+  const progressTxt  = document.getElementById('videoProgressTexto');
+  const btnProcessar = document.querySelector('#videoProcessarStep .btn-gerar');
+
+  statusDiv.style.display = 'block';
+  progressFill.style.width = '0%';
+  progressTxt.textContent = 'Carregando vídeo... 0%';
+  if (btnProcessar) { 
+    btnProcessar.disabled = true; 
+    btnProcessar.textContent = '⏳ Processando...'; 
+    showToast('⚠️ Mantenha a aba aberta para concluir a geração', 5000);
+  }
+
+  // Elementos temporários no DOM (necessário para decodificação correta)
+  let videoEl = null;
+  let canvasEl = null;
+
+  try {
+    // ── 1. Vídeo no DOM (fora da tela) para garantir decodificação ──
+    videoEl = document.createElement('video');
+    videoEl.src = videoAtual.url;
+    videoEl.muted = false;       // NÃO mutar — Web Audio API não captura áudio de elemento mudo
+    videoEl.playsInline = true;
+    videoEl.crossOrigin = 'anonymous';
+    // Tamanho real para o drawImage funcionar corretamente (width:1px distorce)
+    videoEl.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1920px;height:1080px;visibility:hidden;pointer-events:none;';
+    document.body.appendChild(videoEl);
+    const video = videoEl;
+
+    await new Promise((resolve, reject) => {
+      video.onloadedmetadata = resolve;
+      video.onerror = () => reject(new Error('Erro ao carregar vídeo'));
+      video.load();
+    });
+
+    progressFill.style.width = '10%';
+    progressTxt.textContent = 'Configurando canvas... 10%';
+
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+
+    // ── 2. Dimensões de saída ──
+    let outW, outH;
+    if (formato === 'original')                            { outW = vw;   outH = vh;   }
+    else if (formato === 'stories' || formato === 'reels') { outW = 1080; outH = 1920; }
+    else if (formato === 'feed')                           { outW = 1080; outH = 1350; }
+    else if (formato === 'paisagem')                       { outW = 1920; outH = 1080; }
+    else if (formato === 'quadrado')                       { outW = 1080; outH = 1080; }
+    else                                                   { outW = vw || 1080; outH = vh || 1920; }
+
+    const maxDuracao = duracaoOpt === 'completo'
+      ? video.duration
+      : Math.min(parseInt(duracaoOpt), video.duration);
+
+    // ── 3. Canvas no DOM (necessário para captureStream funcionar) ──
+    canvasEl = document.createElement('canvas');
+    canvasEl.width  = outW;
+    canvasEl.height = outH;
+    canvasEl.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;';
+    document.body.appendChild(canvasEl);
+    const canvas = canvasEl;
+    const ctx = canvas.getContext('2d');
+
+    // Pré-calcular escala para "Encaixar" (Contain) em vez de "Preencher" (Cover)
+    // Isso evita que o vídeo seja cortado nas laterais em formatos como Stories/Reels
+    const videoScale = Math.min(outW / vw, outH / vh);
+    const renderW = vw * videoScale;
+    const renderH = vh * videoScale;
+    const renderX = (outW - renderW) / 2;
+    const renderY = (outH - renderH) / 2;
+
+    // ── 4. Pré-calcular posições de texto ──
+    const tituloFS  = Math.round(outW * 0.045);
+    const tituloY   = outH * 0.1;
+    const descFS    = Math.round(outW * 0.028);
+    const descBaseY = tituloY + tituloFS * 1.6;
+
+    // Quebrar descrição em linhas (fora do loop de frames)
+    let descLinhas = [];
+    if (descricao) {
+      ctx.font = `400 ${descFS}px Inter, Arial, sans-serif`;
+      const maxW = outW * 0.80;
+      let cur = '';
+      for (const w of descricao.split(' ')) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width > maxW && cur) { descLinhas.push(cur); cur = w; }
+        else cur = test;
+      }
+      if (cur) descLinhas.push(cur);
+      descLinhas = descLinhas.slice(0, 3);
+      if (descLinhas.length === 3 && descricao.split(' ').length > descLinhas.join(' ').split(' ').length) {
+        descLinhas[2] = descLinhas[2].replace(/\s\S+$/, '…');
+      }
+    }
+
+    // Pré-calcular contatos
+    const contatoFS    = Math.round(outW * 0.032);
+    const contatoLineH = contatoFS * 1.6;
+    const linhasContato = [];
+    if (mostrarWpp   && whatsapp)  linhasContato.push(`📱 ${whatsapp}`);
+    if (mostrarInsta && instagram) linhasContato.push(`📸 ${instagram}`);
+    if (mostrarSite  && site)      linhasContato.push(`🌐 ${site}`);
+
+    let contatoBaseY = 0;
+    if (linhasContato.length > 0) {
+      if (posicaoInfo.startsWith('top')) {
+        contatoBaseY = outH * 0.12;
+      } else if (posicaoInfo === 'middle') {
+        contatoBaseY = (outH - linhasContato.length * contatoLineH) / 2 + contatoFS;
+      } else {
+        // bottom-* — garantir que fica dentro do canvas com margem
+        contatoBaseY = outH - linhasContato.length * contatoLineH - outH * 0.05;
+      }
+    }
+
+    // Cores do overlay
+    const overlayMap = {
+      dark: [0,0,0], purple: [76,29,149], blue: [30,58,95],
+      red: [127,29,29], green: [20,83,45], orange: [124,45,18],
+      pink: [131,24,67], gray: [55,65,81]
+    };
+    const overlayRGB = overlayMap[overlayTipo] || null;
+
+    // ── 5. Função de desenho ──
+    function desenharFrame() {
+      // Fundo preto sólido (sem transparência)
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, outW, outH);
+
+      // Vídeo no modo "Contain" (encaixado)
+      ctx.drawImage(video, renderX, renderY, renderW, renderH);
+
+      // Overlay
+      if (overlayRGB && overlayInt > 0) {
+        ctx.fillStyle = `rgba(${overlayRGB[0]},${overlayRGB[1]},${overlayRGB[2]},${overlayInt})`;
+        ctx.fillRect(0, 0, outW, outH);
+      }
+
+      // Logo (posição escolhida)
+      if (logoImgEl && logoImgEl.naturalWidth > 0) {
+        const logoSize = outW * tamanhoLogoPct;
+        const s2 = Math.min(logoSize / logoImgEl.naturalWidth, logoSize / logoImgEl.naturalHeight);
+        const lw = logoImgEl.naturalWidth * s2;
+        const lh = logoImgEl.naturalHeight * s2;
+        const pad = outW * 0.04;
+        let lx, ly;
+        if      (posicaoLogo === 'top-left')     { lx = pad;             ly = pad; }
+        else if (posicaoLogo === 'top-right')    { lx = outW - lw - pad; ly = pad; }
+        else if (posicaoLogo === 'bottom-left')  { lx = pad;             ly = outH - lh - pad; }
+        else if (posicaoLogo === 'bottom-right') { lx = outW - lw - pad; ly = outH - lh - pad; }
+        else                                     { lx = (outW - lw) / 2; ly = (outH - lh) / 2; }
+        ctx.drawImage(logoImgEl, lx, ly, lw, lh);
+      }
+
+      // Marca d'água: logo no centro com opacidade reduzida
+      if (logoImgEl && logoImgEl.naturalWidth > 0) {
+        const wmSize = outW * 0.25;
+        const s = Math.min(wmSize / logoImgEl.naturalWidth, wmSize / logoImgEl.naturalHeight);
+        const ww = logoImgEl.naturalWidth * s;
+        const wh = logoImgEl.naturalHeight * s;
+        const wx = (outW - ww) / 2;
+        const wy = (outH - wh) / 2;
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        ctx.drawImage(logoImgEl, wx, wy, ww, wh);
+        ctx.restore();
+      }
+
+      // Título
+      if (titulo) {
+        ctx.font = `900 ${tituloFS}px Inter, Arial, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 20;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(titulo, outW / 2, tituloY);
+        ctx.shadowBlur = 0;
+      }
+
+      // Descrição
+      if (descLinhas.length > 0) {
+        ctx.font = `400 ${descFS}px Inter, Arial, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = 'rgba(255,255,255,0.88)';
+        descLinhas.forEach((l, i) => ctx.fillText(l, outW / 2, descBaseY + i * descFS * 1.5));
+        ctx.shadowBlur = 0;
+      }
+
+      // Contatos
+      if (linhasContato.length > 0) {
+        ctx.font = `700 ${contatoFS}px Inter, Arial, sans-serif`;
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 16;
+        ctx.fillStyle = '#ffffff';
+        linhasContato.forEach((linha, i) => {
+          const y = contatoBaseY + i * contatoLineH;
+          if (posicaoInfo.includes('left'))       { ctx.textAlign = 'left';   ctx.fillText(linha, outW * 0.05, y); }
+          else if (posicaoInfo.includes('right')) { ctx.textAlign = 'right';  ctx.fillText(linha, outW * 0.95, y); }
+          else                                    { ctx.textAlign = 'center'; ctx.fillText(linha, outW / 2, y); }
+        });
+        ctx.shadowBlur = 0;
+        ctx.textAlign = 'center';
+      }
+    }
+
+    // ── 6. Áudio via Web Audio API ──
+    const mimeTypes = [
+      'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus',
+      'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'
+    ];
+    const mimeType = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || 'video/webm';
+
+    const canvasStream = canvas.captureStream(30);
+    let audioStream = null;
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const src  = audioCtx.createMediaElementSource(video);
+      const dest = audioCtx.createMediaStreamDestination();
+      // Grava no vídeo final
+      src.connect(dest);
+      // Toca nos alto-falantes durante a renderização
+      src.connect(audioCtx.destination);
+      audioStream = dest.stream;
+    } catch (e) { console.warn('Sem áudio:', e); }
+
+    const combinedStream = new MediaStream([
+      ...canvasStream.getVideoTracks(),
+      ...(audioStream ? audioStream.getAudioTracks() : [])
+    ]);
+
+    const recorder = new MediaRecorder(combinedStream, {
+      mimeType,
+      videoBitsPerSecond: 5_000_000
+    });
+    const chunks = [];
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+    progressFill.style.width = '20%';
+    progressTxt.textContent = 'Iniciando renderização... 20%';
+
+    // ── 7. Loop sincronizado com frames reais do vídeo ──
+    function limparDOM() {
+      try { if (videoEl && videoEl.parentNode) document.body.removeChild(videoEl); } catch(e) {}
+      try { if (canvasEl && canvasEl.parentNode) document.body.removeChild(canvasEl); } catch(e) {}
+    }
+
+    await new Promise((resolve, reject) => {
+      recorder.onstop = resolve;
+      recorder.onerror = reject;
+
+      let gravando  = false;
+      let rafId     = null;
+
+      function handleVisibilityChange() {
+        if (document.hidden) {
+          if (gravando && !video.paused) {
+            video.pause();
+            if (recorder.state === 'recording') recorder.pause();
+          }
+        } else {
+          if (gravando && video.paused) {
+            video.play().catch(e => console.warn('Erro ao retomar vídeo:', e));
+            if (recorder.state === 'paused') recorder.resume();
+          }
+        }
+      }
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      function pararGravacao() {
+        if (!gravando) return;
+        gravando = false;
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if (rafId !== null) {
+          // cancelar requestVideoFrameCallback ou rAF
+          if (video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(rafId);
+          else cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+        video.pause();
+        if (recorder.state !== 'inactive') recorder.stop();
+      }
+
+      function atualizarProgresso() {
+        const pct = Math.min(20 + (video.currentTime / maxDuracao) * 75, 95);
+        progressFill.style.width = pct + '%';
+        progressTxt.textContent = `Processando... ${Math.round(pct)}% — ${Math.round(video.currentTime)}s / ${Math.round(maxDuracao)}s`;
+      }
+
+      // requestVideoFrameCallback: dispara exatamente quando um novo frame do vídeo está pronto
+      // Isso elimina frames duplicados/congelados que o setInterval causava
+      function tickVFC(now, meta) {
+        if (!gravando) return;
+        if (video.ended || video.currentTime >= maxDuracao) {
+          pararGravacao();
+          return;
+        }
+        desenharFrame();
+        atualizarProgresso();
+        rafId = video.requestVideoFrameCallback(tickVFC);
+      }
+
+      // Fallback com rAF para browsers sem requestVideoFrameCallback (Firefox < 132)
+      let ultimoTempoVideo = -1;
+      function tickRAF() {
+        if (!gravando) return;
+        if (video.ended || video.currentTime >= maxDuracao) {
+          pararGravacao();
+          return;
+        }
+        // Só desenha se o vídeo avançou (evita frames duplicados congelados)
+        if (Math.abs(video.currentTime - ultimoTempoVideo) > 0.001) {
+          ultimoTempoVideo = video.currentTime;
+          desenharFrame();
+          atualizarProgresso();
+        }
+        rafId = requestAnimationFrame(tickRAF);
+      }
+
+      video.onended = pararGravacao;
+      video.onerror = () => { pararGravacao(); reject(new Error('Erro no vídeo durante gravação')); };
+
+      video.currentTime = 0;
+      video.onseeked = () => {
+        video.onseeked = null;
+        recorder.start(250); // chunks menores = menos risco de perda
+        gravando = true;
+        video.play().then(() => {
+          if (video.requestVideoFrameCallback) {
+            // Caminho ideal: sincronizado frame-a-frame com o decodificador
+            rafId = video.requestVideoFrameCallback(tickVFC);
+          } else {
+            // Fallback: rAF com detecção de frame novo
+            rafId = requestAnimationFrame(tickRAF);
+          }
+        }).catch(reject);
+      };
+    });
+
+    limparDOM();
+
+    progressFill.style.width = '98%';
+    progressTxt.textContent = 'Finalizando arquivo... 98%';
+
+    // ── 8. Converter webm → mp4 via ffmpeg.wasm (se disponível) ──
+    const webmBlob = new Blob(chunks, { type: mimeType });
+
+    let mp4Blob = null;
+    if (typeof FFmpeg !== 'undefined' && typeof FFmpeg.FFmpeg === 'function') {
+      try {
+        progressTxt.textContent = 'Convertendo para MP4... (pode levar alguns segundos)';
+
+        const { FFmpeg: FFmpegClass } = FFmpeg;
+        const { fetchFile, toBlobURL } = FFmpeg;
+
+        const ffmpeg = new FFmpegClass();
+
+        // Carregar o core (single-thread, sem SharedArrayBuffer)
+        const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
+        await ffmpeg.load({
+          coreURL:   await toBlobURL(`${baseURL}/ffmpeg-core.js`,   'text/javascript'),
+          wasmURL:   await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+        });
+
+        progressFill.style.width = '99%';
+        progressTxt.textContent = 'Convertendo para MP4...';
+
+        // Escrever o webm no sistema de arquivos virtual do ffmpeg
+        await ffmpeg.writeFile('input.webm', await fetchFile(webmBlob));
+
+        // Converter: copia streams sem re-encode quando possível (rápido)
+        await ffmpeg.exec([
+          '-i', 'input.webm',
+          '-c:v', 'copy',
+          '-c:a', 'aac',
+          '-movflags', '+faststart',
+          'output.mp4'
+        ]);
+
+        const data = await ffmpeg.readFile('output.mp4');
+        mp4Blob = new Blob([data.buffer], { type: 'video/mp4' });
+
+        // Limpar arquivos virtuais
+        await ffmpeg.deleteFile('input.webm');
+        await ffmpeg.deleteFile('output.mp4');
+
+      } catch (ffmpegErr) {
+        console.warn('ffmpeg.wasm falhou, baixando como webm:', ffmpegErr);
+        mp4Blob = null;
+      }
+    }
+
+    // ── 9. Mostrar prévia em vez de baixar direto ──
+    const finalBlob = mp4Blob || webmBlob;
+    const finalExt  = mp4Blob ? 'mp4' : 'webm';
+    const dlUrl = URL.createObjectURL(finalBlob);
+
+    // Guarda para o botão de download
+    window._videoFinalBlob = finalBlob;
+    window._videoFinalExt  = finalExt;
+    window._videoFinalUrl  = dlUrl;
+
+    progressFill.style.width = '100%';
+    progressTxt.textContent = `Concluído! ✅ 100%`;
+
+    setTimeout(() => {
+      statusDiv.style.display = 'none';
+      progressFill.style.width = '0%';
+      if (btnProcessar) { btnProcessar.disabled = false; btnProcessar.textContent = '🎬 Processar Vídeo'; }
+
+      // Mostra a prévia no painel direito
+      const previaSection = document.getElementById('videoPreviaSection');
+      const painelPreview = document.querySelector('.painel-preview');
+      if (previaSection && painelPreview) {
+        // Ocultar elementos de banner no painel
+        const bannerEls = painelPreview.querySelectorAll('h3, #canvasWrapper, #previewActions, #filmeSelecionado, #resumoCard');
+        bannerEls.forEach(el => el.style.display = 'none');
+        // Exibir o painel e a seção de prévia
+        painelPreview.style.display = 'block';
+        previaSection.style.display = 'block';
+        const prevVid = document.getElementById('videoPreviaPlayer');
+        if (prevVid) {
+          prevVid.src = dlUrl;
+          prevVid.load();
+          prevVid.play().catch(() => {});
+        }
+        // Info do arquivo
+        const sizeMB = (finalBlob.size / (1024 * 1024)).toFixed(1);
+        const el = document.getElementById('videoPreviaExt');
+        if (el) el.textContent = `${finalExt.toUpperCase()} • ${sizeMB} MB`;
+        // Rola até a prévia
+        previaSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      showToast('✅ Vídeo pronto! Assista antes de baixar.', 3000);
+    }, 800);
+
+  } catch (error) {
+    console.error('Erro ao processar vídeo:', error);
+    showToast('❌ Erro ao processar vídeo: ' + (error.message || error), 4000);
+    document.getElementById('videoProcessandoStatus').style.display = 'none';
+    // Limpar elementos temporários do DOM
+    try { if (videoEl && videoEl.parentNode) document.body.removeChild(videoEl); } catch(e) {}
+    try { if (canvasEl && canvasEl.parentNode) document.body.removeChild(canvasEl); } catch(e) {}
+  } finally {
+    if (btnProcessar) { btnProcessar.disabled = false; btnProcessar.textContent = '🎬 Processar Vídeo'; }
+  }
+}
+
+function baixarVideoCompletoFinal() {
+  if (!window._videoFinalBlob) { showToast('❌ Nenhum vídeo processado'); return; }
+  const a = document.createElement('a');
+  a.href = window._videoFinalUrl || URL.createObjectURL(window._videoFinalBlob);
+  a.download = `bannerflix_video_editado.${window._videoFinalExt || 'webm'}`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast('⬇️ Download iniciado!');
+}
+
+function voltarDoVideoCompleto() {
+  const previaSection = document.getElementById('videoPreviaSection');
+  if (previaSection) previaSection.style.display = 'none';
+  const prevVid = document.getElementById('videoPreviaPlayer');
+  if (prevVid) { prevVid.pause(); prevVid.src = ''; }
+  // Oculta novamente o painel de preview (comportamento padrão da aba vídeo)
+  const painelPreview = document.querySelector('.painel-preview');
+  if (painelPreview) painelPreview.style.display = 'none';
+  window._videoFinalBlob = null;
+  window._videoFinalUrl  = null;
+}
+
+
+// ===== BUSCAR TRAILER PARA ABA DE VÍDEO =====
+let trailerAtualVideo = null;
+
+async function buscarTrailerParaVideo() {
+  const query = document.getElementById('searchTrailerInput').value.trim();
+  if (!query) {
+    showToast('Digite o nome de um filme ou série', 3000);
+    return;
+  }
+  
+  const btn = document.getElementById('btnBuscarTrailer');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Buscando...';
+  
+  const resultsDiv = document.getElementById('trailerResultsVideo');
+  resultsDiv.innerHTML = '<div style="text-align:center;padding:12px;color:var(--text-muted);">🔄 Buscando...</div>';
+  
+  try {
+    // Buscar filme/série
+    const searchUrl = `${TMDB_BASE}/search/multi?api_key=${TMDB_API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`;
+    const searchRes = await fetch(searchUrl);
+    const searchData = await searchRes.json();
+    
+    const items = (searchData.results || [])
+      .filter(i => (i.media_type === 'movie' || i.media_type === 'tv') && (i.poster_path || i.backdrop_path))
+      .slice(0, 5);
+    
+    if (!items.length) {
+      resultsDiv.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:8px 0;">Nenhum resultado encontrado.</p>';
+      btn.disabled = false;
+      btn.innerHTML = '🔍 Buscar';
+      return;
+    }
+    
+    // Mostrar resultados
+    resultsDiv.innerHTML = '';
+    items.forEach(item => {
+      const title = item.title || item.name;
+      const year = (item.release_date || item.first_air_date || '').slice(0, 4);
+      const isSerie = item.media_type === 'tv';
+      const type = isSerie ? 'Série' : 'Filme';
+      const typeIcon = isSerie ? '📺' : '🎬';
+      const poster = item.poster_path ? `${TMDB_IMG_W}${item.poster_path}` : null;
+      
+      const el = document.createElement('div');
+      el.className = 'result-item';
+      el.style.cursor = 'pointer';
+      el.innerHTML = `
+        ${poster
+          ? `<img src="${poster}" alt="${title}" loading="lazy" style="width:50px;height:75px;object-fit:cover;border-radius:4px;" />`
+          : `<div style="width:50px;height:75px;background:var(--bg3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">${typeIcon}</div>`}
+        <div style="flex:1;min-width:0;">
+          <strong style="display:block;font-size:0.9rem;">${title}</strong>
+          <small style="color:var(--text-muted);">${year || 'S/D'} • ${typeIcon} ${type}</small>
+        </div>
+      `;
+      el.addEventListener('click', () => buscarTrailerDoItem(item));
+      resultsDiv.appendChild(el);
+    });
+    
+  } catch (error) {
+    console.error('Erro ao buscar:', error);
+    resultsDiv.innerHTML = '<p style="color:#ef4444;font-size:0.85rem;padding:8px 0;">Erro ao buscar. Verifique sua conexão.</p>';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Buscar';
+  }
+}
+
+// Buscar trailer de um item específico
+async function buscarTrailerDoItem(item) {
+  const resultsDiv = document.getElementById('trailerResultsVideo');
+  resultsDiv.innerHTML = '<div style="text-align:center;padding:12px;color:var(--text-muted);">🔄 Buscando trailer...</div>';
+  
+  try {
+    const mediaType = item.media_type;
+    const itemId = item.id;
+    
+    // Buscar trailer em português
+    let videosUrl = `${TMDB_BASE}/${mediaType}/${itemId}/videos?api_key=${TMDB_API_KEY}&language=pt-BR`;
+    let videosRes = await fetch(videosUrl);
+    let videosData = await videosRes.json();
+    
+    let trailer = videosData.results?.find(v => 
+      v.site === 'YouTube' && 
+      (v.type === 'Trailer' || v.type === 'Teaser')
+    );
+    
+    // Se não encontrar em português, buscar em inglês
+    if (!trailer) {
+      videosUrl = `${TMDB_BASE}/${mediaType}/${itemId}/videos?api_key=${TMDB_API_KEY}&language=en-US`;
+      videosRes = await fetch(videosUrl);
+      videosData = await videosRes.json();
+      
+      trailer = videosData.results?.find(v => 
+        v.site === 'YouTube' && 
+        (v.type === 'Trailer' || v.type === 'Teaser')
+      );
+    }
+    
+    if (trailer) {
+      const trailerUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
+      trailerAtualVideo = {
+        url: trailerUrl,
+        key: trailer.key,
+        title: item.title || item.name,
+        type: item.media_type === 'tv' ? 'Série' : 'Filme'
+      };
+      
+      // Preencher título e descrição automaticamente
+      document.getElementById('videoTitulo').value = trailerAtualVideo.title;
+      const descricaoEl = document.getElementById('videoDescricao');
+      if (descricaoEl && item.overview) {
+        descricaoEl.value = item.overview;
+      }
+      
+      // Mostrar informações do trailer
+      document.getElementById('trailerEncontradoInfo').style.display = 'block';
+      resultsDiv.innerHTML = `
+        <div style="padding:12px;background:var(--bg3);border-radius:6px;border:1px solid var(--accent);">
+          <p style="color:var(--accent);font-weight:600;margin-bottom:4px;">✅ Trailer encontrado!</p>
+          <p style="font-size:0.85rem;color:var(--text);">${trailerAtualVideo.title}</p>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Use os botões acima para baixar o trailer</p>
+        </div>
+      `;
+      
+      showToast('✅ Trailer encontrado! Use os botões para baixar', 4000);
+      
+    } else {
+      resultsDiv.innerHTML = '<p style="color:#ef4444;font-size:0.85rem;padding:8px 0;">❌ Trailer não encontrado para este título</p>';
+      document.getElementById('trailerEncontradoInfo').style.display = 'none';
+      showToast('❌ Trailer não encontrado', 3000);
+    }
+    
+  } catch (error) {
+    console.error('Erro ao buscar trailer:', error);
+    resultsDiv.innerHTML = '<p style="color:#ef4444;font-size:0.85rem;padding:8px 0;">Erro ao buscar trailer</p>';
+    document.getElementById('trailerEncontradoInfo').style.display = 'none';
+  }
+}
+
+// Copiar link do trailer
+function copiarLinkTrailerVideo() {
+  if (!trailerAtualVideo) {
+    showToast('❌ Nenhum trailer selecionado', 2000);
+    return;
+  }
+  
+  navigator.clipboard.writeText(trailerAtualVideo.url).then(() => {
+    showToast('📋 Link copiado! Cole em y2meta.is ou ytdown.to para baixar', 4000);
+  }).catch(() => {
+    showToast('❌ Erro ao copiar link', 2000);
+  });
+}
+
+// Abrir trailer no YouTube
+function abrirTrailerYoutubeVideo() {
+  if (!trailerAtualVideo) {
+    showToast('❌ Nenhum trailer selecionado', 2000);
+    return;
+  }
+  
+  window.open(trailerAtualVideo.url, '_blank');
+  showToast('🎬 Abrindo trailer no YouTube...', 2000);
+}
+
+// Enter para buscar trailer
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchTrailerInput');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') buscarTrailerParaVideo();
+    });
+  }
+
+  // Inicializar select do banco de vídeos
+  const selectBanco = document.getElementById('selectBancoVideos');
+  if (selectBanco && typeof bancoVideos !== 'undefined') {
+    bancoVideos.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.url;
+      opt.textContent = v.nome;
+      selectBanco.appendChild(opt);
+    });
+  }
+});

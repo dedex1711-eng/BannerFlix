@@ -2,11 +2,13 @@
 <html lang="pt-BR">
 <head>
 
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-16x16.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.ico">
-<link rel="shortcut icon" href="favicon.ico">
-<meta name="msapplication-TileColor" content="#ffffff">
-<meta name="theme-color" content="#ffffff">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a0a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BannerFlix">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/dedex1711-eng/BannerFlix/main/logo.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BannerFlix – Crie Banners Profissionais</title>
@@ -16,6 +18,15 @@
   
   <!-- Google reCAPTCHA v3 -->
   <script src="https://www.google.com/recaptcha/api.js?render=6LfKm9YsAAAAAPfC2SpxnqaVfBnmHGd-YcYP4Miw"></script>
+  
+  <!-- Função para aceitar cookies (inline para estar disponível imediatamente) -->
+  <script>
+    function acceptCookies() {
+      const banner = document.getElementById('cookieBanner');
+      if (banner) banner.style.display = 'none';
+      localStorage.setItem('cookiesAccepted', '1');
+    }
+  </script>
 </head>
 <body>
 
@@ -284,6 +295,49 @@
           </div>
           <p id="progressTexto">Processando vídeo... 0%</p>
           <small>Isso pode levar alguns minutos dependendo do tamanho do vídeo</small>
+          <small style="display:block; color: #ff9800; font-weight: bold; margin-top: 5px;">⚠️ Mantenha esta aba aberta para concluir a geração do vídeo.</small>
+        </div>
+      </div>
+
+      <!-- ETAPA 3: PRÉVIA DO VÍDEO EDITADO -->
+      <div id="etapaPrevia" class="video-etapa" style="display:none;">
+        <div class="previa-header">
+          <div class="previa-badge">✅ Vídeo Pronto!</div>
+          <p class="previa-sub">Assista a prévia completa antes de baixar</p>
+        </div>
+
+        <div class="previa-video-wrapper">
+          <video id="videoPreviaFinal" controls playsinline
+            style="width:100%;max-height:420px;border-radius:12px;background:#000;display:block;">
+          </video>
+        </div>
+
+        <div class="previa-info" id="previaInfoBar">
+          <span id="previaInfoTexto">🎬 Vídeo editado com suas configurações</span>
+        </div>
+
+        <div class="previa-acoes">
+          <button class="btn-auth" onclick="voltarParaEdicao()" style="background:var(--bg3);">
+            ← Editar Novamente
+          </button>
+          <button class="btn-auth btn-download-video" onclick="baixarVideoEditado()" id="btnBaixarVideo">
+            ⬇️ Baixar Vídeo
+          </button>
+        </div>
+
+        <div class="previa-detalhes">
+          <div class="detalhe-item">
+            <span class="detalhe-label">📐 Formato</span>
+            <span class="detalhe-valor" id="previaFormato">—</span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">⏱️ Duração</span>
+            <span class="detalhe-valor" id="previaDuracao">—</span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">💾 Tamanho</span>
+            <span class="detalhe-valor" id="previaTamanho">—</span>
+          </div>
         </div>
       </div>
 
@@ -365,6 +419,9 @@
           </button>
           <button class="type-btn" onclick="selecionarTipo('futebol')" id="btnTipoFutebol">
             ⚽ Futebol
+          </button>
+          <button class="type-btn" onclick="selecionarTipo('video')" id="btnTipoVideo">
+            🎥 Vídeo
           </button>
         </div>
       </div>
@@ -467,6 +524,9 @@
           </div>
         </div>
 
+        <!-- CONTAINER COMPARTILHADO DE CONTROLES DO BANNER -->
+        <div id="painelControlesBannerCompartilhado">
+        
         <!-- STEP 2: LOGO -->
         <div class="step-card">
           <div class="step-num step-num-logo">2</div>
@@ -872,10 +932,280 @@
 
           <button class="btn-gerar" onclick="gerarBannerAtual()">✨ Gerar Banner</button>
         </div>
+        </div> <!-- Fecha painelControlesBannerCompartilhado -->
+
+      <!-- PAINEL VÍDEO (NOVO) -->
+      <div class="painel-video" id="painelVideo">
+        
+        <!-- BUSCAR TRAILER DE FILME/SÉRIE -->
+        <div class="step-card">
+          <div class="step-num">🔍</div>
+          <h3>Buscar Trailer de Filme/Série</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
+            Busque um filme ou série para carregar o trailer automaticamente
+          </p>
+          
+          <div class="search-box">
+            <input type="text" id="searchTrailerInput" placeholder="Ex: Vingadores, Breaking Bad..." style="flex:1;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);" />
+            <button onclick="buscarTrailerParaVideo()" id="btnBuscarTrailer" style="padding:10px 20px;background:var(--primary);color:white;border:none;border-radius:6px;cursor:pointer;font-weight:600;">🔍 Buscar</button>
+          </div>
+          
+          <div id="trailerResultsVideo" style="margin-top:12px;"></div>
+          
+          <div id="trailerEncontradoInfo" style="display:none;margin-top:12px;padding:12px;background:var(--bg3);border-radius:6px;border:1px solid var(--accent);">
+            <p style="color:var(--accent);font-weight:600;margin-bottom:8px;">✅ Trailer encontrado!</p>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;">Baixe o trailer usando uma dessas ferramentas:</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <a href="https://y2meta.is/" target="_blank" style="padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--text);font-size:0.85rem;">📥 y2meta.is</a>
+              <a href="https://app.ytdown.to/pt27/" target="_blank" style="padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--text);font-size:0.85rem;">📥 ytdown.to</a>
+              <button onclick="copiarLinkTrailerVideo()" style="padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;cursor:pointer;color:var(--text);font-size:0.85rem;">📋 Copiar Link</button>
+              <button onclick="abrirTrailerYoutubeVideo()" style="padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;cursor:pointer;color:var(--text);font-size:0.85rem;">🎬 Abrir YouTube</button>
+            </div>
+          </div>
+          
+          <div style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--accent);">
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">
+              💡 <strong>Dica:</strong> Após baixar o trailer, faça upload abaixo para adicionar sua logo e informações
+            </p>
+          </div>
+        </div>
+        
+        <!-- STEP 1: UPLOAD DO VÍDEO -->
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>📤 Upload do Vídeo</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
+            Faça upload do vídeo que deseja editar
+          </p>
+          
+          <div class="video-upload-box" onclick="document.getElementById('videoUploadInput').click()">
+            <div id="videoUploadPlaceholder">
+              <span class="upload-icon">🎥</span>
+              <p>Clique para escolher o vídeo</p>
+              <small>MP4, WebM, MOV (máx. 500MB)</small>
+            </div>
+            <video id="videoPreviewMain" style="display:none;width:100%;max-height:300px;border-radius:8px;" controls></video>
+          </div>
+          <input type="file" id="videoUploadInput" accept="video/*" style="display:none;" onchange="carregarVideoUpload(event)" />
+          <button class="btn-remove-logo" id="btnRemoverVideoUpload" onclick="removerVideoUpload()" style="display:none;margin-top:8px;">✕ Remover Vídeo</button>
+        </div>
+
+        <!-- STEP 2: INFORMAÇÕES DO VÍDEO -->
+        <div class="step-card" id="videoInfoStep" style="display:none;">
+          <div class="step-num">2</div>
+          <h3>📝 Informações do Vídeo</h3>
+          
+          <div class="form-group">
+            <label>Título do Vídeo</label>
+            <input type="text" id="videoTitulo" placeholder="Ex: Melhores Momentos" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);" />
+          </div>
+
+          <div class="form-group">
+            <label>Descrição (opcional)</label>
+            <textarea id="videoDescricao" placeholder="Ex: Confira os melhores momentos..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);min-height:80px;resize:vertical;"></textarea>
+          </div>
+        </div>
+
+        <!-- STEP 3: LOGO -->
+        <div class="step-card" id="videoLogoStep" style="display:none;">
+          <div class="step-num">3</div>
+          <h3>🎨 Logo</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
+            Sua logo do perfil será usada. Você também pode enviar uma nova abaixo.
+          </p>
+          
+          <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
+            <img id="videoMiniLogoPreview" src="" style="display:none; max-height: 40px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg3);" />
+            <button onclick="document.getElementById('logoInput').click()" style="padding: 8px 12px; background: var(--bg3); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+              ⬆️ Enviar/Trocar Logo
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label>Posição da Logo</label>
+            <select id="videoPosicaoLogo" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);">
+              <option value="top-left">Superior Esquerdo</option>
+              <option value="top-right" selected>Superior Direito</option>
+              <option value="bottom-left">Inferior Esquerdo</option>
+              <option value="bottom-right">Inferior Direito</option>
+              <option value="center">Centro</option>
+            </select>
+          </div>
+
+          <input type="hidden" id="videoTamanhoLogo" value="10" />
+
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" id="painelVideoMostrarLogo" checked style="width:18px;height:18px;" />
+              <span>Mostrar logo no vídeo</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- STEP 4: INFORMAÇÕES DE CONTATO -->
+        <div class="step-card" id="videoContatoStep" style="display:none;">
+          <div class="step-num">4</div>
+          <h3>📱 Informações de Contato</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
+            Adicione suas informações de contato ao vídeo
+          </p>
+
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px;">
+              <input type="checkbox" id="videoMostrarWhatsApp" checked style="width:18px;height:18px;" />
+              <span>Mostrar WhatsApp</span>
+            </label>
+            <input type="text" id="videoWhatsapp" placeholder="Ex: (83) 99999-9999"
+              style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);box-sizing:border-box;" />
+          </div>
+
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px;">
+              <input type="checkbox" id="videoMostrarInstagram" checked style="width:18px;height:18px;" />
+              <span>Mostrar Instagram</span>
+            </label>
+            <input type="text" id="videoInstagram" placeholder="Ex: @seuperfil"
+              style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);box-sizing:border-box;" />
+          </div>
+
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px;">
+              <input type="checkbox" id="videoMostrarSite" checked style="width:18px;height:18px;" />
+              <span>Mostrar Site</span>
+            </label>
+            <input type="text" id="videoSite" placeholder="Ex: www.seusite.com"
+              style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);box-sizing:border-box;" />
+          </div>
+
+          <div class="form-group">
+            <label>Posição das Informações</label>
+            <select id="videoPosicaoInfo" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);">
+              <option value="bottom-center" selected>Inferior Centro</option>
+              <option value="bottom-left">Inferior Esquerdo</option>
+              <option value="bottom-right">Inferior Direito</option>
+              <option value="top-center">Superior Centro</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- STEP 5: FORMATO E DURAÇÃO -->
+        <div class="step-card" id="videoFormatoStep" style="display:none;">
+          <div class="step-num">5</div>
+          <h3>📐 Formato e Duração</h3>
+          
+          <div class="form-group">
+            <label>Formato de Saída</label>
+            <select id="painelVideoFormatoSaida" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);">
+              <option value="original">Original (manter proporção)</option>
+              <option value="stories">Stories (9:16 - 1080x1920)</option>
+              <option value="reels">Reels (9:16 - 1080x1920)</option>
+              <option value="feed">Feed (4:5 - 1080x1350)</option>
+              <option value="paisagem">Paisagem (16:9 - 1920x1080)</option>
+              <option value="quadrado">Quadrado (1:1 - 1080x1080)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Duração do Corte</label>
+            <select id="painelVideoDuracaoCorte" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);">
+              <option value="completo">Vídeo completo</option>
+              <option value="15">Primeiros 15 segundos</option>
+              <option value="30">Primeiros 30 segundos</option>
+              <option value="60">Primeiros 60 segundos</option>
+              <option value="90">Primeiros 90 segundos</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- STEP 6: OVERLAY -->
+        <div class="step-card" id="videoOverlayStep" style="display:none;">
+          <div class="step-num">6</div>
+          <h3>🎨 Overlay de Cor</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
+            Adicione um filtro de cor ao vídeo (opcional)
+          </p>
+          
+          <div class="overlay-options">
+            <label class="overlay-opt" title="Sem overlay">
+              <input type="radio" name="videoOverlay" value="none" checked />
+              <div class="overlay-swatch none-swatch">✕</div>
+            </label>
+            <label class="overlay-opt" title="Escuro">
+              <input type="radio" name="videoOverlay" value="dark" />
+              <div class="overlay-swatch dark-swatch"></div>
+            </label>
+            <label class="overlay-opt" title="Roxo">
+              <input type="radio" name="videoOverlay" value="purple" />
+              <div class="overlay-swatch purple-swatch"></div>
+            </label>
+            <label class="overlay-opt" title="Azul">
+              <input type="radio" name="videoOverlay" value="blue" />
+              <div class="overlay-swatch blue-swatch"></div>
+            </label>
+            <label class="overlay-opt" title="Vermelho">
+              <input type="radio" name="videoOverlay" value="red" />
+              <div class="overlay-swatch red-swatch"></div>
+            </label>
+            <label class="overlay-opt" title="Verde">
+              <input type="radio" name="videoOverlay" value="green" />
+              <div class="overlay-swatch" style="background:rgba(20,83,45,0.6);"></div>
+            </label>
+            <label class="overlay-opt" title="Laranja">
+              <input type="radio" name="videoOverlay" value="orange" />
+              <div class="overlay-swatch" style="background:rgba(124,45,18,0.6);"></div>
+            </label>
+          </div>
+
+          <div class="form-group" style="margin-top:16px;">
+            <label>Intensidade do Overlay (%)</label>
+            <input type="range" id="videoIntensidadeOverlay" min="0" max="100" value="40" style="width:100%;" oninput="document.getElementById('overlayIntensityValue').textContent = this.value + '%'" />
+            <span id="overlayIntensityValue" style="font-size:0.85rem;color:var(--text-muted);">40%</span>
+          </div>
+        </div>
+
+        <!-- BOTÃO PROCESSAR -->
+        <div class="step-card" id="videoProcessarStep" style="display:none;">
+          <button class="btn-gerar" onclick="processarVideoCompleto()">🎬 Processar Vídeo</button>
+          
+          <div id="videoProcessandoStatus" style="display:none;margin-top:16px;">
+            <div class="progress-bar" style="width:100%;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;">
+              <div class="progress-fill" id="videoProgressFill" style="width:0%;height:100%;background:var(--primary);transition:width 0.3s;"></div>
+            </div>
+            <p id="videoProgressTexto" style="text-align:center;margin-top:8px;font-size:0.85rem;color:var(--text-muted);">Processando vídeo... 0%</p>
+            <small style="display:block;text-align:center;margin-top:4px;font-size:0.75rem;color:var(--text-muted);">Isso pode levar alguns minutos</small>
+            <small style="display:block; text-align:center; color: #ff9800; font-weight: bold; margin-top: 5px; font-size: 0.75rem;">⚠️ Mantenha esta aba aberta para concluir a geração do vídeo.</small>
+          </div>
+        </div>
       </div>
+      </div> <!-- Fecha painel-controles -->
 
       <!-- PAINEL DIREITO: PREVIEW -->
       <div class="painel-preview">
+
+        <!-- PRÉVIA DO VÍDEO EDITADO (aparece após processar) -->
+        <div id="videoPreviaSection" style="display:none;">
+          <div class="previa-header">
+            <div class="previa-badge">✅ Vídeo Pronto!</div>
+            <p class="previa-sub">Assista a prévia completa antes de baixar</p>
+          </div>
+          <div class="previa-video-wrapper">
+            <video id="videoPreviaPlayer" controls playsinline
+              style="width:100%;max-height:400px;border-radius:10px;background:#000;display:block;">
+            </video>
+          </div>
+          <div class="previa-info">
+            <span id="videoPreviaExt">🎬 Vídeo editado pronto</span>
+          </div>
+          <div class="previa-acoes">
+            <button class="btn-auth" onclick="voltarDoVideoCompleto()" style="background:var(--bg3);">
+              ← Processar Novamente
+            </button>
+            <button class="btn-auth btn-download-video" onclick="baixarVideoCompletoFinal()">
+              ⬇️ Baixar Vídeo
+            </button>
+          </div>
+        </div>
+
         <h3>Preview</h3>
         <div class="canvas-wrapper" id="canvasWrapper">
           <canvas id="bannerCanvas"></canvas>
@@ -1243,9 +1573,12 @@
   
   <!-- 2. Sistema de autenticação com LicenseAuth -->
   <script src="auth-licenseauth-js.js"></script>
-  
-  <!-- 3. App principal (criador de banners) -->
-  <script src="app.js?v=20260502091"></script>
+
+  <!-- 3. ffmpeg.wasm — conversão webm→mp4 no browser -->
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+
+  <!-- 4. App principal (criador de banners) -->
+  <script src="app.js?v=20260502094"></script>
   
   <script>
     // Scripts carregados
@@ -1291,6 +1624,16 @@
         iniciarVerificacaoExpiracaoPeriodia();
       }, 2000); // Aguarda 2 segundos para garantir que tudo carregou
     });
+  </script>
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrado!', reg))
+          .catch(err => console.log('Erro ao registrar Service Worker', err));
+      });
+    }
   </script>
 </body>
 </html>
